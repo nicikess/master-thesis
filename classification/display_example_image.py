@@ -28,8 +28,6 @@ class DisplayExampleImage:
         # Loading the image results in a (13,64,64) shape, i.e. CxHxW. Most image libraries work with a HxWxC orientation.
         img_data = np.ma.transpose(img_data, [1, 2, 0])
 
-        print(np.shape(img_data))
-
         fig, ax = plt.subplots(1, figsize=(5, 5))
         ax.imshow(img_data)
         ax.axis(False)

@@ -17,7 +17,7 @@ class BigEarthNet(Dataset):
 
     def __getitem__(self, idx):
         file_name = self.data_index.loc[:, 'fileName'][idx]
-        path_folder = os.path.join(self.root_dir, file_name)
+        path_folder = os.path.join(self.root_dir, file_name) + '_all_bands.npy'
         path_image = os.path.join(path_folder, file_name) + '_all_bands.npy'
         path_label = os.path.join(path_folder, file_name) + '_labels.npy'
         path_meta_information = os.path.join(path_folder, file_name) + '_labels_metadata.json'

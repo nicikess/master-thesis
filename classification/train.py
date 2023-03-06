@@ -6,97 +6,153 @@ from tqdm import tqdm
 
 class Train:
 
-    def __init__(self, model, train_dl):
-
-        self.hyper_parameter = HyperParameter()
+    def __init__(self, model, train_dl, validation_dl, device, wandb, hyper_parameter):
         self.model = model
         self.train_dl = train_dl
+        self.validation_dl = validation_dl
+        self.device = device
+        self.wandb = wandb
+        self.hyper_parameter = hyper_parameter
         self.epochs = self.hyper_parameter.epochs
         self.learning_rate = self.hyper_parameter.learning_rate
         self.opt_func = self.hyper_parameter.opt_func
         self.milestones = self.hyper_parameter.milestones
         self.weight_decay = self.hyper_parameter.weight_decay
         self.loss = self.hyper_parameter.loss
+        self.optimizer = torch.optim.SGD(model.parameters(), lr=self.learning_rate)
 
-        # init collection of training epoch losses
-        train_epoch_losses = []
+    def train(self):
+        # Move the model to the GPU
+        self.model
 
-        # set the model in training mode
-        self.model.train()
+        # Create lists for logging losses and evalualtion metrics:
+        train_losses = []
+        train_accs = []
+        train_ious = []
 
-        self.optimizer = self.opt_func(self.model.fc.parameters(), lr=self.learning_rate, weight_decay=self.weight_decay)
-        self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, milestones=self.milestones, gamma=0.1)
+        val_losses = []
+        val_accs = []
+        val_ious = []
 
-        # train the CIFAR10 model
-        for epoch in tqdm(range(self.epochs)):
+        # For every epoch
+        for epoch in range(50):
+            epoch_loss = 0
+            progress = tqdm(
+                enumerate(self.train_dl), desc="Train Loss: ",
+                total=len(self.train_dl)
+            )
 
-            # init collection of mini-batch losses
-            train_mini_batch_losses = []
+            # Specify you are in training mode
+            self.model.train()
 
-            # iterate over all-mini batches
-            for i, (labels, meta_information, images) in tqdm(enumerate(train_dl)):
-                # push mini-batch data to computation device
-                # images = images.to(device)
-                # labels = labels.to(device)
+            epoch_train_loss = 0
+            epoch_val_loss = 0
 
-                # run forward pass through the network
+            epoch_train_ious = 0
+            epoch_val_ious = 0
+
+            epoch_train_accs = 0
+            epoch_val_accs = 0
+
+            for i, (labels, images) in progress:
+                # Transfer data to GPU if available
+                labels = labels.to(self.device)
+                images = images.to(self.device)
+
+                # Make a forward pass
                 output = self.model(images)
 
-                # reset graph gradients
-                self.optimizer.zero_grad()
-
-                # determine classification loss
+                # Compute the loss
                 loss = self.loss(output, labels)
 
-                # wandb.log({"loss": loss})
+                # Clear the gradients
+                self.optimizer.zero_grad()
 
-                # run backward pass
+                # Calculate gradients
                 loss.backward()
 
-                # update network paramaters
+                # Update Weights
                 self.optimizer.step()
 
-                # collect mini-batch reconstruction loss
-                train_mini_batch_losses.append(loss.data.item())
+                # Accumulate the loss over the epoch
+                epoch_train_loss += loss / len(self.train_dl)
 
-                # print(f'loss {loss}')
+                progress.set_description("Train Loss: {:.4f}".format(
+                    epoch_train_loss))
 
-            # determine mean min-batch loss of epoch
-            train_epoch_loss = np.mean(train_mini_batch_losses)
+            progress = tqdm(
+                enumerate(self.validation_dl), desc="val Loss: ",
+                total=len(self.validation_dl), position=0, leave=True, )
 
-            # print('Epoch-{0} lr: {1}'.format(epoch, self.optimizer.param_groups[0]['lr']))
+            # Specify you are in evaluation mode
+            self.model.eval()
 
-            self.scheduler.step()
+            # Deactivate autograd engine (no backpropagation allowed)
+            with torch.no_grad():
 
-            # print('Epoch-{0} lr: {1}'.format(epoch, self.optimizer.param_groups[0]['lr']))
+                epoch_val_loss = 0
 
-            # Added
-            # result = evaluate(model, vali_dataloader)
+                for i, (labels, images) in progress:
+                    # Transfer Data to GPU if available
+                    images = images.to(self.device)
+                    labels = labels.to(self.device)
 
-            # print epoch loss
-            now = datetime.utcnow().strftime("%Y%m%d-%H:%M:%S")
-            print('[LOG {}] epoch: {} train-loss: {}'.format(str(now), str(epoch), str(train_epoch_loss)))
+                    # Make a forward pass
+                    output = self.model(images)
 
-            if (epoch % 10 == 0):
-                # set filename of actual model
-                model_name = 'challenge_model_epoch_{}.pth'.format(str(epoch))
-                # save current model to GDrive models directory
-                print(f'Here it would save {model_name}')
-                # torch.save(model.state_dict(), os.path.join(MODEL_PATH, model_name))
+                    # Compute the loss
+                    val_loss = self.loss(output, labels)
 
-            # determine mean min-batch loss of epoch
-            train_epoch_losses.append(train_epoch_loss)
+                    # Accumulate the loss over the epoch
+                    epoch_val_loss += val_loss / len(self.validation_dl)
+
+                    progress.set_description("Validation Loss: {:.4f}".format(
+                        epoch_val_loss))
+
+            if epoch == 0:
+                best_val_loss = epoch_val_loss
+            else:
+                if epoch_val_loss <= best_val_loss:
+                    best_val_loss = epoch_val_loss
+                    # Save only the best model
+                    save_weights_path = "segmentation_model.pth"
+                    torch.save(self.model.state_dict(), save_weights_path)
+
+            if self.device.type == 'gpu':
+                # Save losses in list, so that we can visualise them later.
+                train_losses.append(epoch_train_loss.cpu().detach().numpy())
+                val_losses.append(epoch_val_loss.cpu().detach().numpy())
+
+                # Save IoUs in list, so that we can visualise them later.
+                train_ious.append(epoch_train_ious.cpu().detach().numpy())
+                val_ious.append(epoch_val_ious.cpu().detach().numpy())
+
+                # Save accuracies in list, so that we can visualise them later.
+                train_accs.append(epoch_train_accs.cpu().detach().numpy())
+                val_accs.append(epoch_val_accs.cpu().detach().numpy())
+
+            if self.device.type == 'cpu':
+                # Save losses in list, so that we can visualise them later.
+                train_losses.append(epoch_train_loss.detach().numpy())
+                val_losses.append(epoch_val_loss.detach().numpy())
+
+                # Save IoUs in list, so that we can visualise them later.
+                train_ious.append(epoch_train_ious.detach().numpy())
+                val_ious.append(epoch_val_ious.detach().numpy())
+
+                # Save accuracies in list, so that we can visualise them later.
+                train_accs.append(epoch_train_accs.detach().numpy())
+                val_accs.append(epoch_val_accs.detach().numpy())
 
 
 class HyperParameter:
 
-    def __init__(self):
-
-        self.epochs = 20
-        self.batch_size = 32
-        self.learning_rate = 0.001
-        self.opt_func = torch.optim.Adam
-        self.milestones = [5, 15]
-        self.weight_decay = 0
-        self.description = "resnet50_no_transformation_with_normalisation"
-        self.loss = torch.nn.CrossEntropyLoss()
+    def __init__(self, epoch, batch_size, learning_rate, opt_func, milestones, weight_decay, model_description, loss):
+        self.epochs = epoch
+        self.batch_size = batch_size
+        self.learning_rate = learning_rate
+        self.opt_func = opt_func
+        self.milestones = milestones
+        self.weight_decay = weight_decay
+        self.model_description = model_description
+        self.loss = loss

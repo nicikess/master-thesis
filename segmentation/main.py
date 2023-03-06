@@ -40,6 +40,5 @@ if __name__ == '__main__':
 
     # First of all, let's verify if a GPU is available on our compute machine. If not, the cpu will be used instead.
     device = torch.device('cpu')
-    print('Device used: {}'.format(device))
 
     train = Train(model, train_loader=train_loader, val_loader=val_loader, device=device, optimizer=optimizer, criterion=criterion).train()
