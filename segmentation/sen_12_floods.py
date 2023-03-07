@@ -7,22 +7,34 @@ from albumentations.pytorch import ToTensorV2
 import albumentations as A
 
 
-class SEN12FLOODS():
+class SEN12FLOODS:
     """SEN12FLOODS segmentation Dataset."""
 
-    def __init__(self, root='chips/', split='train', transforms=None, **kwargs):
+    def __init__(self, root="chips/", split="train", transforms=None, **kwargs):
         super(SEN12FLOODS, self).__init__()
 
         # Loop over available data and create pairs of Sentinel 1 and Sentinel 2 images, co-registered,
         # with corresponding groundtruth, and store the paths in lists.
-        self.s2_images, self.s2_masks, self.s1_images, self.s1_masks = self._get_sen2flood_pairs(root, split)
+        (
+            self.s2_images,
+            self.s2_masks,
+            self.s1_images,
+            self.s1_masks,
+        ) = self._get_sen2flood_pairs(root, split)
 
         # Make sure that for each data point we have all the values we need.
-        assert (len(self.s2_images) == len(self.s2_masks) == len(self.s1_images) == len(self.s1_masks))
+        assert (
+            len(self.s2_images)
+            == len(self.s2_masks)
+            == len(self.s1_images)
+            == len(self.s1_masks)
+        )
         if len(self.s2_images) == 0:
             raise RuntimeError("Found 0 images in subfolders of:" + root + "\n")
 
-        print('Found {} images in the folder {}'.format(len(self.s2_images), root + split))
+        print(
+            "Found {} images in the folder {}".format(len(self.s2_images), root + split)
+        )
 
         self.transforms = transforms
 
@@ -30,21 +42,27 @@ class SEN12FLOODS():
         if self.transforms:
             augmentation = A.Compose(
                 [
-                    A.Resize(height=256, width=256, p=1, interpolation=cv2.INTER_NEAREST),
+                    A.Resize(
+                        height=256, width=256, p=1, interpolation=cv2.INTER_NEAREST
+                    ),
                     A.Affine(scale=2, translate_px=5, rotate=20, p=0.5),
                     A.HorizontalFlip(p=0.5),
                     A.VerticalFlip(p=0.5),
-                    ToTensorV2()
-                ], additional_targets={'image0': 'image'}
+                    ToTensorV2(),
+                ],
+                additional_targets={"image0": "image"},
             )
             self.augmentation = augmentation
 
         else:
             augmentation = A.Compose(
                 [
-                    A.Resize(height=256, width=256, p=1, interpolation=cv2.INTER_NEAREST),
+                    A.Resize(
+                        height=256, width=256, p=1, interpolation=cv2.INTER_NEAREST
+                    ),
                     ToTensorV2(),
-                ], additional_targets={'image0': 'image'}
+                ],
+                additional_targets={"image0": "image"},
             )
             self.augmentation = augmentation
 
@@ -60,8 +78,21 @@ class SEN12FLOODS():
     def __getitem__(self, index):
         # Loop over all bands, and create a concatenated array for sentinel-2 data
         bands = []
-        for file in ['B1.tif', 'B2.tif', 'B3.tif', 'B4.tif', 'B5.tif', 'B6.tif', 'B7.tif',
-                     'B8.tif', 'B8A.tif', 'B9.tif', 'B10.tif', 'B11.tif', 'B12.tif']:
+        for file in [
+            "B1.tif",
+            "B2.tif",
+            "B3.tif",
+            "B4.tif",
+            "B5.tif",
+            "B6.tif",
+            "B7.tif",
+            "B8.tif",
+            "B8A.tif",
+            "B9.tif",
+            "B10.tif",
+            "B11.tif",
+            "B12.tif",
+        ]:
             band = rio.open(os.path.join(self.s2_images[index], file))
             bands.append(band.read())
         s2_img = np.concatenate(bands, axis=0)
@@ -69,7 +100,7 @@ class SEN12FLOODS():
 
         # Loop over both polarization, and create a concatenated array for sentinel-1 data
         bands = []
-        for file in ['VH.tif', 'VV.tif']:
+        for file in ["VH.tif", "VV.tif"]:
             band = rio.open(os.path.join(self.s1_images[index], file))
             band_array = band.read()
             if np.isfinite(band_array).all():
@@ -90,16 +121,19 @@ class SEN12FLOODS():
         mask_img = mask.read().squeeze()
 
         # Apply same data augmentation for both sentinel 2 and sentinel 1 images, and the mask.
-        augmented_data = self.augmentation(image=np.transpose(s2_img, (1, 2, 0)),
-                                           image0=np.transpose(s1_img, (1, 2, 0)), mask=mask_img)
+        augmented_data = self.augmentation(
+            image=np.transpose(s2_img, (1, 2, 0)),
+            image0=np.transpose(s1_img, (1, 2, 0)),
+            mask=mask_img,
+        )
 
         # Define output tensor
         output_tensor = {
-            "s2_img": augmented_data['image'],
-            "s1_img": augmented_data['image0'],
+            "s2_img": augmented_data["image"],
+            "s1_img": augmented_data["image0"],
             "s2_imgfile": self.s2_images[index],
             "s1_imgfile": self.s1_images[index],
-            "mask": augmented_data['mask'],
+            "mask": augmented_data["mask"],
         }
 
         return output_tensor
@@ -134,21 +168,27 @@ class SEN12FLOODS():
 
         # loop over the image folder (train or validation)
         for filename in os.listdir(img_folder):
-            if filename not in ['._.DS_Store', '.DS_Store']:
-                for file in os.listdir(os.path.join(img_folder, filename, 's2')):
-                    if file not in ['._.DS_Store', '.DS_Store']:
+            if filename not in ["._.DS_Store", ".DS_Store"]:
+                for file in os.listdir(os.path.join(img_folder, filename, "s2")):
+                    if file not in ["._.DS_Store", ".DS_Store"]:
                         # Get the Image ID (as explained in the dataset section)
-                        image_id = file.split('_')[-1]
+                        image_id = file.split("_")[-1]
 
                         # Store Sentinel 2 image and mask paths in lists
-                        s2_imgpath = os.path.join(img_folder, filename, 's2', file)
-                        s2_maskpath = os.path.join(img_folder, filename, 's2', file, 'LabelWater.tif')
+                        s2_imgpath = os.path.join(img_folder, filename, "s2", file)
+                        s2_maskpath = os.path.join(
+                            img_folder, filename, "s2", file, "LabelWater.tif"
+                        )
 
                         # Using the Image ID, store co-registered Sentinel 1 image and mask paths in lists
-                        s1_files = os.listdir(os.path.join(img_folder, filename, 's1'))
-                        s1_file = [file for file in s1_files if file.endswith(image_id)][0]
-                        s1_imgpath = os.path.join(img_folder, filename, 's1', s1_file)
-                        s1_maskpath = os.path.join(img_folder, filename, 's1', s1_file, 'LabelWater.tif')
+                        s1_files = os.listdir(os.path.join(img_folder, filename, "s1"))
+                        s1_file = [
+                            file for file in s1_files if file.endswith(image_id)
+                        ][0]
+                        s1_imgpath = os.path.join(img_folder, filename, "s1", s1_file)
+                        s1_maskpath = os.path.join(
+                            img_folder, filename, "s1", s1_file, "LabelWater.tif"
+                        )
 
                         if os.path.isfile(s1_maskpath):
                             s2_img_paths.append(s2_imgpath)
@@ -156,7 +196,7 @@ class SEN12FLOODS():
                             s1_img_paths.append(s1_imgpath)
                             s1_mask_paths.append(s1_maskpath)
                         else:
-                            print('cannot find the S1 Mask:', s1_maskpath)
+                            print("cannot find the S1 Mask:", s1_maskpath)
 
         return s2_img_paths, s2_mask_paths, s1_img_paths, s1_mask_paths
 
@@ -175,8 +215,8 @@ class SEN12FLOODS():
         s1_image = sample.get("s1_img").squeeze()
         mask = sample.get("mask")
 
-        print(sample.get('s2_imgfile'))
-        print(sample.get('s1_imgfile'))
+        print(sample.get("s2_imgfile"))
+        print(sample.get("s1_imgfile"))
 
         fig, axs = plt.subplots(1, 3, figsize=(17, 6))
 
@@ -185,7 +225,7 @@ class SEN12FLOODS():
 
         axs[0].imshow(s1_img_vh)
         axs[0].set_title("Sentinel-1 VH")
-        axs[0].axis('off')
+        axs[0].axis("off")
 
         s2_img_rgb = s2_image[[3, 2, 1], :, :]
         s2_img_rgb = np.transpose(s2_img_rgb, (1, 2, 0))
@@ -193,12 +233,12 @@ class SEN12FLOODS():
 
         axs[1].imshow(s2_img_rgb)
         axs[1].set_title("Sentinel-2 RGB")
-        axs[1].axis('off')
+        axs[1].axis("off")
 
         mask = mask.squeeze()
 
-        axs[2].imshow(mask, cmap='Blues')
+        axs[2].imshow(mask, cmap="Blues")
         axs[2].set_title("Groundtruth Mask")
-        axs[2].axis('off')
+        axs[2].axis("off")
 
         plt.show()

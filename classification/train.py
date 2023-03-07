@@ -5,7 +5,6 @@ from tqdm import tqdm
 
 
 class Train:
-
     def __init__(self, model, train_dl, validation_dl, device, wandb, hyper_parameter):
         self.model = model
         self.train_dl = train_dl
@@ -28,18 +27,15 @@ class Train:
         # Create lists for logging losses and evalualtion metrics:
         train_losses = []
         train_accs = []
-        train_ious = []
 
         val_losses = []
         val_accs = []
-        val_ious = []
 
         # For every epoch
         for epoch in range(50):
-            epoch_loss = 0
+
             progress = tqdm(
-                enumerate(self.train_dl), desc="Train Loss: ",
-                total=len(self.train_dl)
+                enumerate(self.train_dl), desc="Train Loss: ", total=len(self.train_dl)
             )
 
             # Specify you are in training mode
@@ -47,9 +43,6 @@ class Train:
 
             epoch_train_loss = 0
             epoch_val_loss = 0
-
-            epoch_train_ious = 0
-            epoch_val_ious = 0
 
             epoch_train_accs = 0
             epoch_val_accs = 0
@@ -77,12 +70,15 @@ class Train:
                 # Accumulate the loss over the epoch
                 epoch_train_loss += loss / len(self.train_dl)
 
-                progress.set_description("Train Loss: {:.4f}".format(
-                    epoch_train_loss))
+                progress.set_description("Train Loss: {:.4f}".format(epoch_train_loss))
 
             progress = tqdm(
-                enumerate(self.validation_dl), desc="val Loss: ",
-                total=len(self.validation_dl), position=0, leave=True, )
+                enumerate(self.validation_dl),
+                desc="val Loss: ",
+                total=len(self.validation_dl),
+                position=0,
+                leave=True,
+            )
 
             # Specify you are in evaluation mode
             self.model.eval()
@@ -106,8 +102,9 @@ class Train:
                     # Accumulate the loss over the epoch
                     epoch_val_loss += val_loss / len(self.validation_dl)
 
-                    progress.set_description("Validation Loss: {:.4f}".format(
-                        epoch_val_loss))
+                    progress.set_description(
+                        "Validation Loss: {:.4f}".format(epoch_val_loss)
+                    )
 
             if epoch == 0:
                 best_val_loss = epoch_val_loss
@@ -118,36 +115,37 @@ class Train:
                     save_weights_path = "segmentation_model.pth"
                     torch.save(self.model.state_dict(), save_weights_path)
 
-            if self.device.type == 'gpu':
+            if self.device.type == "gpu":
                 # Save losses in list, so that we can visualise them later.
-                train_losses.append(epoch_train_loss.cpu().detach().numpy())
-                val_losses.append(epoch_val_loss.cpu().detach().numpy())
-
-                # Save IoUs in list, so that we can visualise them later.
-                train_ious.append(epoch_train_ious.cpu().detach().numpy())
-                val_ious.append(epoch_val_ious.cpu().detach().numpy())
+                train_losses.append(epoch_train_loss)
+                val_losses.append(epoch_val_loss)
 
                 # Save accuracies in list, so that we can visualise them later.
-                train_accs.append(epoch_train_accs.cpu().detach().numpy())
-                val_accs.append(epoch_val_accs.cpu().detach().numpy())
+                train_accs.append(epoch_train_accs)
+                val_accs.append(epoch_val_accs)
 
-            if self.device.type == 'cpu':
+            if self.device.type == "cpu":
                 # Save losses in list, so that we can visualise them later.
-                train_losses.append(epoch_train_loss.detach().numpy())
-                val_losses.append(epoch_val_loss.detach().numpy())
-
-                # Save IoUs in list, so that we can visualise them later.
-                train_ious.append(epoch_train_ious.detach().numpy())
-                val_ious.append(epoch_val_ious.detach().numpy())
+                train_losses.append(epoch_train_loss)
+                val_losses.append(epoch_val_loss)
 
                 # Save accuracies in list, so that we can visualise them later.
-                train_accs.append(epoch_train_accs.detach().numpy())
-                val_accs.append(epoch_val_accs.detach().numpy())
+                train_accs.append(epoch_train_accs)
+                val_accs.append(epoch_val_accs)
 
 
 class HyperParameter:
-
-    def __init__(self, epoch, batch_size, learning_rate, opt_func, milestones, weight_decay, model_description, loss):
+    def __init__(
+        self,
+        epoch,
+        batch_size,
+        learning_rate,
+        opt_func,
+        milestones,
+        weight_decay,
+        model_description,
+        loss,
+    ):
         self.epochs = epoch
         self.batch_size = batch_size
         self.learning_rate = learning_rate

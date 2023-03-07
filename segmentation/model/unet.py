@@ -4,8 +4,8 @@ from segmentation.model.unet_blocks import Up
 from segmentation.model.unet_blocks import DoubleConv
 from segmentation.model.unet_blocks import OutConv
 
-class UNet(nn.Module):
 
+class UNet(nn.Module):
     def __init__(self, in_channels, n_classes):
         super(UNet, self).__init__()
 

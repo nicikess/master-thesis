@@ -4,28 +4,19 @@ from segmentation.model.unet import UNet
 import torch
 from train import Train
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     trainset = SEN12FLOODS(
-        root='../data/sen12floods/chips',
-        transforms=True,
-        split='train')
+        root="../data/sen12floods/chips", transforms=True, split="train"
+    )
 
-    valset = SEN12FLOODS(
-        root='../data/sen12floods/chips',
-        split='val')
+    valset = SEN12FLOODS(root="../data/sen12floods/chips", split="val")
 
-    train_loader = DataLoader(
-        trainset,
-        batch_size=8,
-        pin_memory=True)
+    train_loader = DataLoader(trainset, batch_size=8, pin_memory=True)
 
-    val_loader = DataLoader(
-        valset,
-        batch_size=8,
-        pin_memory=True)
+    val_loader = DataLoader(valset, batch_size=8, pin_memory=True)
 
-    #trainset.visualize_observation(8)
+    # trainset.visualize_observation(8)
 
     model = UNet(13, 1)
 
@@ -39,6 +30,13 @@ if __name__ == '__main__':
     criterion = torch.nn.BCEWithLogitsLoss()
 
     # First of all, let's verify if a GPU is available on our compute machine. If not, the cpu will be used instead.
-    device = torch.device('cpu')
+    device = torch.device("cpu")
 
-    train = Train(model, train_loader=train_loader, val_loader=val_loader, device=device, optimizer=optimizer, criterion=criterion).train()
+    train = Train(
+        model,
+        train_loader=train_loader,
+        val_loader=val_loader,
+        device=device,
+        optimizer=optimizer,
+        criterion=criterion,
+    ).train()

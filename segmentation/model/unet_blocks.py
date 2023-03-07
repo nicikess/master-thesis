@@ -19,21 +19,16 @@ class DoubleConv(nn.Module):
         self.double_conv = nn.Sequential(
             # First convolutional layer
             nn.Conv2d(in_channels, mid_channels, kernel_size=3, padding=1),
-
             # First batchnormalization
             nn.BatchNorm2d(mid_channels),
-
             # First ReLU activation function
             nn.ReLU(inplace=True),
-
             # Second convolutional layer
             nn.Conv2d(mid_channels, out_channels, kernel_size=3, padding=1),
-
             # Second batchnormalization
             nn.BatchNorm2d(out_channels),
-
             # Second ReLU activation function
-            nn.ReLU(inplace=True)
+            nn.ReLU(inplace=True),
         )
 
     def forward(self, x):
@@ -52,8 +47,7 @@ class Down(nn.Module):
         self.maxpool_conv = nn.Sequential(
             # 2D max pooling layer with a kernel size of 2 (meaning spatial dimension will be divided by two)
             nn.MaxPool2d(2),
-
-            DoubleConv(in_channels, out_channels)
+            DoubleConv(in_channels, out_channels),
         )
 
     def forward(self, x):
@@ -69,7 +63,7 @@ class Up(nn.Module):
     def __init__(self, in_channels, out_channels):
         super().__init__()
         # upsampling layer with a scale factor of 2 (meaning spatial dimension will be multiplied by two)
-        self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
+        self.up = nn.Upsample(scale_factor=2, mode="bilinear", align_corners=True)
 
         self.conv = DoubleConv(in_channels, out_channels, in_channels // 2)
 
@@ -79,8 +73,7 @@ class Up(nn.Module):
         diffY = x2.size()[2] - x1.size()[2]
         diffX = x2.size()[3] - x1.size()[3]
 
-        x1 = F.pad(x1, [diffX // 2, diffX - diffX // 2,
-                        diffY // 2, diffY - diffY // 2])
+        x1 = F.pad(x1, [diffX // 2, diffX - diffX // 2, diffY // 2, diffY - diffY // 2])
 
         x = torch.cat([x2, x1], dim=1)
         return self.conv(x)

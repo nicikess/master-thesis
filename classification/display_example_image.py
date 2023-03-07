@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 
 
 class DisplayExampleImage:
-
     def __init__(self, img):
         self.img = img
 

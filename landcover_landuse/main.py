@@ -2,7 +2,7 @@ import numpy as np
 from classification.display_example_image import DisplayExampleImage
 import matplotlib.pyplot as plt
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     txt = input("Enter description for training run: ")
 

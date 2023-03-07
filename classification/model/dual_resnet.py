@@ -4,7 +4,6 @@ import torch
 
 
 class DualResNet(nn.Module):
-
     def __init__(self, in_channels_1, in_channels_2, number_of_classes):
         super(DualResNet, self).__init__()
 

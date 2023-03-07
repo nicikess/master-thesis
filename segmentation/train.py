@@ -7,7 +7,6 @@ import numpy as np
 
 
 class Train:
-
     def __init__(self, model, train_loader, val_loader, device, criterion, optimizer):
         self.model = model
         self.train_loader = train_loader
@@ -30,14 +29,15 @@ class Train:
         val_ious = []
 
         # IoU
-        jaccard = JaccardIndex('binary', num_classes=2)
+        jaccard = JaccardIndex("binary", num_classes=2)
 
         # For every epoch
         for epoch in range(50):
             epoch_loss = 0
             progress = tqdm(
-                enumerate(self.train_loader), desc="Train Loss: ",
-                total=len(self.train_loader)
+                enumerate(self.train_loader),
+                desc="Train Loss: ",
+                total=len(self.train_loader),
             )
 
             # Specify you are in training mode
@@ -55,7 +55,7 @@ class Train:
             for i, batch in progress:
                 # Transfer data to GPU if available
                 data = batch["s2_img"].float().to(self.device)
-                label = batch['mask'].float().to(self.device)
+                label = batch["mask"].float().to(self.device)
 
                 # Make a forward pass
                 output = self.model(data)
@@ -66,11 +66,14 @@ class Train:
 
                 # Compute IoU
                 label = torch.unsqueeze(label, dim=1)
-                epoch_train_ious += jaccard(output_binary.to(self.device), label.int()) / len(self.train_loader)
+                epoch_train_ious += jaccard(
+                    output_binary.to(self.device), label.int()
+                ) / len(self.train_loader)
 
                 # Compute pixel accuracies
-                epoch_train_accs += torch.sum(output_binary.to(self.device) == label.int()) / (
-                        len(self.train_loader) * (256 * 256) * 100)
+                epoch_train_accs += torch.sum(
+                    output_binary.to(self.device) == label.int()
+                ) / (len(self.train_loader) * (256 * 256) * 100)
 
                 # Compute the loss
                 loss = self.criterion(output, label)
@@ -87,12 +90,15 @@ class Train:
                 # Accumulate the loss over the eopch
                 epoch_train_loss += loss / len(self.train_loader)
 
-                progress.set_description("Train Loss: {:.4f}".format(
-                    epoch_train_loss))
+                progress.set_description("Train Loss: {:.4f}".format(epoch_train_loss))
 
             progress = tqdm(
-                enumerate(self.val_loader), desc="val Loss: ",
-                total=len(self.val_loader), position=0, leave=True, )
+                enumerate(self.val_loader),
+                desc="val Loss: ",
+                total=len(self.val_loader),
+                position=0,
+                leave=True,
+            )
 
             # Specify you are in evaluation mode
             self.model.eval()
@@ -103,7 +109,7 @@ class Train:
                 for j, batch in progress:
                     # Transfer Data to GPU if available
                     data = batch["s2_img"].float().to(self.device)
-                    label = batch['mask'].float().to(self.device)
+                    label = batch["mask"].float().to(self.device)
 
                     # Make a forward pass
                     output = self.model(data)
@@ -114,11 +120,14 @@ class Train:
 
                     # Compute IoU
                     label = torch.unsqueeze(label, dim=1)
-                    epoch_val_ious += jaccard(output_binary.to(self.device), label.int()) / len(self.val_loader)
+                    epoch_val_ious += jaccard(
+                        output_binary.to(self.device), label.int()
+                    ) / len(self.val_loader)
 
                     # Compute pixel accuracies
-                    epoch_val_accs += torch.sum(output_binary.to(self.device) == label.int()) / (
-                            len(self.val_loader) * (256 * 256) * 100)
+                    epoch_val_accs += torch.sum(
+                        output_binary.to(self.device) == label.int()
+                    ) / (len(self.val_loader) * (256 * 256) * 100)
 
                     # Compute the loss
                     val_loss = self.criterion(output, label)
@@ -126,8 +135,9 @@ class Train:
                     # Accumulate the loss over the epoch
                     epoch_val_loss += val_loss / len(self.val_loader)
 
-                    progress.set_description("Validation Loss: {:.4f}".format(
-                        epoch_val_loss))
+                    progress.set_description(
+                        "Validation Loss: {:.4f}".format(epoch_val_loss)
+                    )
             if epoch == 0:
                 best_val_loss = epoch_val_loss
             else:
