@@ -14,10 +14,11 @@ import torch.utils.data as data
 
 if __name__ == "__main__":
     # Load index file
-    data_index = pd.read_csv("data/ben-ge-s/ben-ge-s_esaworldcover.csv")
+    #data_index = pd.read_csv("data/ben-ge-s/ben-ge-s_esaworldcover.csv")
+    data_index = pd.read_csv("/ds2/remote_sensing/ben-ge/ben-ge-s/esaworldcover/s2_npy/ben-ge-s_esaworldcover.csv")
 
     # Set root dir
-    root_dir = "data/ben-ge-s/"
+    root_dir = "/ds2/remote_sensing/ben-ge/ben-ge-s/esaworldcover/s2_npy/"
 
     # Get transforms
     transforms = Transforms().transform
