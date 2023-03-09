@@ -32,7 +32,7 @@ class Train:
         val_accs = []
 
         # For every epoch
-        for epoch in range(50):
+        for epoch in range(self.epoch):
 
             progress = tqdm(
                 enumerate(self.train_dl), desc="Train Loss: ", total=len(self.train_dl)

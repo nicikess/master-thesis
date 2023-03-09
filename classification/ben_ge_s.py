@@ -25,7 +25,6 @@ class BenGeS(Dataset):
         label_vector = self.data_index.iloc[[idx]].drop(
             ["filename", "patch_id"], axis=1
         )
-        print(label_vector.to_string())
         # Set values to smaller than the threshold to 0
         label_vector = np.where(label_vector <= threshold, 0, label_vector)
         label_vector = np.squeeze(label_vector)

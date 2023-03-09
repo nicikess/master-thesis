@@ -6,7 +6,7 @@ class Transforms:
     def __init__(self):
         self.transform = transforms.Compose(
             [
-                # transforms.ToTensor(),
+                # transforms.ToTensor(),test
                 # transforms.ConvertImageDtype(torch.float),
             ]
         )

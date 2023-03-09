@@ -40,8 +40,8 @@ if __name__ == "__main__":
         "model_description": model_description,
     }
 
-    # wandb.login(key='9da448bfaa162b572403e1551114a17058f249d0')
-    # wandb.init(project="master-thesis", entity="nicikess")
+    wandb.login(key='9da448bfaa162b572403e1551114a17058f249d0')
+    wandb.init(project="master-thesis", entity="nicikess")
 
     # Create dataset
     dataset = BenGeS(
@@ -52,7 +52,7 @@ if __name__ == "__main__":
         transform=transforms,
     )
     # Random split
-    train_set_size = int(len(dataset) * 0.08)
+    train_set_size = int(len(dataset))
     valid_set_size = len(dataset) - train_set_size
     train_ds, validation_ds = data.random_split(
         dataset, [train_set_size, valid_set_size],
