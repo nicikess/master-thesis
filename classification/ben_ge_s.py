@@ -21,7 +21,7 @@ class BenGeS(Dataset):
         path_image = os.path.join(self.root_dir, file_name) + "_all_bands.npy"
 
         # Encode label
-        threshold = 0.05
+        threshold = 0.3
         label_vector = self.data_index.iloc[[idx]].drop(
             ["filename", "patch_id"], axis=1
         )
@@ -31,7 +31,7 @@ class BenGeS(Dataset):
         # Get indexes of largest values
         max_indices = np.argpartition(label_vector, -3)[-3:]
         # Create label encoding and set to one if value is not 0
-        label = np.empty(self.number_of_classes)
+        label = np.zeros(self.number_of_classes)
         for i in range(len(max_indices)):
             if label_vector[max_indices[i]] > 0:
                 label[max_indices[i]] = 1
