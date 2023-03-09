@@ -5,12 +5,12 @@ import numpy as np
 
 class BenGeS(Dataset):
     def __init__(
-        self, data_index, root_dir, number_of_classes, bands_rgb, transform=None
+        self, data_index, root_dir, number_of_classes, bands="RGB", transform=None
     ):
         self.data_index = data_index
         self.root_dir = root_dir
         self.number_of_classes = number_of_classes
-        self.bands_rgb = bands_rgb
+        self.bands = bands
         self.transform = transform
 
     def __len__(self):
@@ -21,7 +21,7 @@ class BenGeS(Dataset):
         path_image = os.path.join(self.root_dir, file_name) + "_all_bands.npy"
 
         # Encode label
-        threshold = 0.001
+        threshold = 0.05
         label_vector = self.data_index.iloc[[idx]].drop(
             ["filename", "patch_id"], axis=1
         )
@@ -42,8 +42,12 @@ class BenGeS(Dataset):
         # Read image
         img = np.load(path_image)
 
-        if self.bands_rgb:
+        if self.bands == "RGB":
             img = img[[3, 2, 1], :, :]
+        if self.bands == "infrared":
+            img = img[[7, 3, 2, 1], :, :]
+        if self.bands == "all":
+            img = img
 
         # change type of img
         img = img.astype("float32")

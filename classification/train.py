@@ -22,7 +22,7 @@ class Train:
 
     def train(self):
         # Move the model to the GPU
-        self.model
+        self.model.to(self.device)
 
         # Create lists for logging losses and evalualtion metrics:
         train_losses = []
@@ -32,7 +32,7 @@ class Train:
         val_accs = []
 
         # For every epoch
-        for epoch in range(self.epoch):
+        for epoch in range(self.epochs):
 
             progress = tqdm(
                 enumerate(self.train_dl), desc="Train Loss: ", total=len(self.train_dl)
@@ -115,29 +115,37 @@ class Train:
                     save_weights_path = "segmentation_model.pth"
                     torch.save(self.model.state_dict(), save_weights_path)
 
-            if self.device.type == "gpu":
+            if self.device.type == "cuda":
                 # Save losses in list, so that we can visualise them later.
                 train_losses.append(epoch_train_loss)
                 val_losses.append(epoch_val_loss)
+                self.wandb.log({"epoch train loss": epoch_train_loss})
+                self.wandb.log({"val train loss": epoch_val_loss})
 
                 # Save accuracies in list, so that we can visualise them later.
                 train_accs.append(epoch_train_accs)
                 val_accs.append(epoch_val_accs)
+                self.wandb.log({"epoch train acc": epoch_train_accs})
+                self.wandb.log({"val train acc": epoch_val_accs})
 
             if self.device.type == "cpu":
                 # Save losses in list, so that we can visualise them later.
                 train_losses.append(epoch_train_loss)
                 val_losses.append(epoch_val_loss)
+                self.wandb.log({"epoch train loss": epoch_train_loss})
+                self.wandb.log({"val train loss": epoch_val_loss})
 
                 # Save accuracies in list, so that we can visualise them later.
                 train_accs.append(epoch_train_accs)
                 val_accs.append(epoch_val_accs)
+                self.wandb.log({"epoch train acc": epoch_train_accs})
+                self.wandb.log({"val train acc": epoch_val_accs})
 
 
 class HyperParameter:
     def __init__(
         self,
-        epoch,
+        epochs,
         batch_size,
         learning_rate,
         opt_func,
@@ -146,7 +154,7 @@ class HyperParameter:
         model_description,
         loss,
     ):
-        self.epochs = epoch
+        self.epochs = epochs
         self.batch_size = batch_size
         self.learning_rate = learning_rate
         self.opt_func = opt_func

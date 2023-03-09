@@ -2,7 +2,7 @@ import pandas as pd
 import torch
 from torch.utils.data import DataLoader
 from ben_ge_s import BenGeS
-from model.dual_resnet import DualResNet
+#from model.dual_resnet import DualResNet
 from model.resnet import ResNet
 from transforms import Transforms
 from train import HyperParameter
@@ -48,7 +48,7 @@ if __name__ == "__main__":
         data_index,
         root_dir,
         number_of_classes=config.get("number_of_classes"),
-        bands_rgb=True,
+        bands="RGB",
         transform=transforms,
     )
     # Random split
@@ -71,7 +71,7 @@ if __name__ == "__main__":
 
     # Set hyper parameters
     hyper_parameter = HyperParameter(
-        epoch=config.get("epochs"),
+        epochs=config.get("epochs"),
         batch_size=config.get("batch_size"),
         learning_rate=config.get("learning_rate"),
         opt_func=config.get("opt_func"),
@@ -88,7 +88,7 @@ if __name__ == "__main__":
     ).model
 
     # Run training routing
-    device = torch.device("cpu")
+    device = torch.device("cuda")
     train = Train(
         model,
         train_dl=train_dl,
