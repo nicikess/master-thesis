@@ -1,7 +1,10 @@
 from datetime import datetime
 import torch
 import numpy as np
+import wandb
 from tqdm import tqdm
+from torchmetrics.classification import BinaryF1Score, BinaryAccuracy
+import torch.nn as nn
 
 
 class Train:
@@ -21,15 +24,13 @@ class Train:
         self.optimizer = torch.optim.SGD(model.parameters(), lr=self.learning_rate)
 
     def train(self):
+
         # Move the model to the GPU
         self.model.to(self.device)
 
-        # Create lists for logging losses and evalualtion metrics:
-        train_losses = []
-        train_accs = []
-
-        val_losses = []
-        val_accs = []
+        # Set metric
+        metric_accuracy = BinaryAccuracy()
+        metric_f1 = BinaryF1Score()
 
         # For every epoch
         for epoch in range(self.epochs):
@@ -42,10 +43,8 @@ class Train:
             self.model.train()
 
             epoch_train_loss = 0
-            epoch_val_loss = 0
-
-            epoch_train_accs = 0
-            epoch_val_accs = 0
+            epoch_train_accuracy = 0
+            epoch_train_f1_score = 0
 
             for i, (labels, images) in progress:
                 # Transfer data to GPU if available
@@ -67,10 +66,26 @@ class Train:
                 # Update Weights
                 self.optimizer.step()
 
-                # Accumulate the loss over the epoch
-                epoch_train_loss += loss / len(self.train_dl)
+                softmax = nn.Softmax(dim=1)
+                accuracy = metric_accuracy(softmax(output), labels)
+                f1_score = metric_f1(softmax(output), labels)
 
-                progress.set_description("Train Loss: {:.4f}".format(epoch_train_loss))
+                # Accumulate the loss over the epoch
+                epoch_train_loss += loss
+                epoch_train_accuracy += accuracy
+                epoch_train_f1_score += f1_score
+
+                wandb.log({"loss": loss})
+
+            progress.set_description("Train loss epoch: {:.4f}".format(epoch_train_loss))
+
+            epoch_train_loss = epoch_train_loss / len(self.train_dl)
+            epoch_train_accuracy = epoch_train_accuracy / len(self.train_dl)
+            epoch_train_f1_score = epoch_train_f1_score / len (self.train_dl)
+
+            wandb.log({"Epoch loss": epoch_train_loss})
+            wandb.log({"Epoch accuracy": epoch_train_accuracy})
+            wandb.log({"Epoch f1 score": epoch_train_f1_score})
 
             progress = tqdm(
                 enumerate(self.validation_dl),
@@ -86,7 +101,9 @@ class Train:
             # Deactivate autograd engine (no backpropagation allowed)
             with torch.no_grad():
 
-                epoch_val_loss = 0
+                epoch_val_accuracy = 0
+                epoch_val_f1_score = 0
+                softmax = nn.Softmax(dim=1)
 
                 for i, (labels, images) in progress:
                     # Transfer Data to GPU if available
@@ -96,50 +113,23 @@ class Train:
                     # Make a forward pass
                     output = self.model(images)
 
-                    # Compute the loss
-                    val_loss = self.loss(output, labels)
+                    epoch_val_accuracy += metric_accuracy(softmax(output), labels)
+                    epoch_val_f1_score += metric_f1(softmax(output), labels)
 
-                    # Accumulate the loss over the epoch
-                    epoch_val_loss += val_loss / len(self.validation_dl)
+                epoch_val_accuracy = epoch_train_accuracy / len(self.train_dl)
+                epoch_val_f1_score = epoch_train_f1_score / len(self.train_dl)
 
-                    progress.set_description(
-                        "Validation Loss: {:.4f}".format(epoch_val_loss)
-                    )
+                wandb.log({"Epoch val accuracy": epoch_val_accuracy})
+                wandb.log({"Epoch val f1 score": epoch_val_f1_score})
 
             if epoch == 0:
-                best_val_loss = epoch_val_loss
+                best_val = epoch_val_f1_score
             else:
-                if epoch_val_loss <= best_val_loss:
-                    best_val_loss = epoch_val_loss
+                if epoch_val_f1_score <= best_val:
+                    best_val = epoch_val_f1_score
                     # Save only the best model
-                    save_weights_path = "segmentation_model.pth"
+                    save_weights_path = "classification_model.pth"
                     torch.save(self.model.state_dict(), save_weights_path)
-
-            if self.device.type == "cuda":
-                # Save losses in list, so that we can visualise them later.
-                train_losses.append(epoch_train_loss)
-                val_losses.append(epoch_val_loss)
-                self.wandb.log({"epoch train loss": epoch_train_loss})
-                self.wandb.log({"val train loss": epoch_val_loss})
-
-                # Save accuracies in list, so that we can visualise them later.
-                train_accs.append(epoch_train_accs)
-                val_accs.append(epoch_val_accs)
-                self.wandb.log({"epoch train acc": epoch_train_accs})
-                self.wandb.log({"val train acc": epoch_val_accs})
-
-            if self.device.type == "cpu":
-                # Save losses in list, so that we can visualise them later.
-                train_losses.append(epoch_train_loss)
-                val_losses.append(epoch_val_loss)
-                self.wandb.log({"epoch train loss": epoch_train_loss})
-                self.wandb.log({"val train loss": epoch_val_loss})
-
-                # Save accuracies in list, so that we can visualise them later.
-                train_accs.append(epoch_train_accs)
-                val_accs.append(epoch_val_accs)
-                self.wandb.log({"epoch train acc": epoch_train_accs})
-                self.wandb.log({"val train acc": epoch_val_accs})
 
 
 class HyperParameter:

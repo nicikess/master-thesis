@@ -11,14 +11,21 @@ from display_example_image import DisplayExampleImage
 import numpy as np
 import wandb
 import torch.utils.data as data
+import torch.nn as nn
 
 if __name__ == "__main__":
-    # Load index file
-    #data_index = pd.read_csv("data/ben-ge-s/ben-ge-s_esaworldcover.csv")
-    data_index = pd.read_csv("/ds2/remote_sensing/ben-ge/ben-ge-s/esaworldcover/s2_npy/ben-ge-s_esaworldcover.csv")
 
-    # Set root dir
-    root_dir = "/ds2/remote_sensing/ben-ge/ben-ge-s/esaworldcover/s2_npy/"
+    environment = "local"
+
+    if environment == "local":
+        data_index = pd.read_csv("data/ben-ge-s/ben-ge-s_esaworldcover.csv")
+        root_dir = "data/ben-ge-s/"
+        device = torch.device("cpu")
+
+    if environment == "remote":
+        data_index = pd.read_csv("/ds2/remote_sensing/ben-ge/ben-ge-s/esaworldcover/s2_npy/ben-ge-s_esaworldcover.csv")
+        root_dir = "/ds2/remote_sensing/ben-ge/ben-ge-s/esaworldcover/s2_npy/"
+        device = torch.device("cuda")
 
     # Get transforms
     transforms = Transforms().transform
@@ -30,7 +37,7 @@ if __name__ == "__main__":
     config = {
         "epochs": 20,
         "learning_rate": 0.001,
-        "batch_size": 32,
+        "batch_size": 1,
         "opt_func": torch.optim.Adam,
         "milestones": [5, 15],
         "weight_decay": 0,
@@ -40,8 +47,8 @@ if __name__ == "__main__":
         "model_description": model_description,
     }
 
-    wandb.login(key='9da448bfaa162b572403e1551114a17058f249d0')
-    wandb.init(project="master-thesis", entity="nicikess")
+    #wandb.login(key='9da448bfaa162b572403e1551114a17058f249d0')
+    #wandb.init(project="master-thesis", entity="nicikess")
 
     # Create dataset
     dataset = BenGeS(
@@ -88,7 +95,6 @@ if __name__ == "__main__":
     ).model
 
     # Run training routing
-    device = torch.device("cuda")
     train = Train(
         model,
         train_dl=train_dl,

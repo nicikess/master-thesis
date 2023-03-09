@@ -5,13 +5,14 @@ import numpy as np
 
 class BenGeS(Dataset):
     def __init__(
-        self, data_index, root_dir, number_of_classes, bands="RGB", transform=None
+        self, data_index, root_dir, number_of_classes, bands="RGB", transform=None, normalization_value=10_000
     ):
         self.data_index = data_index
         self.root_dir = root_dir
         self.number_of_classes = number_of_classes
         self.bands = bands
         self.transform = transform
+        self.normalization_value = normalization_value
 
     def __len__(self):
         return len(self.data_index)
@@ -51,8 +52,9 @@ class BenGeS(Dataset):
 
         # change type of img
         img = img.astype("float32")
+        img_normalized = img/self.normalization_value
 
         if self.transform:
-            img = self.transform(img)
+            img_normalized = self.transform(img_normalized)
 
-        return label, img
+        return label, img_normalized
