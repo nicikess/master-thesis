@@ -15,7 +15,7 @@ import torch.nn as nn
 
 if __name__ == "__main__":
 
-    environment = "local"
+    environment = "remote"
 
     if environment == "local":
         data_index = pd.read_csv("data/ben-ge-s/ben-ge-s_esaworldcover.csv")
@@ -23,8 +23,8 @@ if __name__ == "__main__":
         device = torch.device("cpu")
 
     if environment == "remote":
-        data_index = pd.read_csv("/ds2/remote_sensing/ben-ge/ben-ge-s/esaworldcover/s2_npy/ben-ge-s_esaworldcover.csv")
-        root_dir = "/ds2/remote_sensing/ben-ge/ben-ge-s/esaworldcover/s2_npy/"
+        data_index = pd.read_csv("/ds2/remote_sensing/ben-ge/ben-ge-s/sentinel-2/s2_npy/ben-ge-s_esaworldcover.csv")
+        root_dir = "/ds2/remote_sensing/ben-ge/ben-ge-s/sentinel-2/s2_npy/"
         device = torch.device("cuda")
 
     # Get transforms
@@ -41,21 +41,21 @@ if __name__ == "__main__":
         "opt_func": torch.optim.Adam,
         "milestones": [5, 15],
         "weight_decay": 0,
-        "loss": torch.nn.CrossEntropyLoss(),
+        "loss": torch.nn.BCEWithLogitsLoss(),
         "number_of_classes": 11,
-        "number_of_input_channels": 3,
+        "number_of_input_channels": 4,
         "model_description": model_description,
     }
 
-    #wandb.login(key='9da448bfaa162b572403e1551114a17058f249d0')
-    #wandb.init(project="master-thesis", entity="nicikess")
+    wandb.login(key='9da448bfaa162b572403e1551114a17058f249d0')
+    wandb.init(project="master-thesis", entity="nicikess")
 
     # Create dataset
     dataset = BenGeS(
         data_index,
         root_dir,
         number_of_classes=config.get("number_of_classes"),
-        bands="RGB",
+        bands="infrared",
         transform=transforms,
     )
     # Random split

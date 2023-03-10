@@ -29,8 +29,8 @@ class Train:
         self.model.to(self.device)
 
         # Set metric
-        metric_accuracy = BinaryAccuracy()
-        metric_f1 = BinaryF1Score()
+        metric_accuracy = BinaryAccuracy().to(self.device)
+        metric_f1 = BinaryF1Score().to(self.device)
 
         # For every epoch
         for epoch in range(self.epochs):
@@ -74,8 +74,6 @@ class Train:
                 epoch_train_loss += loss
                 epoch_train_accuracy += accuracy
                 epoch_train_f1_score += f1_score
-
-                wandb.log({"loss": loss})
 
             progress.set_description("Train loss epoch: {:.4f}".format(epoch_train_loss))
 
