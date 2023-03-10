@@ -5,6 +5,7 @@ import wandb
 from tqdm import tqdm
 from torchmetrics.classification import BinaryF1Score, BinaryAccuracy
 import torch.nn as nn
+import torch.optim as optim
 
 
 class Train:
@@ -17,11 +18,14 @@ class Train:
         self.hyper_parameter = hyper_parameter
         self.epochs = self.hyper_parameter.epochs
         self.learning_rate = self.hyper_parameter.learning_rate
-        self.opt_func = self.hyper_parameter.opt_func
-        self.milestones = self.hyper_parameter.milestones
-        self.weight_decay = self.hyper_parameter.weight_decay
+        self.optimizer = self.hyper_parameter.optimizer
+        self.scheduler = self.hyper_parameter.scheduler
         self.loss = self.hyper_parameter.loss
-        self.optimizer = torch.optim.SGD(model.parameters(), lr=self.learning_rate)
+
+        #Initialize optimier and scheduler
+        self.optimizer = self.optimizer(model.parameters(), lr=self.learning_rate)
+        self.scheduler = self.scheduler(self.optimizer, T_max = 150_000, eta_min = 0)
+
 
     def train(self):
 
@@ -75,15 +79,18 @@ class Train:
                 epoch_train_accuracy += accuracy
                 epoch_train_f1_score += f1_score
 
-            progress.set_description("Train loss epoch: {:.4f}".format(epoch_train_loss))
+                progress.set_description("Train loss epoch: {:.4f}".format(loss))
 
+                wandb.log({"Step loss": loss})
+            
+            wandb.log({"Learning-rate": self.scheduler.get_last_lr()[0]})
+            self.scheduler.step()
+            
             epoch_train_loss = epoch_train_loss / len(self.train_dl)
             epoch_train_accuracy = epoch_train_accuracy / len(self.train_dl)
             epoch_train_f1_score = epoch_train_f1_score / len (self.train_dl)
 
             wandb.log({"Epoch loss": epoch_train_loss})
-            wandb.log({"Epoch accuracy": epoch_train_accuracy})
-            wandb.log({"Epoch f1 score": epoch_train_f1_score})
 
             progress = tqdm(
                 enumerate(self.validation_dl),
@@ -114,8 +121,8 @@ class Train:
                     epoch_val_accuracy += metric_accuracy(softmax(output), labels)
                     epoch_val_f1_score += metric_f1(softmax(output), labels)
 
-                epoch_val_accuracy = epoch_train_accuracy / len(self.train_dl)
-                epoch_val_f1_score = epoch_train_f1_score / len(self.train_dl)
+                epoch_val_accuracy = epoch_val_accuracy / len(self.validation_dl)
+                epoch_val_f1_score = epoch_val_f1_score / len(self.validation_dl)
 
                 wandb.log({"Epoch val accuracy": epoch_val_accuracy})
                 wandb.log({"Epoch val f1 score": epoch_val_f1_score})
@@ -136,17 +143,15 @@ class HyperParameter:
         epochs,
         batch_size,
         learning_rate,
-        opt_func,
-        milestones,
-        weight_decay,
+        optimizer,
+        scheduler,
         model_description,
         loss,
     ):
         self.epochs = epochs
         self.batch_size = batch_size
         self.learning_rate = learning_rate
-        self.opt_func = opt_func
-        self.milestones = milestones
-        self.weight_decay = weight_decay
+        self.optimizer = optimizer
+        self.scheduler = scheduler
         self.model_description = model_description
         self.loss = loss

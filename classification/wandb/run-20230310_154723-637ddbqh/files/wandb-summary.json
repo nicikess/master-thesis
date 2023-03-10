@@ -1,0 +1,1 @@
+{"Step loss": 0.02058393321931362, "_timestamp": 1678460432.409945, "_runtime": 786.5511341094971, "_step": 6877, "Learning rate": [0.0009999999753259896], "Epoch loss": 0.003231619717553258, "Epoch val accuracy": 0.887000560760498, "Epoch val f1 score": 0.440809965133667, "_wandb": {"runtime": 793}}

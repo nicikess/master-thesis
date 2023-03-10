@@ -12,6 +12,7 @@ import numpy as np
 import wandb
 import torch.utils.data as data
 import torch.nn as nn
+import torch.optim as optim
 
 if __name__ == "__main__":
 
@@ -37,29 +38,29 @@ if __name__ == "__main__":
     config = {
         "epochs": 20,
         "learning_rate": 0.001,
-        "batch_size": 1,
-        "opt_func": torch.optim.Adam,
-        "milestones": [5, 15],
-        "weight_decay": 0,
+        "batch_size": 32,
+        "optimizer": torch.optim.Adam,
+        "scheduler": torch.optim.lr_scheduler.CosineAnnealingLR,
         "loss": torch.nn.BCEWithLogitsLoss(),
+        "bands": "RGB",
         "number_of_classes": 11,
-        "number_of_input_channels": 4,
+        "number_of_input_channels": 3,
         "model_description": model_description,
     }
 
     wandb.login(key='9da448bfaa162b572403e1551114a17058f249d0')
-    wandb.init(project="master-thesis", entity="nicikess")
+    wandb.init(project="master-thesis", entity="nicikess", config=config)
 
     # Create dataset
     dataset = BenGeS(
         data_index,
         root_dir,
         number_of_classes=config.get("number_of_classes"),
-        bands="infrared",
+        bands=config.get("bands"),
         transform=transforms,
     )
     # Random split
-    train_set_size = int(len(dataset))
+    train_set_size = int(len(dataset) * 0.8)
     valid_set_size = len(dataset) - train_set_size
     train_ds, validation_ds = data.random_split(
         dataset, [train_set_size, valid_set_size],
@@ -72,20 +73,17 @@ if __name__ == "__main__":
     train_dl = DataLoader(train_ds, batch_size=config.get("batch_size"), shuffle=False)
 
     # Define validation dataloader
-    validation_dl = DataLoader(
-        validation_ds, batch_size=config.get("batch_size"), shuffle=False
-    )
+    validation_dl = DataLoader(validation_ds, batch_size=config.get("batch_size"), shuffle=False)
 
     # Set hyper parameters
     hyper_parameter = HyperParameter(
         epochs=config.get("epochs"),
         batch_size=config.get("batch_size"),
         learning_rate=config.get("learning_rate"),
-        opt_func=config.get("opt_func"),
-        milestones=config.get("milestones"),
-        weight_decay=config.get("weight_decay"),
+        optimizer=config.get("optimizer"),
+        scheduler=config.get("scheduler"),
         model_description=config.get("model_description"),
-        loss=config.get("loss"),
+        loss=config.get("loss")
     )
 
     # Set number of classes and load model
