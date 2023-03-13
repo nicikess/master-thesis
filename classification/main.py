@@ -2,8 +2,8 @@ import pandas as pd
 import torch
 from torch.utils.data import DataLoader
 from ben_ge_s import BenGeS
-#from model.dual_resnet import DualResNet
-from model.resnet import ResNet
+from model.dual_resnet import DualResNet
+#from model.resnet import ResNet
 from transforms import Transforms
 from train import HyperParameter
 from train import Train
@@ -16,17 +16,19 @@ import torch.optim as optim
 
 if __name__ == "__main__":
 
-    environment = "local"
+    environment = "remote"
 
     if environment == "local":
-        skiprows=lambda i: i % 15 != 0
-        data_index = pd.read_csv("data/ben-ge-s/ben-ge-s_esaworldcover.csv", skiprows=skiprows)
+        #skiprows=lambda i: i % 15 != 0
+        data_index = pd.read_csv("data/ben-ge-s/ben-ge-s_esaworldcover.csv")#, skiprows=skiprows)
         root_dir = "data/ben-ge-s/"
         device = torch.device("cpu")
 
     if environment == "remote":
-        data_index = pd.read_csv("/ds2/remote_sensing/ben-ge/ben-ge-s/sentinel-2/s2_npy/ben-ge-s_esaworldcover.csv")
-        root_dir = "/ds2/remote_sensing/ben-ge/ben-ge-s/sentinel-2/s2_npy/"
+        data_index = pd.read_csv("/ds2/remote_sensing/ben-ge/ben-ge-s/ben-ge-s_sentinel12_meta.csv")
+        esaworldcover_index = pd.read_csv("/ds2/remote_sensing/ben-ge/ben-ge-s/sentinel-2/s2_npy/ben-ge-s_esaworldcover.csv")      
+        root_dir_s1 = "/ds2/remote_sensing/ben-ge/ben-ge-s/sentinel-1/s1_npy/"
+        root_dir_s2 = "/ds2/remote_sensing/ben-ge/ben-ge-s/sentinel-2/s2_npy/"
         device = torch.device("cuda")
 
     # Get transforms
@@ -37,12 +39,15 @@ if __name__ == "__main__":
     np.random.seed(42)
     model_description = input("Enter description for training run: ")
     config = {
+        "model": DualResNet,
         "epochs": 20,
         "learning_rate": 0.001,
         "batch_size": 32,
         "optimizer": torch.optim.Adam,
         "scheduler": torch.optim.lr_scheduler.CosineAnnealingLR,
         "loss": torch.nn.BCEWithLogitsLoss(),
+        "t_max": 4_000,
+        "eta_min": 1e-5,
         "bands": "RGB",
         "number_of_classes": 11,
         "number_of_input_channels": 3,
@@ -55,7 +60,9 @@ if __name__ == "__main__":
     # Create dataset
     dataset = BenGeS(
         data_index,
-        root_dir,
+        esaworldcover_index,
+        root_dir_s1,
+        root_dir_s2,
         number_of_classes=config.get("number_of_classes"),
         bands=config.get("bands"),
         transform=transforms,
@@ -84,14 +91,17 @@ if __name__ == "__main__":
         optimizer=config.get("optimizer"),
         scheduler=config.get("scheduler"),
         model_description=config.get("model_description"),
-        loss=config.get("loss")
+        loss=config.get("loss"),
+        t_max=config.get("t_max"),
+        eta_min=config.get("eta_min")
     )
 
     # Set number of classes and load model
-    model = ResNet(
-        number_of_input_channels=config.get("number_of_input_channels"),
-        number_of_classes=config.get("number_of_classes"),
-    ).model
+    model = config.get("model")(
+        in_channels_1=2,
+        in_channels_2=3,
+        number_of_classes=config.get("number_of_classes")
+    )
 
     # Run training routing
     train = Train(

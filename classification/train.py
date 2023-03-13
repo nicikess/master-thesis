@@ -21,10 +21,12 @@ class Train:
         self.optimizer = self.hyper_parameter.optimizer
         self.scheduler = self.hyper_parameter.scheduler
         self.loss = self.hyper_parameter.loss
+        self.t_max = self.hyper_parameter.t_max
+        self.eta_min = self.hyper_parameter.eta_min
 
         #Initialize optimier and scheduler
         self.optimizer = self.optimizer(model.parameters(), lr=self.learning_rate)
-        self.scheduler = self.scheduler(self.optimizer, T_max = 150_000, eta_min = 0)
+        self.scheduler = self.scheduler(self.optimizer, T_max = self.t_max, eta_min = self.eta_min)
 
 
     def train(self):
@@ -50,13 +52,14 @@ class Train:
             epoch_train_accuracy = 0
             epoch_train_f1_score = 0
 
-            for i, (labels, images) in progress:
+            for i, (output_tensor) in progress:
                 # Transfer data to GPU if available
-                labels = labels.to(self.device)
-                images = images.to(self.device)
+                images_s1 = output_tensor.get("s1_img").to(self.device)
+                images_s2 = output_tensor.get("s2_img").to(self.device)
+                labels = output_tensor.get("label").to(self.device)
 
                 # Make a forward pass
-                output = self.model(images)
+                output = self.model(images_s1, images_s2)
 
                 # Compute the loss
                 loss = self.loss(output, labels)
@@ -147,6 +150,8 @@ class HyperParameter:
         scheduler,
         model_description,
         loss,
+        t_max,
+        eta_min
     ):
         self.epochs = epochs
         self.batch_size = batch_size
@@ -155,3 +160,5 @@ class HyperParameter:
         self.scheduler = scheduler
         self.model_description = model_description
         self.loss = loss
+        self.t_max = t_max
+        self.eta_min = eta_min
