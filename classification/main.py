@@ -16,10 +16,11 @@ import torch.optim as optim
 
 if __name__ == "__main__":
 
-    environment = "remote"
+    environment = "local"
 
     if environment == "local":
-        data_index = pd.read_csv("data/ben-ge-s/ben-ge-s_esaworldcover.csv")
+        skiprows=lambda i: i % 15 != 0
+        data_index = pd.read_csv("data/ben-ge-s/ben-ge-s_esaworldcover.csv", skiprows=skiprows)
         root_dir = "data/ben-ge-s/"
         device = torch.device("cpu")
 

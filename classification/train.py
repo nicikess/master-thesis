@@ -82,8 +82,8 @@ class Train:
                 progress.set_description("Train loss epoch: {:.4f}".format(loss))
 
                 wandb.log({"Step loss": loss})
-            
-            wandb.log({"Learning-rate": self.scheduler.get_last_lr()[0]})
+
+            wandb.log({"Learning rate": self.scheduler.get_last_lr()[0]})
             self.scheduler.step()
             
             epoch_train_loss = epoch_train_loss / len(self.train_dl)
