@@ -1,5 +1,5 @@
 import numpy as np
-from classification.display_example_image import DisplayExampleImage
+from classification_baseline.display_example_image import DisplayExampleImage
 import matplotlib.pyplot as plt
 
 if __name__ == "__main__":

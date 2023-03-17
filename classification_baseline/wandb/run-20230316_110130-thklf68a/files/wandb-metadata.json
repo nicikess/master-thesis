@@ -1,0 +1,42 @@
+{
+    "os": "macOS-11.0.1-x86_64-i386-64bit",
+    "python": "3.8.2",
+    "heartbeatAt": "2023-03-16T10:01:31.083459",
+    "startedAt": "2023-03-16T10:01:30.462985",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/Users/nicolaskesseli/NICOLAS_KESSELI/Programming/Lokal/master-thesis-local/classification_baseline/main.py",
+    "codePath": "classification_baseline/main.py",
+    "git": {
+        "remote": "https://github.com/nicikess/master-thesis.git",
+        "commit": "8d4871c3bebf3a8a11e5dddf1315c7c2a91a8e08"
+    },
+    "email": "nicolaskesseli@gmail.com",
+    "root": "/Users/nicolaskesseli/NICOLAS_KESSELI/Programming/Lokal/master-thesis-local",
+    "host": "nicolas-macbook",
+    "username": "nicolaskesseli",
+    "executable": "/Users/nicolaskesseli/NICOLAS_KESSELI/Programming/Lokal/master-thesis-local/venv/bin/python",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 2000,
+        "min": 2000,
+        "max": 2000
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2000,
+            "min": 2000,
+            "max": 2000
+        }
+    ],
+    "disk": {
+        "total": 465.62699127197266,
+        "used": 13.913257598876953
+    },
+    "memory": {
+        "total": 16.0
+    }
+}

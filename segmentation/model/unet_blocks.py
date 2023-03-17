@@ -79,7 +79,7 @@ class Up(nn.Module):
         return self.conv(x)
 
 
-# Create the last convolution block, responsible of the pixel classification
+# Create the last convolution block, responsible of the pixel classification_baseline
 class OutConv(nn.Module):
     def __init__(self, in_channels, out_channels):
         super(OutConv, self).__init__()
