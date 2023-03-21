@@ -34,7 +34,7 @@ if __name__ == "__main__":
         # Training
         "epochs": 20,
         "learning_rate": 0.001,
-        "batch_size": 1,
+        "batch_size": 32,
         "optimizer": torch.optim.Adam,
         "scheduler": torch.optim.lr_scheduler.CosineAnnealingLR,
         "loss": torch.nn.BCEWithLogitsLoss(),
@@ -46,13 +46,16 @@ if __name__ == "__main__":
         "seed": 42
     }
 
+    # sort numpy array
+
+
     # Define configurations
     torch.manual_seed(config.get("seed"))
     np.random.seed(config.get("seed"))
 
     #if environment == "remote":
-    wandb.login(key='9da448bfaa162b572403e1551114a17058f249d0')
-    wandb.init(project="master-thesis", entity="nicikess", config=config)
+    #wandb.login(key='9da448bfaa162b572403e1551114a17058f249d0')
+    #wandb.init(project="master-thesis", entity="nicikess", config=config)
 
     # Create dataset
     dataset = BenGeS(
@@ -69,7 +72,19 @@ if __name__ == "__main__":
     train_ds, validation_ds = data.random_split(
         dataset, [train_set_size, valid_set_size],
     )
-    wandb.log({"Length dataset": len(dataset)})
+    #wandb.log({"Length dataset": len(dataset)})
+
+    #Leave it!
+    '''
+    count = 0
+    for img in train_ds:
+        img = img[1]
+        img = img[img>10_000]
+        print(len(img))
+        #if len(img > 0):
+            #count += 1
+    print(count)
+    '''
 
     # Define training dataloader
     train_dl = DataLoader(train_ds, batch_size=config.get("batch_size"), shuffle=True)
@@ -93,13 +108,14 @@ if __name__ == "__main__":
         number_of_input_channels=config.get("number_of_input_channels"),
         number_of_classes=config.get("number_of_classes"),
     ).model
-    wandb.log({"Model": model})
+    #wandb.log({"Model": model})
 
     # Run training routing
     train = Train(
         model,
         train_dl=train_dl,
         validation_dl=validation_dl,
+        number_of_classes=config.get("number_of_classes"),
         device=device,
         wandb=wandb,
         hyper_parameter=hyper_parameter,

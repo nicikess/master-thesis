@@ -26,8 +26,8 @@ class BenGeS(Dataset):
         threshold = 0.05
 
         # Log values
-        self.wandb.log({"Normalization value": self.normalization_value})
-        self.wandb.log({"Threshold label": threshold})
+        #self.wandb.log({"Normalization value": self.normalization_value})
+        #self.wandb.log({"Threshold label": threshold})
 
         label_vector = self.data_index.iloc[[idx]].drop(
             ["filename", "patch_id"], axis=1
@@ -58,7 +58,7 @@ class BenGeS(Dataset):
 
         # change type of img
         img = img.astype("float32")
-        img_normalized = img/self.normalization_value
+        img_normalized = img
 
         if self.transform:
             img_normalized = self.transform(img_normalized)
