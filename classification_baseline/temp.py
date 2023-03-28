@@ -18,14 +18,11 @@ if __name__ == "__main__":
     print(target_transpose)
     preds_transpose = torch.transpose(preds, 0, 1)
     print(preds_transpose)
-    mca = BinaryAccuracy(multidim_average='samplewise')
+    mca = BinaryAccuracy(multidim_average="samplewise")
     print(mca(preds_transpose, target_transpose))
-
 
     # Evelation model
     # data = pd.read_csv('/ds2/remote_sensing/ben-ge/ben-ge-s'+'/ben-ge-s_climatezones.csv')
     # print(data.head())
     # Climate zone
     # LU/LC
-
-

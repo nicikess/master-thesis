@@ -3,7 +3,8 @@ import torch
 from torch.utils.data import DataLoader
 from ben_ge_s import BenGeS
 from model.dual_resnet import DualResNet
-#from model.resnet import ResNet
+
+# from model.resnet import ResNet
 from transforms import Transforms
 from train import HyperParameter
 from train import Train
@@ -19,14 +20,20 @@ if __name__ == "__main__":
     environment = "remote"
 
     if environment == "local":
-        #skiprows=lambda i: i % 15 != 0
-        data_index = pd.read_csv("../data/ben-ge-s/ben-ge-s_esaworldcover.csv")#, skiprows=skiprows)
+        # skiprows=lambda i: i % 15 != 0
+        data_index = pd.read_csv(
+            "../data/ben-ge-s/ben-ge-s_esaworldcover.csv"
+        )  # , skiprows=skiprows)
         root_dir = "../data/ben-ge-s/"
         device = torch.device("cpu")
 
     if environment == "remote":
-        data_index = pd.read_csv("/ds2/remote_sensing/ben-ge/ben-ge-s/ben-ge-s_sentinel12_meta.csv")
-        esaworldcover_index = pd.read_csv("/ds2/remote_sensing/ben-ge/ben-ge-s/sentinel-2/s2_npy/ben-ge-s_esaworldcover.csv")      
+        data_index = pd.read_csv(
+            "/ds2/remote_sensing/ben-ge/ben-ge-s/ben-ge-s_sentinel12_meta.csv"
+        )
+        esaworldcover_index = pd.read_csv(
+            "/ds2/remote_sensing/ben-ge/ben-ge-s/sentinel-2/s2_npy/ben-ge-s_esaworldcover.csv"
+        )
         root_dir_s1 = "/ds2/remote_sensing/ben-ge/ben-ge-s/sentinel-1/s1_npy/"
         root_dir_s2 = "/ds2/remote_sensing/ben-ge/ben-ge-s/sentinel-2/s2_npy/"
         device = torch.device("cuda")
@@ -54,7 +61,7 @@ if __name__ == "__main__":
         "model_description": model_description,
     }
 
-    wandb.login(key='9da448bfaa162b572403e1551114a17058f249d0')
+    wandb.login(key="9da448bfaa162b572403e1551114a17058f249d0")
     wandb.init(project="master-thesis", entity="nicikess", config=config)
 
     # Create dataset
@@ -81,7 +88,9 @@ if __name__ == "__main__":
     train_dl = DataLoader(train_ds, batch_size=config.get("batch_size"), shuffle=True)
 
     # Define validation dataloader
-    validation_dl = DataLoader(validation_ds, batch_size=config.get("batch_size"), shuffle=False)
+    validation_dl = DataLoader(
+        validation_ds, batch_size=config.get("batch_size"), shuffle=False
+    )
 
     # Set hyper parameters
     hyper_parameter = HyperParameter(
@@ -93,14 +102,14 @@ if __name__ == "__main__":
         model_description=config.get("model_description"),
         loss=config.get("loss"),
         t_max=config.get("t_max"),
-        eta_min=config.get("eta_min")
+        eta_min=config.get("eta_min"),
     )
 
     # Set number of classes and load model
     model = config.get("model")(
         in_channels_1=2,
         in_channels_2=3,
-        number_of_classes=config.get("number_of_classes")
+        number_of_classes=config.get("number_of_classes"),
     )
 
     # Run training routing

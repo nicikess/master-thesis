@@ -3,12 +3,27 @@ import torch
 import numpy as np
 import wandb
 from tqdm import tqdm
-from torchmetrics.classification import BinaryAccuracy, MulticlassPrecision, MulticlassRecall, MulticlassF1Score
+from torchmetrics.classification import (
+    BinaryAccuracy,
+    MulticlassPrecision,
+    MulticlassRecall,
+    MulticlassF1Score,
+)
 import torch.nn as nn
 
 
 class Train:
-    def __init__(self, model, train_dl, validation_dl, number_of_classes, device, wandb, hyper_parameter, environment):
+    def __init__(
+        self,
+        model,
+        train_dl,
+        validation_dl,
+        number_of_classes,
+        device,
+        wandb,
+        hyper_parameter,
+        environment,
+    ):
         self.model = model
         self.train_dl = train_dl
         self.validation_dl = validation_dl
@@ -33,14 +48,14 @@ class Train:
         self.model.to(self.device)
 
         # Set metrics
-        #metric_accuracy_avg = MulticlassAccuracy(num_classes=self.number_of_classes).to(self.device)
+        # metric_accuracy_avg = MulticlassAccuracy(num_classes=self.number_of_classes).to(self.device)
         metric_accuracy = BinaryAccuracy().to(self.device)
-        #metric_precision_avg = MulticlassPrecision(num_classes=self.number_of_classes).to(self.device)
-        #metric_precision = MulticlassPrecision(num_classes=self.number_of_classes, average=None).to(self.device)
-        #metric_recall_avg = MulticlassRecall(num_classes=self.number_of_classes).to(self.device)
-        #metric_recall = MulticlassRecall(num_classes=self.number_of_classes, average=None).to(self.device)
-        #metric_f1_avg = MulticlassRecall(num_classes=self.number_of_classes).to(self.device)
-        #metric_f1 = MulticlassRecall(num_classes=self.number_of_classes, average=None).to(self.device)
+        # metric_precision_avg = MulticlassPrecision(num_classes=self.number_of_classes).to(self.device)
+        # metric_precision = MulticlassPrecision(num_classes=self.number_of_classes, average=None).to(self.device)
+        # metric_recall_avg = MulticlassRecall(num_classes=self.number_of_classes).to(self.device)
+        # metric_recall = MulticlassRecall(num_classes=self.number_of_classes, average=None).to(self.device)
+        # metric_f1_avg = MulticlassRecall(num_classes=self.number_of_classes).to(self.device)
+        # metric_f1 = MulticlassRecall(num_classes=self.number_of_classes, average=None).to(self.device)
 
         # For every epoch
         for epoch in range(self.epochs):
@@ -86,9 +101,9 @@ class Train:
 
                 # Calculate metrics
                 epoch_train_accuracy += metric_accuracy(softmax_output, labels)
-                #epoch_train_precision += metric_precision_avg(softmax_output, labels)
-                #epoch_train_recall += metric_recall_avg(softmax_output, labels)
-                #epoch_train_f1_score += metric_f1_avg(softmax_output, labels)
+                # epoch_train_precision += metric_precision_avg(softmax_output, labels)
+                # epoch_train_recall += metric_recall_avg(softmax_output, labels)
+                # epoch_train_f1_score += metric_f1_avg(softmax_output, labels)
 
                 progress.set_description("Train loss epoch: {:.4f}".format(loss))
                 wandb.log({"Step loss": loss})
@@ -97,11 +112,11 @@ class Train:
             self.scheduler.step()
 
             # Calculate average per metric per epoch
-            #epoch_train_loss = epoch_train_loss / len(self.train_dl)
-            #epoch_train_accuracy = epoch_train_accuracy / len(self.train_dl)
-            #epoch_train_precision = epoch_train_precision / len(self.train_dl)
-            #epoch_train_recall = epoch_train_recall / len(self.train_dl)
-            #epoch_train_f1_score = epoch_train_f1_score / len(self.train_dl)
+            # epoch_train_loss = epoch_train_loss / len(self.train_dl)
+            # epoch_train_accuracy = epoch_train_accuracy / len(self.train_dl)
+            # epoch_train_precision = epoch_train_precision / len(self.train_dl)
+            # epoch_train_recall = epoch_train_recall / len(self.train_dl)
+            # epoch_train_f1_score = epoch_train_f1_score / len(self.train_dl)
 
             wandb.log({"Epoch train loss": epoch_train_loss})
             wandb.log({"Epoch train accuracy": epoch_train_accuracy})
@@ -161,20 +176,20 @@ class Train:
                         best_val = epoch_val_f1_score
                         # Save only the best model
                         run_id = str(wandb.run.id)
-                        save_weights_path = "model/"+run_id+"/classification_model"
+                        save_weights_path = "model/" + run_id + "/classification_model"
                         torch.save(self.model.state_dict(), save_weights_path)
 
 
 class HyperParameter:
     def __init__(
-            self,
-            epochs,
-            batch_size,
-            learning_rate,
-            optimizer,
-            scheduler,
-            model_description,
-            loss,
+        self,
+        epochs,
+        batch_size,
+        learning_rate,
+        optimizer,
+        scheduler,
+        model_description,
+        loss,
     ):
         self.epochs = epochs
         self.batch_size = batch_size

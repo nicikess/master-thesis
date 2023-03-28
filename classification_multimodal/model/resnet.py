@@ -21,5 +21,5 @@ class ResNet:
             nn.Linear(2048, 256),
             nn.ReLU(),
             nn.Dropout(0.2),
-            nn.Linear(256, self.number_of_classes)
+            nn.Linear(256, self.number_of_classes),
         )

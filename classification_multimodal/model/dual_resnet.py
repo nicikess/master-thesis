@@ -20,6 +20,6 @@ class DualResNet(nn.Module):
         x2 = self.res_net_2(x2)
 
         tensor_sum = torch.add(x1, x2)
-        tensor_mean = tensor_sum/2
+        tensor_mean = tensor_sum / 2
 
         return tensor_mean

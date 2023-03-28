@@ -24,10 +24,11 @@ class Train:
         self.t_max = self.hyper_parameter.t_max
         self.eta_min = self.hyper_parameter.eta_min
 
-        #Initialize optimier and scheduler
+        # Initialize optimier and scheduler
         self.optimizer = self.optimizer(model.parameters(), lr=self.learning_rate)
-        self.scheduler = self.scheduler(self.optimizer, T_max = self.t_max, eta_min = self.eta_min)
-
+        self.scheduler = self.scheduler(
+            self.optimizer, T_max=self.t_max, eta_min=self.eta_min
+        )
 
     def train(self):
 
@@ -88,10 +89,10 @@ class Train:
 
             wandb.log({"Learning rate": self.scheduler.get_last_lr()[0]})
             self.scheduler.step()
-            
+
             epoch_train_loss = epoch_train_loss / len(self.train_dl)
             epoch_train_accuracy = epoch_train_accuracy / len(self.train_dl)
-            epoch_train_f1_score = epoch_train_f1_score / len (self.train_dl)
+            epoch_train_f1_score = epoch_train_f1_score / len(self.train_dl)
 
             wandb.log({"Epoch loss": epoch_train_loss})
 
@@ -151,7 +152,7 @@ class HyperParameter:
         model_description,
         loss,
         t_max,
-        eta_min
+        eta_min,
     ):
         self.epochs = epochs
         self.batch_size = batch_size
