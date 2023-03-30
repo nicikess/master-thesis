@@ -1,1 +1,0 @@
-{"loss": 4.321875095367432, "_timestamp": 1678392955.8155081, "_runtime": 10752.441392183304, "_step": 129139, "Epoch loss": 1.8088767528533936, "Epoch accuracy": 0.8999136686325073, "Epoch f1 score": 0.2069370001554489, "Epoch val accuracy": 0.00011248921509832144, "Epoch val f1 score": 2.5867126169032417e-05, "_wandb": {"runtime": 10751}}

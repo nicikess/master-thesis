@@ -1,8 +1,10 @@
 # file: ~/.gitignore_global
-.DS_Store
+**/.DS_Store
 .idea
-data/*
-wandb/*
+src/master_thesis_benge_supervised_learning/data/*
+src/master_thesis_benge_supervised_learning/classification_multimodal/wandb/*
+src/master_thesis_benge_supervised_learning/classification_baseline/wandb/*
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
