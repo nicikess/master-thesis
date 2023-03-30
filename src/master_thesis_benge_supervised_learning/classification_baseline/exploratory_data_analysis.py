@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
-import tqdm as tqdm
+from tqdm import tqdm
 import matplotlib.pyplot as plt
 
-class ExploratoryDataAnalysis:
 
+class ExploratoryDataAnalysis:
     def __init__(
         self,
         data_set,
@@ -74,31 +74,37 @@ class ExploratoryDataAnalysis:
 
     def esaworldcover_statistics(self):
         # Select column from 2 until the end
-        df = self.esaworldcover_index.iloc[:, 2:len(self.esaworldcover_index.columns)]
+        df = self.esaworldcover_index.iloc[:, 2 : len(self.esaworldcover_index.columns)]
         # Get the sum of each column
         df_sum = df.sum(axis=0)
         fig, ax = plt.subplots(figsize=(15, 10))
         # create the pie chart and adjust label distance
-        ax.pie(df_sum, labels=df_sum.index, autopct='%1.1f%%', labeldistance=1.3, pctdistance=0.9)
+        ax.pie(
+            df_sum,
+            labels=df_sum.index,
+            autopct="%1.1f%%",
+            labeldistance=1.3,
+            pctdistance=0.9,
+        )
 
         # create a legend and set the font size
-        ax.legend(loc='lower left', bbox_to_anchor=(-0.5, -0.1), fontsize=12)
+        ax.legend(loc="lower left", bbox_to_anchor=(-0.5, -0.1), fontsize=12)
 
         # set the title
-        ax.set_title('Culumn sum', fontsize=16)
+        ax.set_title("Culumn sum", fontsize=16)
 
         # display the plot
         plt.show()
 
     def era5_statistics(self):
         df = pd.read_csv(self.file_path_era5)
-        df_numerical = df.drop(columns=['patch_id', 'patch_id_s1'])
+        df_numerical = df.drop(columns=["patch_id", "patch_id_s1"])
         df_description = df_numerical.describe()
         print(df_description.to_string())
 
     def era5_statistics_plot(self):
         df = pd.read_csv(self.file_path_era5)
-        df_numerical = df['atmpressure_level']
+        df_numerical = df["atmpressure_level"]
         # Convert to ndarray
         df_numerical = df_numerical.to_numpy()
         df_numerical_rounded = np.round(df_numerical, 1)
@@ -122,12 +128,12 @@ class ExploratoryDataAnalysis:
     def sentinel_1_2_metadata_statistics(self):
         df = pd.read_csv(self.file_path_sentinel_1_2_metadata)
         print(df.timestamp_s2.dtype)
-        df['timestamp_s1'] = pd.to_datetime(df['timestamp_s1'])
-        df['timestamp_s2'] = pd.to_datetime(df['timestamp_s2'])
+        df["timestamp_s1"] = pd.to_datetime(df["timestamp_s1"])
+        df["timestamp_s2"] = pd.to_datetime(df["timestamp_s2"])
         print(df.timestamp_s2.dtype)
-        df_numerical = df.drop(columns=['patch_id', 'patch_id_s1'])
+        df_numerical = df.drop(columns=["patch_id", "patch_id_s1"])
         df_description = df_numerical.describe()
         print(df_description)
-        print("Timestamp S1: \n"+str(df['timestamp_s1'].describe()))
-        print("Timestamp S2: \n"+str(df['timestamp_s2'].describe()))
+        print("Timestamp S1: \n" + str(df["timestamp_s1"].describe()))
+        print("Timestamp S2: \n" + str(df["timestamp_s2"].describe()))
         print("stop")

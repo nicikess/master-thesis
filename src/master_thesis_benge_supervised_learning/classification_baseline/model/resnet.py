@@ -7,7 +7,7 @@ class ResNet:
     def __init__(self, number_of_input_channels, number_of_classes):
 
         self.number_of_classes = number_of_classes
-        self.model = models.resnet18(weights=ResNet18_Weights)
+        self.model = models.resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
         self.model.conv1 = nn.Conv2d(
             number_of_input_channels, 64, kernel_size=7, stride=2, padding=3, bias=False
         )
