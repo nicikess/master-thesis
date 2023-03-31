@@ -85,8 +85,8 @@ class BenGeS(Dataset):
         img_s1 = img_s1.astype("float32")
         img_s2 = img_s2.astype("float32")
         img_world_cover = img_world_cover.astype("float32")
-        img_s1_normalized = img_s1  # /self.normalization_value
-        img_s2_normalized = img_s2  # /self.normalization_value
+        img_s1_normalized = img_s1 / self.normalization_value
+        img_s2_normalized = img_s2 / self.normalization_value
         img_world_cover_normalized = img_world_cover  # /self.normalization_value
 
         if self.transform:

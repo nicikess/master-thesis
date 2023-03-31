@@ -2,8 +2,6 @@ import pandas as pd
 import torch
 from torch.utils.data import DataLoader
 from ben_ge_s import BenGeS
-from exploratory_data_analysis import ExploratoryDataAnalysis
-from model.resnet import ResNet
 from train import HyperParameter
 from train import Train
 import numpy as np
@@ -12,7 +10,7 @@ import torch.utils.data as data
 
 from master_thesis_benge_supervised_learning.constants import (
     LocalFilesAndDirectoryReferences,
-    TrainingParameters
+    TrainingParameters,
 )
 
 if __name__ == "__main__":
@@ -86,7 +84,7 @@ if __name__ == "__main__":
 
     # Define validation dataloader
     validation_dl = DataLoader(
-        validation_ds, TrainingParameters.BATCH_SIZE.value, shuffle=False
+        validation_ds, TrainingParameters.BATCH_SIZE.value, shuffle=True
     )
 
     # Set hyper parameters
@@ -99,11 +97,22 @@ if __name__ == "__main__":
         loss=TrainingParameters.LOSS.value
     )
 
-    # Set number of classes and load model
-    model = ResNet(
-        number_of_input_channels=TrainingParameters.NUMBER_OF_INPUT_CHANNELS.value,
-        number_of_classes=TrainingParameters.NUMBER_OF_CLASSES.value,
-    ).model
+    # Define model
+    if TrainingParameters.MULTI_MODAL.value:
+        # Define multi modal model
+        model = TrainingParameters.MODEL.value(
+            # Input channels for s1
+            in_channels_1=TrainingParameters.NUMBER_OF_INPUT_CHANNELS_S1.value,
+            # Input channels for s2
+            in_channels_2=TrainingParameters.NUMBER_OF_INPUT_CHANNELS_S2.value,
+            number_of_classes=TrainingParameters.NUMBER_OF_CLASSES.value,
+        )
+    else:
+        # Define single modal model (usually s2)
+        model = TrainingParameters.MODEL.value(
+            number_of_input_channels=TrainingParameters.NUMBER_OF_INPUT_CHANNELS_S2.value,
+            number_of_classes=TrainingParameters.NUMBER_OF_CLASSES.value,
+        ).model
     # wandb.log({"Model": model})
 
     # Run training routing

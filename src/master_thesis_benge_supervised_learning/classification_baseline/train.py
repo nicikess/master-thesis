@@ -82,12 +82,14 @@ class Train:
                 s2_images = ben_ge_data["s2_img"].to(self.device)
                 labels = ben_ge_data["label"].to(self.device)
                 if self.multi_modal:
+                    # Transfer other data modalities to GPU if available
                     s1_images = ben_ge_data["s1_img"].to(self.device)
 
                 # Make a forward pass
-                output = self.model(s2_images)
                 if self.multi_modal:
                     output = self.model(s1_images, s2_images)
+                else:
+                    output = self.model(s2_images)
 
                 # Compute the loss
                 loss = self.loss(output, labels)
