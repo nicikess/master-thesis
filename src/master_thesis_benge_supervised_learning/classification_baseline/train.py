@@ -187,8 +187,8 @@ class Train:
                     #epoch_val_recall += metric_recall_avg(softmax_output, labels)
                     #epoch_val_f1_score += metric_f1_avg(softmax_output, labels)
 
-                epoch_val_accuracy = epoch_val_accuracy / len(self.val_dl)
-                epoch_val_accuracy_per_class = epoch_val_accuracy_per_class / len(self.val_dl)
+                epoch_val_accuracy = epoch_val_accuracy / len(self.validation_dl)
+                epoch_val_accuracy_per_class = epoch_val_accuracy_per_class / len(self.validation_dl)
                 #epoch_val_precision = epoch_val_precision / len(self.val_dl)
                 #epoch_val_recall = epoch_val_recall / len(self.val_dl)
                 #epoch_val_f1_score = epoch_val_f1_score / len(self.val_dl)

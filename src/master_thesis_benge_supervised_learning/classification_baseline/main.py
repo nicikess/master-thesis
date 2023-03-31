@@ -21,8 +21,9 @@ if __name__ == "__main__":
     if environment == "local":
 
         # Set references to files and directories
+        esa_world_cover_data_train = pd.read_csv(LocalFilesAndDirectoryReferences.ESA_WORLD_COVER_CSV_TRAIN.value)
+        esa_world_cover_data_validation = pd.read_csv(LocalFilesAndDirectoryReferences.ESA_WORLD_COVER_CSV_VALIDATION.value)
         sentinel_1_2_metadata = pd.read_csv(LocalFilesAndDirectoryReferences.SENTINEL_1_2_METADATA_CSV.value)
-        esa_world_cover_data = pd.read_csv(LocalFilesAndDirectoryReferences.ESA_WORLD_COVER_CSV.value)
         era5_data = pd.read_csv(LocalFilesAndDirectoryReferences.ERA5_CSV.value)
 
         root_dir_s1 = LocalFilesAndDirectoryReferences.SENTINEL_1_DIRECTORY.value
@@ -40,7 +41,6 @@ if __name__ == "__main__":
         root_dir = "/ds2/remote_sensing/ben-ge/ben-ge-s/sentinel-2/s2_npy/"
         device = torch.device("cuda")
 
-
     # Define configurations
     torch.manual_seed(TrainingParameters.SEED.value)
     np.random.seed(TrainingParameters.SEED.value)
@@ -51,13 +51,27 @@ if __name__ == "__main__":
     # wandb.init(project="master-thesis", entity="nicikess", config=config)
 
     # Create dataset
-    dataset = BenGeS(
-        sentinel_1_2_metadata,
-        esa_world_cover_data,
-        era5_data,
-        root_dir_s1,
-        root_dir_s2,
-        root_dir_world_cover,
+    dataset_train = BenGeS(
+        esa_world_cover_data=esa_world_cover_data_train,
+        sentinel_1_2_metadata=sentinel_1_2_metadata,
+        era5_data=era5_data,
+        root_dir_s1=root_dir_s1,
+        root_dir_s2=root_dir_s2,
+        root_dir_world_cover=root_dir_world_cover,
+        wandb=wandb,
+        number_of_classes=TrainingParameters.NUMBER_OF_CLASSES.value,
+        bands=TrainingParameters.BANDS.value,
+        transform=TrainingParameters.TRANSFORMS.value,
+        normalization_value=TrainingParameters.NORMALIZATION_VALUE.value
+    )
+
+    dataset_validation = BenGeS(
+        esa_world_cover_data=esa_world_cover_data_train,
+        sentinel_1_2_metadata=sentinel_1_2_metadata,
+        era5_data=era5_data,
+        root_dir_s1=root_dir_s1,
+        root_dir_s2=root_dir_s2,
+        root_dir_world_cover=root_dir_world_cover,
         wandb=wandb,
         number_of_classes=TrainingParameters.NUMBER_OF_CLASSES.value,
         bands=TrainingParameters.BANDS.value,
@@ -70,22 +84,12 @@ if __name__ == "__main__":
     #)
     #eda.distribution_barchart(modality="s1_img")
 
-    # Random split
-    # TODO: Change to different train & validation csvs
-    train_set_size = int(len(dataset) * 0.8)
-    valid_set_size = len(dataset) - train_set_size
-    train_ds, validation_ds = data.random_split(
-        dataset, [train_set_size, valid_set_size],
-    )
-    # wandb.log({"Length dataset": len(dataset)})
 
     # Define training dataloader
-    train_dl = DataLoader(train_ds, TrainingParameters.BATCH_SIZE.value, shuffle=True)
+    train_dl = DataLoader(dataset_train, TrainingParameters.BATCH_SIZE.value, shuffle=True)
 
     # Define validation dataloader
-    validation_dl = DataLoader(
-        validation_ds, TrainingParameters.BATCH_SIZE.value, shuffle=True
-    )
+    validation_dl = DataLoader(dataset_validation, TrainingParameters.BATCH_SIZE.value, shuffle=True)
 
     # Set hyper parameters
     hyper_parameter = HyperParameter(

@@ -17,8 +17,8 @@ class Bands(Enum):
 
 # Set training parameters
 class TrainingParameters(Enum):
-    MODEL = DualResNet
-    MULTI_MODAL = True
+    MODEL = ResNet
+    MULTI_MODAL = False
     EPOCHS = 20
     LEARNING_RATE = 0.001
     BATCH_SIZE = 32
@@ -33,10 +33,23 @@ class TrainingParameters(Enum):
     TRANSFORMS = Transforms().transform
     NORMALIZATION_VALUE = 10_000
 
+# Set remote file paths and directories
+class RemoteFilesAndDirectoryReferences(Enum):
+    ESA_WORLD_COVER_CSV_TRAIN = "/ds2/remote_sensing/ben-ge/ben-ge-s/data-index/ben-ge-s-train.csv"
+    ESA_WORLD_COVER_CSV_VALIDATION = "/ds2/remote_sensing/ben-ge/ben-ge-s/data-index/ben-ge-s-validation.csv"
+    ESA_WORLD_COVER_CSV_TEST = "/ds2/remote_sensing/ben-ge/ben-ge-s/data-index/ben-ge-s-test.csv"
+    SENTINEL_1_2_METADATA_CSV = "/ds2/remote_sensing/ben-ge/ben-ge-s/ben-ge-s_sentinel12_meta.csv"
+    SENTINEL_1_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge-s/sentinel-1/s1_npy/"
+    SENTINEL_2_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge-s/sentinel-2/s2_npy/"
+    ESA_WORLD_COVER_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge-s/esaworldcover/"
+    ERA5_CSV = "/ds2/remote_sensing/ben-ge/ben-ge-s/ben-ge-s_era-5.csv"
+
 # Set local file paths and directories
 class LocalFilesAndDirectoryReferences(Enum):
+    ESA_WORLD_COVER_CSV_TRAIN = "/Users/nicolaskesseli/Desktop/Uni/master-thesis.nosync/data/ben-ge-s/data-index/ben-ge-s-train.csv"
+    ESA_WORLD_COVER_CSV_VALIDATION = "/Users/nicolaskesseli/Desktop/Uni/master-thesis.nosync/data/ben-ge-s/data-index/ben-ge-s-validation.csv"
+    ESA_WORLD_COVER_CSV_TEST = "/Users/nicolaskesseli/Desktop/Uni/master-thesis.nosync/data/ben-ge-s/data-index/ben-ge-s-test.csv"
     SENTINEL_1_2_METADATA_CSV = "/Users/nicolaskesseli/Desktop/Uni/master-thesis.nosync/data/ben-ge-s/ben-ge-s_sentinel12_meta.csv"
-    ESA_WORLD_COVER_CSV = "/Users/nicolaskesseli/Desktop/Uni/master-thesis.nosync/data/ben-ge-s/sentinel-2/s2_npy/ben-ge-s_esaworldcover.csv"
     SENTINEL_1_DIRECTORY = "/Users/nicolaskesseli/Desktop/Uni/master-thesis.nosync/data/ben-ge-s/sentinel-1/s1_npy/"
     SENTINEL_2_DIRECTORY = "/Users/nicolaskesseli/Desktop/Uni/master-thesis.nosync/data/ben-ge-s/sentinel-2/s2_npy/"
     ESA_WORLD_COVER_DIRECTORY = "/Users/nicolaskesseli/Desktop/Uni/master-thesis.nosync/data/ben-ge-s/esaworldcover/"
