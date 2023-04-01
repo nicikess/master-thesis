@@ -2,11 +2,11 @@ from enum import Enum
 import torch
 
 # Import transforms
-from master_thesis_benge_supervised_learning.classification_baseline.transforms import Transforms
+from transforms import Transforms
 
 # Import models
-from master_thesis_benge_supervised_learning.classification_baseline.model.resnet import ResNet
-from master_thesis_benge_supervised_learning.classification_baseline.model.dual_resnet import DualResNet
+from classification_baseline.model.resnet import ResNet
+from classification_baseline.model.dual_resnet import DualResNet
 
 
 # Set bands

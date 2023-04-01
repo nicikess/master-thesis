@@ -3,9 +3,7 @@ import os
 from torch.utils.data import Dataset
 import numpy as np
 
-from master_thesis_benge_supervised_learning.constants import (
-    Bands,
-)
+from ..constants import Bands, NUMPY_DTYPE
 
 class BenGeS(Dataset):
     def __init__(
@@ -70,19 +68,19 @@ class BenGeS(Dataset):
         for i in range(len(max_indices)):
             if label_vector[max_indices[i]] > 0:
                 label[max_indices[i]] = 1
-        label = label.astype("float32")
+        label = label.astype(NUMPY_DTYPE)
 
-        if self.bands == Bands.RGB:
+        if self.bands.value == Bands.RGB.value:
             img_s2 = img_s2[[3, 2, 1], :, :]
-        if self.bands == Bands.INFRARED:
+        if self.bands .value == Bands.INFRARED.value:
             img_s2 = img_s2[[7, 3, 2, 1], :, :]
-        if self.bands == Bands.ALL:
+        if self.bands.value == Bands.ALL.value:
             img_s2 = img_s2
 
         # change type of img
-        img_s1 = img_s1.astype("float32")
-        img_s2 = img_s2.astype("float32")
-        img_world_cover = img_world_cover.astype("float32")
+        img_s1 = img_s1.astype(NUMPY_DTYPE)
+        img_s2 = img_s2.astype(NUMPY_DTYPE)
+        img_world_cover = img_world_cover.astype(NUMPY_DTYPE)
         img_s1_normalized = img_s1 / self.normalization_value
         img_s2_normalized = img_s2 / self.normalization_value
         img_world_cover_normalized = img_world_cover  # /self.normalization_value
