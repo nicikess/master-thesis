@@ -11,6 +11,7 @@ from torchmetrics.classification import (
 )
 import torch.nn as nn
 
+from src.master_thesis_benge_supervised_learning.constants import TrainingParameters
 
 class Train:
     def __init__(
@@ -42,7 +43,7 @@ class Train:
 
         # Initialize optimizer and scheduler
         self.optimizer = self.optimizer(model.parameters(), lr=self.learning_rate)
-        self.scheduler = self.scheduler(self.optimizer, T_max=TrainingParameters.SCHEDULER_MAX_NUMBER_INTERATIONS, eta_min=TrainingParameters.SCHEDULER_MIN_LR)
+        self.scheduler = self.scheduler(self.optimizer, T_max=TrainingParameters.SCHEDULER_MAX_NUMBER_INTERATIONS.value, eta_min=TrainingParameters.SCHEDULER_MIN_LR.value)
 
     def train(self):
 
@@ -124,7 +125,7 @@ class Train:
                 # epoch_train_f1_score += metric_f1_avg(softmax_output, labels)
 
                 progress.set_description("Train loss epoch: {:.4f}".format(loss))
-                wandb.log({"Step loss": loss})
+                #wandb.log({"Step loss": loss})
 
             # TODO - check if scheduler works correct
             wandb.log({"Learning-rate": self.scheduler.get_last_lr()[0]})

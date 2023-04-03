@@ -2,11 +2,11 @@ from enum import Enum
 import torch
 
 # Import transforms
-from transforms import Transforms
+from classification_baseline.transforms import Transforms
 
 # Import models
-from model.resnet import ResNet
-from model.dual_resnet import DualResNet
+from classification_baseline.model.resnet import ResNet
+from classification_baseline.model.dual_resnet import DualResNet
 
 # Set bands
 class Bands(Enum):

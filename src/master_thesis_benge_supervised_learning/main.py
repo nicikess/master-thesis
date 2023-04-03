@@ -6,13 +6,13 @@ from classification_baseline.train import Train
 import numpy as np
 import wandb
 
-from classification_baseline.constants import RemoteFilesAndDirectoryReferences, LocalFilesAndDirectoryReferences, TrainingParameters
+from src.master_thesis_benge_supervised_learning.constants import RemoteFilesAndDirectoryReferences, LocalFilesAndDirectoryReferences, TrainingParameters
 from classification_baseline.ben_ge_s import BenGeS
 
 if __name__ == "__main__":
 
     # Set environment to remote or local
-    environment = "remote"
+    environment = "local"
 
     if environment == "local":
 
