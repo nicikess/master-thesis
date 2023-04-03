@@ -42,7 +42,7 @@ class Train:
 
         # Initialize optimizer and scheduler
         self.optimizer = self.optimizer(model.parameters(), lr=self.learning_rate)
-        self.scheduler = self.scheduler(self.optimizer, T_max=150_000, eta_min=0)
+        self.scheduler = self.scheduler(self.optimizer, T_max=TrainingParameters.SCHEDULER_MAX_NUMBER_INTERATIONS, eta_min=TrainingParameters.SCHEDULER_MIN_LR)
 
     def train(self):
 
@@ -78,6 +78,7 @@ class Train:
             #epoch_train_f1_score = 0
 
             for i, (ben_ge_data) in progress:
+
                 # Transfer data to GPU if available
                 s2_images = ben_ge_data["s2_img"].to(self.device)
                 labels = ben_ge_data["label"].to(self.device)
@@ -93,6 +94,7 @@ class Train:
 
                 # Compute the loss
                 loss = self.loss(output, labels)
+                print(loss)
 
                 # Clear the gradients
                 self.optimizer.zero_grad()
@@ -122,10 +124,10 @@ class Train:
                 # epoch_train_f1_score += metric_f1_avg(softmax_output, labels)
 
                 progress.set_description("Train loss epoch: {:.4f}".format(loss))
-                #wandb.log({"Step loss": loss})
+                wandb.log({"Step loss": loss})
 
             # TODO - check if scheduler works correct
-            #wandb.log({"Learning-rate": self.scheduler.get_last_lr()[0]})
+            wandb.log({"Learning-rate": self.scheduler.get_last_lr()[0]})
             self.scheduler.step()
 
             # Calculate average per metric per epoch
@@ -136,8 +138,8 @@ class Train:
             # epoch_train_recall = epoch_train_recall / len(self.train_dl)
             # epoch_train_f1_score = epoch_train_f1_score / len(self.train_dl)
 
-            #wandb.log({"Epoch train loss": epoch_train_loss})
-            #wandb.log({"Epoch train accuracy": epoch_train_accuracy})
+            wandb.log({"Epoch train loss": epoch_train_loss})
+            wandb.log({"Epoch train accuracy": epoch_train_accuracy})
             #wandb.log({"Epoch train accuracy per class": epoch_train_accuracy_per_class})
 
             #wandb.log({"Epoch train precision accuracy": epoch_train_precision})
@@ -193,8 +195,8 @@ class Train:
                 #epoch_val_recall = epoch_val_recall / len(self.val_dl)
                 #epoch_val_f1_score = epoch_val_f1_score / len(self.val_dl)
 
-                #wandb.log({"Epoch val accuracy": epoch_val_accuracy})
-                #wandb.log({"Epoch val accuracy per class": epoch_val_accuracy_per_class})
+                wandb.log({"Epoch val accuracy": epoch_val_accuracy})
+                wandb.log({"Epoch val accuracy per class": epoch_val_accuracy_per_class})
 
                 #wandb.log({"Epoch val precision accuracy": epoch_val_precision})
                 #wandb.log({"Epoch val recall accuracy": epoch_val_recall})

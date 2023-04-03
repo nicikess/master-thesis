@@ -1,18 +1,18 @@
 import pandas as pd
 import torch
 from torch.utils.data import DataLoader
-from src.master_thesis_benge_supervised_learning.classification_baseline.ben_ge_s import BenGeS
 from classification_baseline.train import HyperParameter
 from classification_baseline.train import Train
 import numpy as np
 import wandb
 
-from constants import LocalFilesAndDirectoryReferences, TrainingParameters
+from classification_baseline.constants import RemoteFilesAndDirectoryReferences, LocalFilesAndDirectoryReferences, TrainingParameters
+from classification_baseline.ben_ge_s import BenGeS
 
 if __name__ == "__main__":
 
     # Set environment to remote or local
-    environment = "local"
+    environment = "remote"
 
     if environment == "local":
 
@@ -31,20 +31,27 @@ if __name__ == "__main__":
 
     # TODO: Set references to files and directories
     if environment == "remote":
-        data_index = pd.read_csv(
-            "/ds2/remote_sensing/ben-ge/ben-ge-s/sentinel-2/s2_npy/ben-ge-s_esaworldcover.csv"
-        )
-        root_dir = "/ds2/remote_sensing/ben-ge/ben-ge-s/sentinel-2/s2_npy/"
+
+        # Set references to files and directories
+        esa_world_cover_data_train = pd.read_csv(RemoteFilesAndDirectoryReferences.ESA_WORLD_COVER_CSV_TRAIN.value)
+        esa_world_cover_data_validation = pd.read_csv(RemoteFilesAndDirectoryReferences.ESA_WORLD_COVER_CSV_VALIDATION.value)
+        sentinel_1_2_metadata = pd.read_csv(RemoteFilesAndDirectoryReferences.SENTINEL_1_2_METADATA_CSV.value)
+        era5_data = pd.read_csv(RemoteFilesAndDirectoryReferences.ERA5_CSV.value)
+
+        root_dir_s1 = RemoteFilesAndDirectoryReferences.SENTINEL_1_DIRECTORY.value
+        root_dir_s2 = RemoteFilesAndDirectoryReferences.SENTINEL_2_DIRECTORY.value
+        root_dir_world_cover = RemoteFilesAndDirectoryReferences.ESA_WORLD_COVER_DIRECTORY.value
+
         device = torch.device("cuda")
 
     # Define configurations
     torch.manual_seed(TrainingParameters.SEED.value)
     np.random.seed(TrainingParameters.SEED.value)
 
-    # if environment == "remote":
-    # config = {i.name: i.value for i in TrainingParameters}
-    # wandb.login(key='9da448bfaa162b572403e1551114a17058f249d0')
-    # wandb.init(project="master-thesis", entity="nicikess", config=config)
+    if environment == "remote":
+        config = {i.name: i.value for i in TrainingParameters}
+        wandb.login(key='9da448bfaa162b572403e1551114a17058f249d0')
+        wandb.init(project="master-thesis", entity="nicikess", config=config)
 
     # Create dataset
     dataset_train = BenGeS(
@@ -62,7 +69,7 @@ if __name__ == "__main__":
     )
 
     dataset_validation = BenGeS(
-        esa_world_cover_data=esa_world_cover_data_train,
+        esa_world_cover_data=esa_world_cover_data_validation,
         sentinel_1_2_metadata=sentinel_1_2_metadata,
         era5_data=era5_data,
         root_dir_s1=root_dir_s1,
@@ -80,6 +87,8 @@ if __name__ == "__main__":
     #)
     #eda.distribution_barchart(modality="s1_img")
 
+    print(len(dataset_train))
+    print(len(dataset_validation))
 
     # Define training dataloader
     train_dl = DataLoader(dataset_train, TrainingParameters.BATCH_SIZE.value, shuffle=True)

@@ -3,7 +3,7 @@ import os
 from torch.utils.data import Dataset
 import numpy as np
 
-from ..constants import Bands, NUMPY_DTYPE
+from constants import Bands, NUMPY_DTYPE, TrainingParameters
 
 class BenGeS(Dataset):
     def __init__(
@@ -45,17 +45,17 @@ class BenGeS(Dataset):
         # Load other modalities
 
         # Sentinel 1
-        file_name_s1 = self.sentinel_1_2_metadata.loc[self.sentinel_1_2_metadata['patch_id'] == file_name_s2, "patch_id_s1"].values[0]
-        path_image_s1 = os.path.join(self.root_dir_s1, file_name_s1) + "_all_bands.npy"
-        img_s1 = np.load(path_image_s1)
+        #file_name_s1 = self.sentinel_1_2_metadata.loc[self.sentinel_1_2_metadata['patch_id'] == file_name_s2, "patch_id_s1"].values[0]
+        #path_image_s1 = os.path.join(self.root_dir_s1, file_name_s1) + "_all_bands.npy"
+        #img_s1 = np.load(path_image_s1)
 
         # World cover
-        file_name_world_cover = self.data_index.loc[:, "patch_id"][idx]
-        path_image_world_cover = (os.path.join(self.root_dir_world_cover, file_name_world_cover) + "_esaworldcover.npy")
-        img_world_cover = np.load(path_image_world_cover)
+        #file_name_world_cover = self.data_index.loc[:, "patch_id"][idx]
+        #path_image_world_cover = (os.path.join(self.root_dir_world_cover, file_name_world_cover) + "_esaworldcover.npy")
+        #img_world_cover = np.load(path_image_world_cover)
 
         # Encode label
-        threshold = 0.3
+        threshold = TrainingParameters.LABEL_THRESHOLD
         label_vector = self.data_index.loc[[idx]]
         label_vector = label_vector.drop(["filename", "patch_id"], axis=1)
         # Set values to smaller than the threshold to 0
@@ -72,29 +72,29 @@ class BenGeS(Dataset):
 
         if self.bands.value == Bands.RGB.value:
             img_s2 = img_s2[[3, 2, 1], :, :]
-        if self.bands .value == Bands.INFRARED.value:
+        if self.bands.value == Bands.INFRARED.value:
             img_s2 = img_s2[[7, 3, 2, 1], :, :]
         if self.bands.value == Bands.ALL.value:
             img_s2 = img_s2
 
         # change type of img
-        img_s1 = img_s1.astype(NUMPY_DTYPE)
+        #img_s1 = img_s1.astype(NUMPY_DTYPE)
         img_s2 = img_s2.astype(NUMPY_DTYPE)
-        img_world_cover = img_world_cover.astype(NUMPY_DTYPE)
-        img_s1_normalized = img_s1 / self.normalization_value
+        #img_world_cover = img_world_cover.astype(NUMPY_DTYPE)
+        #img_s1_normalized = img_s1 / self.normalization_value
         img_s2_normalized = img_s2 / self.normalization_value
-        img_world_cover_normalized = img_world_cover  # /self.normalization_value
+        #img_world_cover_normalized = img_world_cover  # /self.normalization_value
 
         if self.transform:
-            img_s1_normalized = self.transform(img_s1_normalized)
+            #img_s1_normalized = self.transform(img_s1_normalized)
             img_s2_normalized = self.transform(img_s2_normalized)
-            img_world_cover_normalized = self.transform(img_world_cover_normalized)
+            #img_world_cover_normalized = self.transform(img_world_cover_normalized)
 
         # Define output tensor
         ben_ge_data = {
-            "s1_img": img_s1_normalized,
+            #"s1_img": img_s1_normalized,
             "s2_img": img_s2_normalized,
-            "world_cover_img": img_world_cover_normalized,
+            #"world_cover_img": img_world_cover_normalized,
             "label": label,
         }
 
