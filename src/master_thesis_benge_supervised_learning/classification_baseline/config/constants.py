@@ -2,11 +2,11 @@ from enum import Enum
 import torch
 
 # Import transforms
-from classification_baseline.transforms import Transforms
+from master_thesis_benge_supervised_learning.classification_baseline.training.transforms import Transforms
 
 # Import models
-from classification_baseline.model.resnet import ResNet
-from classification_baseline.model.dual_resnet import DualResNet
+from master_thesis_benge_supervised_learning.classification_baseline.model.resnet import ResNet
+
 
 # Set bands
 class Bands(Enum):
@@ -15,11 +15,12 @@ class Bands(Enum):
     ALL = "all"
 
 # Set training parameters
-class TrainingParameters(Enum):
+class TrainingParameters():
     MODEL = ResNet
-    MULTI_MODAL = False
+    MULTI_MODAL = None
+    WEIGHTS = False
     EPOCHS = 20
-    LEARNING_RATE = 0.001
+    LEARNING_RATE = 0.0001
     BATCH_SIZE = 32
     OPTIMIZER = torch.optim.Adam
     SCHEDULER = torch.optim.lr_scheduler.CosineAnnealingLR
@@ -31,26 +32,49 @@ class TrainingParameters(Enum):
     SEED = 42
     TRANSFORMS = Transforms().transform
     NORMALIZATION_VALUE = 10_000
-    LABEL_THRESHOLD = 0.3
-    SCHEDULER_MAX_NUMBER_INTERATIONS = 150_000
+    LABEL_THRESHOLD = 0.05
+    SCHEDULER_MAX_NUMBER_INTERATIONS = 20
     SCHEDULER_MIN_LR = 0
+    SAVE_MODEL = False
+    SHUFFLE_TRAINING_DATA = True
+    SHUFFLE_VALIDATION_DATA = True
+    DATASET_SIZE_SMALL = True
 
-# Set remote file paths and directories
-class RemoteFilesAndDirectoryReferences(Enum):
+
+# Set remote file paths and directories for ben-ge (small)
+class RemoteFilesAndDirectoryReferencesSmall():
+    # Files
     ESA_WORLD_COVER_CSV_TRAIN = "/ds2/remote_sensing/ben-ge/ben-ge-s/data-index/ben-ge-s-train.csv"
     ESA_WORLD_COVER_CSV_VALIDATION = "/ds2/remote_sensing/ben-ge/ben-ge-s/data-index/ben-ge-s-validation.csv"
     ESA_WORLD_COVER_CSV_TEST = "/ds2/remote_sensing/ben-ge/ben-ge-s/data-index/ben-ge-s-test.csv"
     SENTINEL_1_2_METADATA_CSV = "/ds2/remote_sensing/ben-ge/ben-ge-s/ben-ge-s_sentinel12_meta.csv"
+
+    # Directories
     SENTINEL_1_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge-s/sentinel-1/s1_npy/"
     SENTINEL_2_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge-s/sentinel-2/s2_npy/"
     ESA_WORLD_COVER_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge-s/esaworldcover/"
     ERA5_CSV = "/ds2/remote_sensing/ben-ge/ben-ge-s/ben-ge-s_era-5.csv"
 
-# Set local file paths and directories
-class LocalFilesAndDirectoryReferences(Enum):
+# Set remote file paths and directories for ben-ge (small)
+class RemoteFilesAndDirectoryReferencesLarge():
+    # Files
+    ESA_WORLD_COVER_CSV_TRAIN = "/ds2/remote_sensing/ben-ge/ben-ge/data-index/ben-ge-train.csv"
+    ESA_WORLD_COVER_CSV_VALIDATION = "/ds2/remote_sensing/ben-ge/ben-ge/data-index/ben-ge-validation.csv"
+    ESA_WORLD_COVER_CSV_TEST = "/ds2/remote_sensing/ben-ge/ben-ge/data-index/ben-ge-test.csv"
+    SENTINEL_1_2_METADATA_CSV = "/ds2/remote_sensing/ben-ge/ben-ge/ben-ge_meta.csv"
+
+    # Directories
+    SENTINEL_1_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge/sentinel-1/"
+    SENTINEL_2_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge/sentinel-2/"
+    ESA_WORLD_COVER_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge/esaworldcover/npy/"
+    ERA5_CSV = "/ds2/remote_sensing/ben-ge/ben-ge/era-5/ben-ge_era-5.csv"
+
+# Set local file paths and directories (large)
+class LocalFilesAndDirectoryReferences():
     ESA_WORLD_COVER_CSV_TRAIN = "/Users/nicolaskesseli/Desktop/Uni/master-thesis.nosync/data/ben-ge-s/data-index/ben-ge-s-train.csv"
     ESA_WORLD_COVER_CSV_VALIDATION = "/Users/nicolaskesseli/Desktop/Uni/master-thesis.nosync/data/ben-ge-s/data-index/ben-ge-s-validation.csv"
     ESA_WORLD_COVER_CSV_TEST = "/Users/nicolaskesseli/Desktop/Uni/master-thesis.nosync/data/ben-ge-s/data-index/ben-ge-s-test.csv"
+
     SENTINEL_1_2_METADATA_CSV = "/Users/nicolaskesseli/Desktop/Uni/master-thesis.nosync/data/ben-ge-s/ben-ge-s_sentinel12_meta.csv"
     SENTINEL_1_DIRECTORY = "/Users/nicolaskesseli/Desktop/Uni/master-thesis.nosync/data/ben-ge-s/sentinel-1/s1_npy/"
     SENTINEL_2_DIRECTORY = "/Users/nicolaskesseli/Desktop/Uni/master-thesis.nosync/data/ben-ge-s/sentinel-2/s2_npy/"

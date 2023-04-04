@@ -3,7 +3,7 @@ import os
 from torch.utils.data import Dataset
 import numpy as np
 
-from src.master_thesis_benge_supervised_learning.constants import Bands, NUMPY_DTYPE, TrainingParameters
+from master_thesis_benge_supervised_learning.classification_baseline.config.constants import Bands, NUMPY_DTYPE, TrainingParameters
 
 class BenGeS(Dataset):
     def __init__(
@@ -55,7 +55,7 @@ class BenGeS(Dataset):
         #img_world_cover = np.load(path_image_world_cover)
 
         # Encode label
-        threshold = TrainingParameters.LABEL_THRESHOLD.value
+        threshold = TrainingParameters.LABEL_THRESHOLD
         label_vector = self.data_index.loc[[idx]]
         label_vector = label_vector.drop(["filename", "patch_id"], axis=1)
         # Set values to smaller than the threshold to 0
