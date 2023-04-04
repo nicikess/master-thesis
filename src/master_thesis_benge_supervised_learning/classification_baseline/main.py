@@ -5,14 +5,21 @@ from master_thesis_benge_supervised_learning.classification_baseline.training.tr
 from master_thesis_benge_supervised_learning.classification_baseline.training.train import Train
 import numpy as np
 import wandb
+import os
+import yaml
 
-from  master_thesis_benge_supervised_learning.classification_baseline.config.constants import LocalFilesAndDirectoryReferences, TrainingParameters
+from master_thesis_benge_supervised_learning.classification_baseline.config.constants import TrainModel, LocalFilesAndDirectoryReferences, RemoteFilesAndDirectoryReferencesLarge
 from master_thesis_benge_supervised_learning.classification_baseline.dataset.ben_ge_s import BenGeS
 
 if __name__ == "__main__":
 
-    # Set environment to remote or local
-    environment = "remote"
+    # Read config
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    yaml_path = os.path.join(root_dir, 'classification_baseline/config', 'test_config.yaml')
+    with open(yaml_path, 'r') as f:
+        config = yaml.safe_load(f)
+
+    environment = config['environment']['value']
 
     if environment == "local":
 
@@ -32,7 +39,7 @@ if __name__ == "__main__":
     if environment == "remote":
 
         # Change import based on dataset size
-        if TrainingParameters.DATASET_SIZE_SMALL:
+        if config['training']['dataset_size_small']:
             from master_thesis_benge_supervised_learning.classification_baseline.config.constants import \
                 RemoteFilesAndDirectoryReferencesSmall as RemoteFilesAndDirectoryReferences
         else:
@@ -52,15 +59,12 @@ if __name__ == "__main__":
         device = torch.device("cuda")
 
     # Define configurations
-    torch.manual_seed(TrainingParameters.SEED)
-    np.random.seed(TrainingParameters.SEED)
+    torch.manual_seed(config['training']['seed'])
+    np.random.seed(config['training']['seed'])
 
     if environment == "remote":
-        training_parameters = TrainingParameters()
-        config = vars(training_parameters)
-        print(config)
-        #wandb.login(key='9da448bfaa162b572403e1551114a17058f249d0')
-        #wandb.init(project="master-thesis", entity="nicikess", config=config)
+        wandb.login(key='9da448bfaa162b572403e1551114a17058f249d0')
+        wandb.init(project="master-thesis", entity="nicikess", config=config['training'])
 
     # Create dataset
     dataset_train = BenGeS(
@@ -71,12 +75,13 @@ if __name__ == "__main__":
         root_dir_s2=root_dir_s2,
         root_dir_world_cover=root_dir_world_cover,
         wandb=wandb,
-        number_of_classes=TrainingParameters.NUMBER_OF_CLASSES,
-        bands=TrainingParameters.BANDS,
-        transform=TrainingParameters.TRANSFORMS,
-        normalization_value=TrainingParameters.NORMALIZATION_VALUE
+        number_of_classes=config['training']['number_of_classes'],
+        bands=config['training']['bands'],
+        transform=config['training']['transforms'],
+        normalization_value=config['training']['normalization_value'],
+        label_threshold=config['training']['label_threshold']
     )
-    wandb.log({"Dataset size": len(dataset_train)})
+    #wandb.log({"Dataset size": len(dataset_train)})
 
     dataset_validation = BenGeS(
         esa_world_cover_data=esa_world_cover_data_validation,
@@ -86,10 +91,11 @@ if __name__ == "__main__":
         root_dir_s2=root_dir_s2,
         root_dir_world_cover=root_dir_world_cover,
         wandb=wandb,
-        number_of_classes=TrainingParameters.NUMBER_OF_CLASSES,
-        bands=TrainingParameters.BANDS,
-        transform=TrainingParameters.TRANSFORMS,
-        normalization_value=TrainingParameters.NORMALIZATION_VALUE
+        number_of_classes=config['training']['number_of_classes'],
+        bands=config['training']['bands'],
+        transform=config['training']['transforms'],
+        normalization_value=config['training']['normalization_value'],
+        label_threshold=config['training']['label_threshold']
     )
 
     #eda = ExploratoryDataAnalysis(
@@ -98,36 +104,40 @@ if __name__ == "__main__":
     #eda.distribution_barchart(modality="s1_img")
 
     # Define training dataloader
-    train_dl = DataLoader(dataset_train, TrainingParameters.BATCH_SIZE, shuffle=TrainingParameters.SHUFFLE_TRAINING_DATA)
+    train_dl = DataLoader(dataset_train, config['training']['batch_size'], shuffle=config['training']['shuffle_training_data'])
 
     # Define validation dataloader
-    validation_dl = DataLoader(dataset_validation, TrainingParameters.BATCH_SIZE, shuffle=TrainingParameters.SHUFFLE_VALIDATION_DATA)
+    validation_dl = DataLoader(dataset_validation, config['training']['batch_size'], shuffle=config['training']['shuffle_validation_data'])
+
+    print(type(config['training']['learning_rate']))
 
     # Set hyper parameters
     hyper_parameter = HyperParameter(
-        epochs=TrainingParameters.EPOCHS,
-        batch_size=TrainingParameters.BATCH_SIZE,
-        learning_rate=TrainingParameters.LEARNING_RATE,
-        optimizer=TrainingParameters.OPTIMIZER,
-        scheduler=TrainingParameters.SCHEDULER,
-        loss=TrainingParameters.LOSS
+        epochs=config['training']['epochs'],
+        batch_size=config['training']['batch_size'],
+        learning_rate=config['training']['learning_rate'],
+        optimizer=config['training']['optimizer'],
+        scheduler=config['training']['scheduler'],
+        loss=config['training']['loss'],
+        scheduler_max_number_iterations=config['training']['scheduler_max_number_iterations'],
+        scheduler_min_lr=config['training']['scheduler_min_lr'],
     )
 
     # Define model
-    if TrainingParameters.MULTI_MODAL:
+    if config['training']['multi_modal']:
         # Define multi modal model
-        model = TrainingParameters.MODEL(
+        model = config['training']['model'](
             # Input channels for s1
-            in_channels_1=TrainingParameters.NUMBER_OF_INPUT_CHANNELS_S1,
+            in_channels_1=config['training']['number_of_input_channels_s1'],
             # Input channels for s2
-            in_channels_2=TrainingParameters.NUMBER_OF_INPUT_CHANNELS_S2,
-            number_of_classes=TrainingParameters.NUMBER_OF_CLASSES,
+            in_channels_2=config['training']['number_of_input_channels_s2'],
+            number_of_classes=config['training']['number_of_classes'],
         )
     else:
         # Define single modal model (usually s2)
-        model = TrainingParameters.MODEL(
-            number_of_input_channels=TrainingParameters.NUMBER_OF_INPUT_CHANNELS_S2,
-            number_of_classes=TrainingParameters.NUMBER_OF_CLASSES,
+        model = TrainModel.MODEL(
+            number_of_input_channels=config['training']['number_of_input_channels_s2'],
+            number_of_classes=config['training']['number_of_classes']
         ).model
     # wandb.log({"Model": model})
 
@@ -136,10 +146,11 @@ if __name__ == "__main__":
         model,
         train_dl=train_dl,
         validation_dl=validation_dl,
-        number_of_classes=TrainingParameters.NUMBER_OF_CLASSES,
+        number_of_classes=config['training']['number_of_classes'],
         device=device,
         wandb=wandb,
-        hyper_parameter=hyper_parameter,
         environment=environment,
-        multi_modal=TrainingParameters.MULTI_MODAL,
+        multi_modal=config['training']['multi_modal'],
+        save_model=config['training']['save_model'],
+        hyper_parameter=hyper_parameter,
     ).train()

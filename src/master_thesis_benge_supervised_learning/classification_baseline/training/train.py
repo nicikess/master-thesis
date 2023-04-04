@@ -9,8 +9,6 @@ from torchmetrics.classification import (
 )
 import torch.nn as nn
 
-from master_thesis_benge_supervised_learning.classification_baseline.config.constants import TrainingParameters
-
 class Train:
     def __init__(
         self,
@@ -20,9 +18,10 @@ class Train:
         number_of_classes,
         device,
         wandb,
-        hyper_parameter,
         environment,
-        multi_modal
+        multi_modal,
+        save_model,
+        hyper_parameter,
     ):
         self.model = model
         self.train_dl = train_dl
@@ -30,18 +29,21 @@ class Train:
         self.number_of_classes = number_of_classes
         self.device = device
         self.wandb = wandb
-        self.hyper_parameter = hyper_parameter
         self.environment = environment
         self.multi_modal = multi_modal
+        self.save_model = save_model
+        self.hyper_parameter = hyper_parameter
         self.epochs = self.hyper_parameter.epochs
         self.learning_rate = self.hyper_parameter.learning_rate
         self.optimizer = self.hyper_parameter.optimizer
         self.scheduler = self.hyper_parameter.scheduler
         self.loss = self.hyper_parameter.loss
+        self.scheduler_max_number_iterations = self.hyper_parameter.scheduler_max_number_iterations
+        self.scheduler_min_lr = self.hyper_parameter.scheduler_min_lr
 
         # Initialize optimizer and scheduler
-        self.optimizer = self.optimizer(model.parameters(), lr=self.learning_rate)
-        self.scheduler = self.scheduler(self.optimizer, T_max=TrainingParameters.EPOCHS, eta_min=TrainingParameters.SCHEDULER_MIN_LR)
+        #self.optimizer = self.optimizer(self.model.parameters(), lr=self.learning_rate)
+        #self.scheduler = self.scheduler(self.optimizer, T_max=self.scheduler_max_number_iterations, eta_min=self.scheduler_min_lr)
 
     def train(self):
 
@@ -197,7 +199,7 @@ class Train:
                 wandb.log({"Epoch val f1 score": epoch_val_f1_score})
 
 
-            if TrainingParameters.SAVE_MODEL:
+            if self.save_model:
                 if epoch == 0:
                     best_val = epoch_val_f1_score
                 else:
@@ -219,6 +221,8 @@ class HyperParameter:
         optimizer,
         scheduler,
         loss,
+        scheduler_max_number_iterations,
+        scheduler_min_lr,
     ):
         self.epochs = epochs
         self.batch_size = batch_size
@@ -226,3 +230,5 @@ class HyperParameter:
         self.optimizer = optimizer
         self.scheduler = scheduler
         self.loss = loss
+        self.scheduler_max_number_iterations = scheduler_max_number_iterations
+        self.scheduler_min_lr = scheduler_min_lr

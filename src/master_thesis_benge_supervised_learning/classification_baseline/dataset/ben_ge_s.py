@@ -3,7 +3,7 @@ import os
 from torch.utils.data import Dataset
 import numpy as np
 
-from master_thesis_benge_supervised_learning.classification_baseline.config.constants import Bands, NUMPY_DTYPE, TrainingParameters
+from master_thesis_benge_supervised_learning.classification_baseline.config.constants import Bands, NUMPY_DTYPE
 
 class BenGeS(Dataset):
     def __init__(
@@ -19,6 +19,7 @@ class BenGeS(Dataset):
         bands,
         transform,
         normalization_value,
+        label_threshold
     ):
         self.data_index = esa_world_cover_data
         self.sentinel_1_2_metadata = sentinel_1_2_metadata
@@ -31,6 +32,7 @@ class BenGeS(Dataset):
         self.bands = bands
         self.transform = transform
         self.normalization_value = normalization_value
+        self.label_threshold = label_threshold
 
     def __len__(self):
         return len(self.data_index)
@@ -55,7 +57,7 @@ class BenGeS(Dataset):
         #img_world_cover = np.load(path_image_world_cover)
 
         # Encode label
-        threshold = TrainingParameters.LABEL_THRESHOLD
+        threshold = self.label_threshold
         label_vector = self.data_index.loc[[idx]]
         label_vector = label_vector.drop(["filename", "patch_id"], axis=1)
         # Set values to smaller than the threshold to 0
@@ -70,11 +72,11 @@ class BenGeS(Dataset):
                 label[max_indices[i]] = 1
         label = label.astype(NUMPY_DTYPE)
 
-        if self.bands.value == Bands.RGB.value:
+        if self.bands == Bands.RGB.value:
             img_s2 = img_s2[[3, 2, 1], :, :]
-        if self.bands.value == Bands.INFRARED.value:
+        if self.bands == Bands.INFRARED.value:
             img_s2 = img_s2[[7, 3, 2, 1], :, :]
-        if self.bands.value == Bands.ALL.value:
+        if self.bands == Bands.ALL.value:
             img_s2 = img_s2
 
         # change type of img

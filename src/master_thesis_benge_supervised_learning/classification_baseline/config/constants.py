@@ -15,31 +15,8 @@ class Bands(Enum):
     ALL = "all"
 
 # Set training parameters
-class TrainingParameters():
+class TrainModel():
     MODEL = ResNet
-    MULTI_MODAL = None
-    WEIGHTS = False
-    EPOCHS = 20
-    LEARNING_RATE = 0.0001
-    BATCH_SIZE = 32
-    OPTIMIZER = torch.optim.Adam
-    SCHEDULER = torch.optim.lr_scheduler.CosineAnnealingLR
-    LOSS = torch.nn.BCEWithLogitsLoss()
-    BANDS = Bands.RGB
-    NUMBER_OF_CLASSES = 11
-    NUMBER_OF_INPUT_CHANNELS_S1 = 2
-    NUMBER_OF_INPUT_CHANNELS_S2 = 3
-    SEED = 42
-    TRANSFORMS = Transforms().transform
-    NORMALIZATION_VALUE = 10_000
-    LABEL_THRESHOLD = 0.05
-    SCHEDULER_MAX_NUMBER_INTERATIONS = 20
-    SCHEDULER_MIN_LR = 0
-    SAVE_MODEL = False
-    SHUFFLE_TRAINING_DATA = True
-    SHUFFLE_VALIDATION_DATA = True
-    DATASET_SIZE_SMALL = True
-
 
 # Set remote file paths and directories for ben-ge (small)
 class RemoteFilesAndDirectoryReferencesSmall():
