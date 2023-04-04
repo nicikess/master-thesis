@@ -9,7 +9,7 @@ from torchmetrics.classification import (
 )
 import torch.nn as nn
 
-from master_thesis_benge_supervised_learning.classification_baseline.config.constants import TrainingParameters
+from master_thesis_benge_supervised_learning.classification_baseline.config.config import *
 
 class Train:
     def __init__(
@@ -17,31 +17,18 @@ class Train:
         model,
         train_dl,
         validation_dl,
-        number_of_classes,
-        device,
         wandb,
-        hyper_parameter,
-        environment,
-        multi_modal
+        device
     ):
         self.model = model
         self.train_dl = train_dl
         self.validation_dl = validation_dl
-        self.number_of_classes = number_of_classes
+        self.wandb = wandb,
         self.device = device
-        self.wandb = wandb
-        self.hyper_parameter = hyper_parameter
-        self.environment = environment
-        self.multi_modal = multi_modal
-        self.epochs = self.hyper_parameter.epochs
-        self.learning_rate = self.hyper_parameter.learning_rate
-        self.optimizer = self.hyper_parameter.optimizer
-        self.scheduler = self.hyper_parameter.scheduler
-        self.loss = self.hyper_parameter.loss
 
         # Initialize optimizer and scheduler
-        self.optimizer = self.optimizer(model.parameters(), lr=self.learning_rate)
-        self.scheduler = self.scheduler(self.optimizer, T_max=TrainingParameters.EPOCHS, eta_min=TrainingParameters.SCHEDULER_MIN_LR)
+        self.optimizer = config.get(optimizer_key)(model.parameters(), lr=config.get(learning_rate_key))
+        self.scheduler = config.get(scheduler_key)(self.optimizer, T_max=config.get(scheduler_max_number_interations_key), eta_min=config.get(scheduler_min_lr_key))
 
     def train(self):
 
@@ -49,14 +36,14 @@ class Train:
         self.model.to(self.device)
 
         # Set metrics
-        metric_accuracy_avg = BinaryAccuracy(num_classes=self.number_of_classes).to(self.device)
+        metric_accuracy_avg = BinaryAccuracy(num_classes=config.get(number_of_classes_key)).to(self.device)
         metric_accuracy_per_class = BinaryAccuracy(multidim_average='samplewise').to(self.device)
-        metric_precision_avg = BinaryPrecision(num_classes=self.number_of_classes).to(self.device)
-        metric_recall_avg = BinaryRecall(num_classes=self.number_of_classes).to(self.device)
-        metric_f1_avg = BinaryF1Score(num_classes=self.number_of_classes).to(self.device)
+        metric_precision_avg = BinaryPrecision(num_classes=config.get(number_of_classes_key)).to(self.device)
+        metric_recall_avg = BinaryRecall(num_classes=config.get(number_of_classes_key)).to(self.device)
+        metric_f1_avg = BinaryF1Score(num_classes=config.get(number_of_classes_key)).to(self.device)
 
         # For every epoch
-        for epoch in range(self.epochs):
+        for epoch in range(config.get(epochs_key)):
 
             progress = tqdm(
                 enumerate(self.train_dl), desc="Train Loss: ", total=len(self.train_dl)
@@ -77,18 +64,18 @@ class Train:
                 # Transfer data to GPU if available
                 s2_images = ben_ge_data["s2_img"].to(self.device)
                 labels = ben_ge_data["label"].to(self.device)
-                if self.multi_modal:
+                if config.get(multi_modal_key):
                     # Transfer other data modalities to GPU if available
                     s1_images = ben_ge_data["s1_img"].to(self.device)
 
                 # Make a forward pass
-                if self.multi_modal:
+                if config.get(multi_modal_key):
                     output = self.model(s1_images, s2_images)
                 else:
                     output = self.model(s2_images)
 
                 # Compute the loss
-                loss = self.loss(output, labels)
+                loss = config.get(loss_key)(output, labels)
 
                 # Clear the gradients
                 self.optimizer.zero_grad()
@@ -118,10 +105,10 @@ class Train:
                 epoch_train_f1_score += metric_f1_avg(sigmoid_output, labels)
 
                 progress.set_description("Train loss epoch: {:.4f}".format(loss))
-                wandb.log({"Step loss": loss})
+                #wandb.log({"Step loss": loss})
 
             # TODO - check if scheduler works correct
-            wandb.log({"Learning-rate": self.scheduler.get_last_lr()[0]})
+            #wandb.log({"Learning-rate": self.scheduler.get_last_lr()[0]})
             self.scheduler.step()
 
             # Calculate average per metric per epoch
@@ -132,13 +119,13 @@ class Train:
             epoch_train_recall = epoch_train_recall / len(self.train_dl)
             epoch_train_f1_score = epoch_train_f1_score / len(self.train_dl)
 
-            wandb.log({"Epoch train loss": epoch_train_loss})
-            wandb.log({"Epoch train accuracy": epoch_train_accuracy})
-            wandb.log({"Epoch train accuracy per class": epoch_train_accuracy_per_class})
+            #wandb.log({"Epoch train loss": epoch_train_loss})
+            #wandb.log({"Epoch train accuracy": epoch_train_accuracy})
+            #wandb.log({"Epoch train accuracy per class": epoch_train_accuracy_per_class})
 
-            wandb.log({"Epoch train precision accuracy": epoch_train_precision})
-            wandb.log({"Epoch train recall accuracy": epoch_train_recall})
-            wandb.log({"Epoch train f1 score": epoch_train_f1_score})
+            #wandb.log({"Epoch train precision accuracy": epoch_train_precision})
+            #wandb.log({"Epoch train recall accuracy": epoch_train_recall})
+            #wandb.log({"Epoch train f1 score": epoch_train_f1_score})
 
             progress = tqdm(
                 enumerate(self.validation_dl),
@@ -189,15 +176,15 @@ class Train:
                 epoch_val_recall = epoch_val_recall / len(self.validation_dl)
                 epoch_val_f1_score = epoch_val_f1_score / len(self.validation_dl)
 
-                wandb.log({"Epoch val accuracy": epoch_val_accuracy})
-                wandb.log({"Epoch val accuracy per class": epoch_val_accuracy_per_class})
+                #wandb.log({"Epoch val accuracy": epoch_val_accuracy})
+                #wandb.log({"Epoch val accuracy per class": epoch_val_accuracy_per_class})
 
-                wandb.log({"Epoch val precision accuracy": epoch_val_precision})
-                wandb.log({"Epoch val recall accuracy": epoch_val_recall})
-                wandb.log({"Epoch val f1 score": epoch_val_f1_score})
+                #wandb.log({"Epoch val precision accuracy": epoch_val_precision})
+                #wandb.log({"Epoch val recall accuracy": epoch_val_recall})
+                #wandb.log({"Epoch val f1 score": epoch_val_f1_score})
 
 
-            if TrainingParameters.SAVE_MODEL:
+            if config.get(save_model_key):
                 if epoch == 0:
                     best_val = epoch_val_f1_score
                 else:
@@ -208,21 +195,3 @@ class Train:
                             run_id = str(wandb.run.id)
                             save_weights_path = "model/" + run_id + "/classification_model"
                             torch.save(self.model.state_dict(), save_weights_path)
-
-
-class HyperParameter:
-    def __init__(
-        self,
-        epochs,
-        batch_size,
-        learning_rate,
-        optimizer,
-        scheduler,
-        loss,
-    ):
-        self.epochs = epochs
-        self.batch_size = batch_size
-        self.learning_rate = learning_rate
-        self.optimizer = optimizer
-        self.scheduler = scheduler
-        self.loss = loss

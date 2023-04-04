@@ -1,18 +1,16 @@
 import pandas as pd
-import torch
 from torch.utils.data import DataLoader
-from master_thesis_benge_supervised_learning.classification_baseline.training.train import HyperParameter
 from master_thesis_benge_supervised_learning.classification_baseline.training.train import Train
 import numpy as np
 import wandb
 
-from  master_thesis_benge_supervised_learning.classification_baseline.config.constants import LocalFilesAndDirectoryReferences, TrainingParameters
+from  master_thesis_benge_supervised_learning.classification_baseline.config.constants import LocalFilesAndDirectoryReferences
 from master_thesis_benge_supervised_learning.classification_baseline.dataset.ben_ge_s import BenGeS
+from master_thesis_benge_supervised_learning.classification_baseline.config.config import *
 
 if __name__ == "__main__":
 
-    # Set environment to remote or local
-    environment = "remote"
+    environment = config.get(environment_key)
 
     if environment == "local":
 
@@ -32,7 +30,7 @@ if __name__ == "__main__":
     if environment == "remote":
 
         # Change import based on dataset size
-        if TrainingParameters.DATASET_SIZE_SMALL:
+        if config.get(data_set_size_small_key):
             from master_thesis_benge_supervised_learning.classification_baseline.config.constants import \
                 RemoteFilesAndDirectoryReferencesSmall as RemoteFilesAndDirectoryReferences
         else:
@@ -52,15 +50,12 @@ if __name__ == "__main__":
         device = torch.device("cuda")
 
     # Define configurations
-    torch.manual_seed(TrainingParameters.SEED)
-    np.random.seed(TrainingParameters.SEED)
+    torch.manual_seed(config.get(seed_key))
+    np.random.seed(config.get(seed_key))
 
-    if environment == "remote":
-        training_parameters = TrainingParameters()
-        config = vars(training_parameters)
-        print(config)
-        #wandb.login(key='9da448bfaa162b572403e1551114a17058f249d0')
-        #wandb.init(project="master-thesis", entity="nicikess", config=config)
+    if environment == "local":
+        wandb.login(key='9da448bfaa162b572403e1551114a17058f249d0')
+        wandb.init(project="master-thesis", entity="nicikess", config=config)
 
     # Create dataset
     dataset_train = BenGeS(
@@ -71,12 +66,8 @@ if __name__ == "__main__":
         root_dir_s2=root_dir_s2,
         root_dir_world_cover=root_dir_world_cover,
         wandb=wandb,
-        number_of_classes=TrainingParameters.NUMBER_OF_CLASSES,
-        bands=TrainingParameters.BANDS,
-        transform=TrainingParameters.TRANSFORMS,
-        normalization_value=TrainingParameters.NORMALIZATION_VALUE
     )
-    wandb.log({"Dataset size": len(dataset_train)})
+    #wandb.log({"Dataset size": len(dataset_train)})
 
     dataset_validation = BenGeS(
         esa_world_cover_data=esa_world_cover_data_validation,
@@ -85,11 +76,7 @@ if __name__ == "__main__":
         root_dir_s1=root_dir_s1,
         root_dir_s2=root_dir_s2,
         root_dir_world_cover=root_dir_world_cover,
-        wandb=wandb,
-        number_of_classes=TrainingParameters.NUMBER_OF_CLASSES,
-        bands=TrainingParameters.BANDS,
-        transform=TrainingParameters.TRANSFORMS,
-        normalization_value=TrainingParameters.NORMALIZATION_VALUE
+        wandb=wandb
     )
 
     #eda = ExploratoryDataAnalysis(
@@ -98,48 +85,34 @@ if __name__ == "__main__":
     #eda.distribution_barchart(modality="s1_img")
 
     # Define training dataloader
-    train_dl = DataLoader(dataset_train, TrainingParameters.BATCH_SIZE, shuffle=TrainingParameters.SHUFFLE_TRAINING_DATA)
+    train_dl = DataLoader(dataset_train, config.get(batch_size_key), shuffle=config.get(shuffle_training_data_key))
 
     # Define validation dataloader
-    validation_dl = DataLoader(dataset_validation, TrainingParameters.BATCH_SIZE, shuffle=TrainingParameters.SHUFFLE_VALIDATION_DATA)
-
-    # Set hyper parameters
-    hyper_parameter = HyperParameter(
-        epochs=TrainingParameters.EPOCHS,
-        batch_size=TrainingParameters.BATCH_SIZE,
-        learning_rate=TrainingParameters.LEARNING_RATE,
-        optimizer=TrainingParameters.OPTIMIZER,
-        scheduler=TrainingParameters.SCHEDULER,
-        loss=TrainingParameters.LOSS
-    )
+    validation_dl = DataLoader(dataset_validation, config.get(batch_size_key), shuffle=config.get(shuffle_validation_data_key))
 
     # Define model
-    if TrainingParameters.MULTI_MODAL:
+    if config.get(multi_modal_key):
         # Define multi modal model
-        model = TrainingParameters.MODEL(
+        model = config.get(model_key)(
             # Input channels for s1
-            in_channels_1=TrainingParameters.NUMBER_OF_INPUT_CHANNELS_S1,
+            in_channels_1=config.get(number_of_input_channels_s1_key),
             # Input channels for s2
-            in_channels_2=TrainingParameters.NUMBER_OF_INPUT_CHANNELS_S2,
-            number_of_classes=TrainingParameters.NUMBER_OF_CLASSES,
-        )
+            in_channels_2=config.get(number_of_input_channels_s2_key),
+            number_of_classes=config.get(number_of_classes_key),
+        ).model
     else:
         # Define single modal model (usually s2)
-        model = TrainingParameters.MODEL(
-            number_of_input_channels=TrainingParameters.NUMBER_OF_INPUT_CHANNELS_S2,
-            number_of_classes=TrainingParameters.NUMBER_OF_CLASSES,
+        model = config.get(model_key)(
+            number_of_input_channels=config.get(number_of_input_channels_s2_key),
+            number_of_classes=config.get(number_of_classes_key),
         ).model
-    # wandb.log({"Model": model})
+    wandb.log({"model": model})
 
     # Run training routing
     train = Train(
         model,
         train_dl=train_dl,
         validation_dl=validation_dl,
-        number_of_classes=TrainingParameters.NUMBER_OF_CLASSES,
-        device=device,
         wandb=wandb,
-        hyper_parameter=hyper_parameter,
-        environment=environment,
-        multi_modal=TrainingParameters.MULTI_MODAL,
+        device=device,
     ).train()

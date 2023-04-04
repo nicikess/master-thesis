@@ -3,7 +3,9 @@ import os
 from torch.utils.data import Dataset
 import numpy as np
 
-from master_thesis_benge_supervised_learning.classification_baseline.config.constants import Bands, NUMPY_DTYPE, TrainingParameters
+from master_thesis_benge_supervised_learning.classification_baseline.config.config import *
+from master_thesis_benge_supervised_learning.classification_baseline.config.constants import *
+
 
 class BenGeS(Dataset):
     def __init__(
@@ -14,11 +16,7 @@ class BenGeS(Dataset):
         root_dir_s1,
         root_dir_s2,
         root_dir_world_cover,
-        number_of_classes,
         wandb,
-        bands,
-        transform,
-        normalization_value,
     ):
         self.data_index = esa_world_cover_data
         self.sentinel_1_2_metadata = sentinel_1_2_metadata
@@ -26,11 +24,6 @@ class BenGeS(Dataset):
         self.root_dir_s1 = root_dir_s1
         self.root_dir_s2 = root_dir_s2
         self.root_dir_world_cover = root_dir_world_cover
-        self.number_of_classes = number_of_classes
-        self.wandb = wandb
-        self.bands = bands
-        self.transform = transform
-        self.normalization_value = normalization_value
 
     def __len__(self):
         return len(self.data_index)
@@ -55,7 +48,7 @@ class BenGeS(Dataset):
         #img_world_cover = np.load(path_image_world_cover)
 
         # Encode label
-        threshold = TrainingParameters.LABEL_THRESHOLD
+        threshold = config.get(label_threshold_key)
         label_vector = self.data_index.loc[[idx]]
         label_vector = label_vector.drop(["filename", "patch_id"], axis=1)
         # Set values to smaller than the threshold to 0
@@ -64,17 +57,17 @@ class BenGeS(Dataset):
         # Get indexes of largest values
         max_indices = np.argpartition(label_vector, -3)[-3:]
         # Create label encoding and set to one if value is not 0
-        label = np.zeros(self.number_of_classes)
+        label = np.zeros(config.get(number_of_classes_key))
         for i in range(len(max_indices)):
             if label_vector[max_indices[i]] > 0:
                 label[max_indices[i]] = 1
         label = label.astype(NUMPY_DTYPE)
 
-        if self.bands.value == Bands.RGB.value:
+        if config.get(bands_key) == Bands.RGB:
             img_s2 = img_s2[[3, 2, 1], :, :]
-        if self.bands.value == Bands.INFRARED.value:
+        if config.get(bands_key) == Bands.INFRARED:
             img_s2 = img_s2[[7, 3, 2, 1], :, :]
-        if self.bands.value == Bands.ALL.value:
+        if config.get(bands_key) == Bands.ALL:
             img_s2 = img_s2
 
         # change type of img
@@ -82,12 +75,12 @@ class BenGeS(Dataset):
         img_s2 = img_s2.astype(NUMPY_DTYPE)
         #img_world_cover = img_world_cover.astype(NUMPY_DTYPE)
         #img_s1_normalized = img_s1 / self.normalization_value
-        img_s2_normalized = img_s2 / self.normalization_value
+        img_s2_normalized = img_s2 / config.get(normalization_value_key)
         #img_world_cover_normalized = img_world_cover  # /self.normalization_value
 
-        if self.transform:
+        if config.get(transforms_key):
             #img_s1_normalized = self.transform(img_s1_normalized)
-            img_s2_normalized = self.transform(img_s2_normalized)
+            img_s2_normalized = config.get(transforms_key)(img_s2_normalized)
             #img_world_cover_normalized = self.transform(img_world_cover_normalized)
 
         # Define output tensor
