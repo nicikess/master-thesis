@@ -1,4 +1,3 @@
-import torch
 import wandb
 from tqdm import tqdm
 from torchmetrics.classification import (
@@ -10,6 +9,7 @@ from torchmetrics.classification import (
 import torch.nn as nn
 
 from master_thesis_benge_supervised_learning.classification_baseline.config.config import *
+from master_thesis_benge_supervised_learning.classification_baseline.training.train_utils import TrainUtils
 
 class Train:
     def __init__(
@@ -41,6 +41,8 @@ class Train:
         metric_precision_avg = BinaryPrecision(num_classes=config.get(number_of_classes_key)).to(self.device)
         metric_recall_avg = BinaryRecall(num_classes=config.get(number_of_classes_key)).to(self.device)
         metric_f1_avg = BinaryF1Score(num_classes=config.get(number_of_classes_key)).to(self.device)
+        metric_f1_avg_per_class = BinaryF1Score(multidim_average='samplewise').to(self.device)
+
 
         # For every epoch
         for epoch in range(config.get(epochs_key)):
@@ -58,6 +60,7 @@ class Train:
             epoch_train_precision = 0
             epoch_train_recall = 0
             epoch_train_f1_score = 0
+            epoch_train_f1_score_per_class = 0
 
             for i, (ben_ge_data) in progress:
 
@@ -94,38 +97,42 @@ class Train:
                 epoch_train_loss += loss
 
                 # Overall accuracy batch
-                epoch_train_accuracy += metric_accuracy_avg(sigmoid_output, labels)
 
                 # Accuracy per class batch
                 labels_transpose = torch.transpose(labels, 0, 1)
                 output_transpose = torch.transpose(sigmoid_output, 0, 1)
-                epoch_train_accuracy_per_class += metric_accuracy_per_class(output_transpose, labels_transpose)
+
+                epoch_train_accuracy += metric_accuracy_avg(sigmoid_output, labels)
                 epoch_train_precision += metric_precision_avg(sigmoid_output, labels)
                 epoch_train_recall += metric_recall_avg(sigmoid_output, labels)
                 epoch_train_f1_score += metric_f1_avg(sigmoid_output, labels)
 
-                progress.set_description("Train loss epoch: {:.4f}".format(loss))
-                #wandb.log({"Step loss": loss})
+                epoch_train_accuracy_per_class += metric_accuracy_per_class(output_transpose, labels_transpose)
+                epoch_train_f1_score_per_class += metric_accuracy_per_class(output_transpose, labels_transpose)
 
-            # TODO - check if scheduler works correct
-            #wandb.log({"Learning-rate": self.scheduler.get_last_lr()[0]})
+                progress.set_description("Train loss epoch: {:.4f}".format(loss))
+                wandb.log({"Step loss": loss})
+
+            wandb.log({"Learning-rate": self.scheduler.get_last_lr()[0]})
             self.scheduler.step()
 
             # Calculate average per metric per epoch
             epoch_train_loss = epoch_train_loss / len(self.train_dl)
             epoch_train_accuracy = epoch_train_accuracy / len(self.train_dl)
             epoch_train_accuracy_per_class = epoch_train_accuracy_per_class / len(self.train_dl)
+            TrainUtils.caluculate_and_log_accuracy_per_class_training(epoch_train_accuracy_per_class)
+            TrainUtils.caluculate_and_log_f1_per_class_training(epoch_train_accuracy_per_class)
             epoch_train_precision = epoch_train_precision / len(self.train_dl)
             epoch_train_recall = epoch_train_recall / len(self.train_dl)
             epoch_train_f1_score = epoch_train_f1_score / len(self.train_dl)
 
-            #wandb.log({"Epoch train loss": epoch_train_loss})
-            #wandb.log({"Epoch train accuracy": epoch_train_accuracy})
-            #wandb.log({"Epoch train accuracy per class": epoch_train_accuracy_per_class})
+            print(f'\n epoch train loss: {epoch_train_loss} \n')
 
-            #wandb.log({"Epoch train precision accuracy": epoch_train_precision})
-            #wandb.log({"Epoch train recall accuracy": epoch_train_recall})
-            #wandb.log({"Epoch train f1 score": epoch_train_f1_score})
+            wandb.log({"Epoch train loss": epoch_train_loss})
+            wandb.log({"Epoch train accuracy": epoch_train_accuracy})
+            wandb.log({"Epoch train precision": epoch_train_precision})
+            wandb.log({"Epoch train recall": epoch_train_recall})
+            wandb.log({"Epoch train f1 score": epoch_train_f1_score})
 
             progress = tqdm(
                 enumerate(self.validation_dl),
@@ -146,18 +153,19 @@ class Train:
                 epoch_val_precision = 0
                 epoch_val_recall = 0
                 epoch_val_f1_score = 0
+                epoch_val_f1_per_class = 0
 
                 for i, (ben_ge_data) in progress:
 
                     # Transfer data to GPU if available
                     s2_images = ben_ge_data["s2_img"].to(self.device)
                     labels = ben_ge_data["label"].to(self.device)
-                    if self.multi_modal:
+                    if config.get(multi_modal_key):
                         s1_images = ben_ge_data["s1_img"].to(self.device)
 
                     # Make a forward pass
                     output = self.model(s2_images)
-                    if self.multi_modal:
+                    if config.get(multi_modal_key):
                         output = self.model(s1_images, s2_images)
 
                     # Calculate probabilities
@@ -169,19 +177,20 @@ class Train:
                     epoch_val_precision += metric_precision_avg(sigmoid_output, labels)
                     epoch_val_recall += metric_recall_avg(sigmoid_output, labels)
                     epoch_val_f1_score += metric_f1_avg(sigmoid_output, labels)
+                    epoch_val_f1_per_class += metric_f1_avg_per_class(sigmoid_output, labels)
 
                 epoch_val_accuracy = epoch_val_accuracy / len(self.validation_dl)
                 epoch_val_accuracy_per_class = epoch_val_accuracy_per_class / len(self.validation_dl)
+                TrainUtils.caluculate_and_log_accuracy_per_class_validation(epoch_val_accuracy_per_class)
+                TrainUtils.caluculate_and_log_f1_per_class_validation(epoch_val_f1_per_class)
                 epoch_val_precision = epoch_val_precision / len(self.validation_dl)
                 epoch_val_recall = epoch_val_recall / len(self.validation_dl)
                 epoch_val_f1_score = epoch_val_f1_score / len(self.validation_dl)
 
-                #wandb.log({"Epoch val accuracy": epoch_val_accuracy})
-                #wandb.log({"Epoch val accuracy per class": epoch_val_accuracy_per_class})
-
-                #wandb.log({"Epoch val precision accuracy": epoch_val_precision})
-                #wandb.log({"Epoch val recall accuracy": epoch_val_recall})
-                #wandb.log({"Epoch val f1 score": epoch_val_f1_score})
+                wandb.log({"Epoch val accuracy": epoch_val_accuracy})
+                wandb.log({"Epoch val precision": epoch_val_precision})
+                wandb.log({"Epoch val recall": epoch_val_recall})
+                wandb.log({"Epoch val f1 score": epoch_val_f1_score})
 
 
             if config.get(save_model_key):

@@ -53,9 +53,9 @@ if __name__ == "__main__":
     torch.manual_seed(config.get(seed_key))
     np.random.seed(config.get(seed_key))
 
-    if environment == "local":
+    if environment == "remote":
         wandb.login(key='9da448bfaa162b572403e1551114a17058f249d0')
-        wandb.init(project="master-thesis", entity="nicikess", config=config)
+        wandb.init(project="master-thesis-experiments", entity="nicikess", config=config)
 
     # Create dataset
     dataset_train = BenGeS(
@@ -90,6 +90,9 @@ if __name__ == "__main__":
     # Define validation dataloader
     validation_dl = DataLoader(dataset_validation, config.get(batch_size_key), shuffle=config.get(shuffle_validation_data_key))
 
+    run_description = input("Describe run: ")
+    wandb.log({"Run description": run_description})
+
     # Define model
     if config.get(multi_modal_key):
         # Define multi modal model
@@ -99,14 +102,17 @@ if __name__ == "__main__":
             # Input channels for s2
             in_channels_2=config.get(number_of_input_channels_s2_key),
             number_of_classes=config.get(number_of_classes_key),
+            wandb=wandb
         ).model
     else:
         # Define single modal model (usually s2)
         model = config.get(model_key)(
             number_of_input_channels=config.get(number_of_input_channels_s2_key),
             number_of_classes=config.get(number_of_classes_key),
+            wandb=wandb
         ).model
-    wandb.log({"model": model})
+    wandb.log({"model details": model})
+    wandb.config.update(config)
 
     # Run training routing
     train = Train(

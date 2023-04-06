@@ -73,6 +73,10 @@ class BenGeS(Dataset):
         # change type of img
         #img_s1 = img_s1.astype(NUMPY_DTYPE)
         img_s2 = img_s2.astype(NUMPY_DTYPE)
+
+        #Clip values to 0-10000
+        img_s2 = np.clip(img_s2, 0, 10000)
+
         #img_world_cover = img_world_cover.astype(NUMPY_DTYPE)
         #img_s1_normalized = img_s1 / self.normalization_value
         img_s2_normalized = img_s2 / config.get(normalization_value_key)

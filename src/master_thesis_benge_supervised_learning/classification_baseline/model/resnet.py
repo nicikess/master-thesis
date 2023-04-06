@@ -1,11 +1,14 @@
-import torchvision.models as models
 import torch.nn as nn
+import torchvision.models as models
+
+from master_thesis_benge_supervised_learning.classification_baseline.config.config import *
 
 class ResNet:
-    def __init__(self, number_of_input_channels, number_of_classes):
+    def __init__(self, number_of_input_channels, number_of_classes, wandb):
 
         self.number_of_classes = number_of_classes
         self.model = models.resnet18()
+        wandb.log({"Model size": str(self.model)})
         self.model.conv1 = nn.Conv2d(
             number_of_input_channels, 64, kernel_size=7, stride=2, padding=3, bias=False
         )
