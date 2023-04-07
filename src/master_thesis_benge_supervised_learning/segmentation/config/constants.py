@@ -45,15 +45,10 @@ class LocalFilesAndDirectoryReferences():
     SENTINEL_2_DIRECTORY = "/Users/nicolaskesseli/Desktop/Uni/master-thesis.nosync/data/ben-ge-s/sentinel-2/s2_npy/"
     ESA_WORLD_COVER_DIRECTORY = "/Users/nicolaskesseli/Desktop/Uni/master-thesis.nosync/data/ben-ge-s/esaworldcover/"
     ERA5_CSV = "/Users/nicolaskesseli/Desktop/Uni/master-thesis.nosync/data/ben-ge-s/ben-ge-s_era-5.csv"
-    GLO_30_DIRECTORY = '/Users/nicolaskesseli/Desktop/Uni/master-thesis.nosync/data/ben-ge-s/glo-30_dem'
 
-# Images
+# Set other values
+
 S1_IMG_KEY = "s1_img"
 S2_IMG_KEY = "s2_img"
-WORLD_COVER_IMG_KEY = "world_cover_img"
-ALTITUDE_IMG_KEY = "altitude_img"
-STACKED_IMAGE_KEY = "stacked_img"
-# Labels
-MULTICLASS_LABEL_KEY = "multiclass_label"
-# File data type
+LABEL_KEY = "label"
 NUMPY_DTYPE = "float32"

@@ -3,7 +3,6 @@
 from tqdm import tqdm
 from torchmetrics import JaccardIndex
 import torch
-import numpy as np
 
 
 class Train:
@@ -55,25 +54,10 @@ class Train:
             for i, batch in progress:
                 # Transfer data to GPU if available
                 data = batch["s2_img"].float().to(self.device)
-                label = batch["mask"].float().to(self.device)
+                label = batch["label"].float().to(self.device)
 
                 # Make a forward pass
                 output = self.model(data)
-
-                # Derive binary segmentation map from prediction
-                output_binary = torch.zeros(output.shape)
-                output_binary[output >= 0] = 1
-
-                # Compute IoU
-                label = torch.unsqueeze(label, dim=1)
-                epoch_train_ious += jaccard(
-                    output_binary.to(self.device), label.int()
-                ) / len(self.train_loader)
-
-                # Compute pixel accuracies
-                epoch_train_accs += torch.sum(
-                    output_binary.to(self.device) == label.int()
-                ) / (len(self.train_loader) * (256 * 256) * 100)
 
                 # Compute the loss
                 loss = self.criterion(output, label)
@@ -109,25 +93,10 @@ class Train:
                 for j, batch in progress:
                     # Transfer Data to GPU if available
                     data = batch["s2_img"].float().to(self.device)
-                    label = batch["mask"].float().to(self.device)
+                    label = batch["label"].float().to(self.device)
 
                     # Make a forward pass
                     output = self.model(data)
-
-                    # Derive binary segmentation map from prediction
-                    output_binary = torch.zeros(output.shape)
-                    output_binary[output >= 0] = 1
-
-                    # Compute IoU
-                    label = torch.unsqueeze(label, dim=1)
-                    epoch_val_ious += jaccard(
-                        output_binary.to(self.device), label.int()
-                    ) / len(self.val_loader)
-
-                    # Compute pixel accuracies
-                    epoch_val_accs += torch.sum(
-                        output_binary.to(self.device) == label.int()
-                    ) / (len(self.val_loader) * (256 * 256) * 100)
 
                     # Compute the loss
                     val_loss = self.criterion(output, label)
@@ -138,6 +107,7 @@ class Train:
                     progress.set_description(
                         "Validation Loss: {:.4f}".format(epoch_val_loss)
                     )
+
             if epoch == 0:
                 best_val_loss = epoch_val_loss
             else:

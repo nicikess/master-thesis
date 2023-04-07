@@ -10,20 +10,33 @@ from master_thesis_benge_supervised_learning.classification_baseline.config.conf
 
 if __name__ == "__main__":
 
-    environment = config.get(environment_key)
+    environment = config["other"][environment_key]
 
     if environment == "local":
 
-        # Set references to files and directories
-        esa_world_cover_data_train = pd.read_csv(LocalFilesAndDirectoryReferences.ESA_WORLD_COVER_CSV_TRAIN)
-        esa_world_cover_data_validation = pd.read_csv(LocalFilesAndDirectoryReferences.ESA_WORLD_COVER_CSV_VALIDATION)
-        sentinel_1_2_metadata = pd.read_csv(LocalFilesAndDirectoryReferences.SENTINEL_1_2_METADATA_CSV)
-        era5_data = pd.read_csv(LocalFilesAndDirectoryReferences.ERA5_CSV)
+        # Create dataset
+        dataset_train = BenGeS(
+            root_dir_s1=LocalFilesAndDirectoryReferences.SENTINEL_1_DIRECTORY,
+            root_dir_s2=LocalFilesAndDirectoryReferences.SENTINEL_2_DIRECTORY,
+            root_dir_world_cover=LocalFilesAndDirectoryReferences.ESA_WORLD_COVER_DIRECTORY,
+            root_dir_glo_30_dem=LocalFilesAndDirectoryReferences.GLO_30_DIRECTORY,
+            era5_data_path=LocalFilesAndDirectoryReferences.ERA5_CSV,
+            esa_world_cover_index_path=LocalFilesAndDirectoryReferences.ESA_WORLD_COVER_CSV_TRAIN,
+            sentinel_1_2_metadata_path=LocalFilesAndDirectoryReferences.SENTINEL_1_2_METADATA_CSV,
+            s2_bands=Bands.RGB,
+        )
 
-        root_dir_s1 = LocalFilesAndDirectoryReferences.SENTINEL_1_DIRECTORY
-        root_dir_s2 = LocalFilesAndDirectoryReferences.SENTINEL_2_DIRECTORY
-        root_dir_world_cover = LocalFilesAndDirectoryReferences.ESA_WORLD_COVER_DIRECTORY
-
+        # Create dataset
+        dataset_validation = BenGeS(
+            root_dir_s1=LocalFilesAndDirectoryReferences.SENTINEL_1_DIRECTORY,
+            root_dir_s2=LocalFilesAndDirectoryReferences.SENTINEL_2_DIRECTORY,
+            root_dir_world_cover=LocalFilesAndDirectoryReferences.ESA_WORLD_COVER_DIRECTORY,
+            root_dir_glo_30_dem=LocalFilesAndDirectoryReferences.GLO_30_DIRECTORY,
+            era5_data_path=LocalFilesAndDirectoryReferences.ERA5_CSV,
+            esa_world_cover_index_path=LocalFilesAndDirectoryReferences.ESA_WORLD_COVER_CSV_VALIDATION,
+            sentinel_1_2_metadata_path=LocalFilesAndDirectoryReferences.SENTINEL_1_2_METADATA_CSV,
+            s2_bands=Bands.RGB,
+        )
         # Set device
         device = torch.device("cpu")
 
@@ -50,34 +63,14 @@ if __name__ == "__main__":
         device = torch.device("cuda")
 
     # Define configurations
-    torch.manual_seed(config.get(seed_key))
-    np.random.seed(config.get(seed_key))
+    torch.manual_seed(config["training"][seed_key])
+    np.random.seed(config["training"][seed_key])
 
     if environment == "remote":
         wandb.login(key='9da448bfaa162b572403e1551114a17058f249d0')
         wandb.init(project="master-thesis-experiments", entity="nicikess", config=config)
 
-    # Create dataset
-    dataset_train = BenGeS(
-        esa_world_cover_data=esa_world_cover_data_train,
-        sentinel_1_2_metadata=sentinel_1_2_metadata,
-        era5_data=era5_data,
-        root_dir_s1=root_dir_s1,
-        root_dir_s2=root_dir_s2,
-        root_dir_world_cover=root_dir_world_cover,
-        wandb=wandb,
-    )
     #wandb.log({"Dataset size": len(dataset_train)})
-
-    dataset_validation = BenGeS(
-        esa_world_cover_data=esa_world_cover_data_validation,
-        sentinel_1_2_metadata=sentinel_1_2_metadata,
-        era5_data=era5_data,
-        root_dir_s1=root_dir_s1,
-        root_dir_s2=root_dir_s2,
-        root_dir_world_cover=root_dir_world_cover,
-        wandb=wandb
-    )
 
     #eda = ExploratoryDataAnalysis(
         #dataset, esa_world_cover_data, era5_data, sentinel_1_2_metadata
@@ -85,34 +78,34 @@ if __name__ == "__main__":
     #eda.distribution_barchart(modality="s1_img")
 
     # Define training dataloader
-    train_dl = DataLoader(dataset_train, config.get(batch_size_key), shuffle=config.get(shuffle_training_data_key))
+    train_dl = DataLoader(dataset_train, config['training'][batch_size_key], shuffle=config['data'][shuffle_training_data_key])
 
     # Define validation dataloader
-    validation_dl = DataLoader(dataset_validation, config.get(batch_size_key), shuffle=config.get(shuffle_validation_data_key))
+    validation_dl = DataLoader(dataset_validation, config['training'][batch_size_key], shuffle=config['data'][shuffle_validation_data_key])
 
-    run_description = input("Describe run: ")
-    wandb.log({"Run description": run_description})
+    #run_description = input("Describe run: ")
+    #wandb.log({"Run description": run_description})
 
     # Define model
-    if config.get(multi_modal_key):
+    if config['model'][multi_modal_key]:
         # Define multi modal model
-        model = config.get(model_key)(
+        model = config['model'][model_key](
             # Input channels for s1
-            in_channels_1=config.get(number_of_input_channels_s1_key),
+            in_channels_1=config['model'][number_of_input_channels_s1_key],
             # Input channels for s2
-            in_channels_2=config.get(number_of_input_channels_s2_key),
-            number_of_classes=config.get(number_of_classes_key),
+            in_channels_2=config['model'][number_of_input_channels_s2_key],
+            number_of_classes=config['model'][number_of_classes_key],
             wandb=wandb
         ).model
     else:
         # Define single modal model (usually s2)
-        model = config.get(model_key)(
-            number_of_input_channels=config.get(number_of_input_channels_s2_key),
-            number_of_classes=config.get(number_of_classes_key),
+        model = config['model'][model_key](
+            number_of_input_channels=config['model'][number_of_input_channels_s2_key],
+            number_of_classes=config['model'][number_of_classes_key],
             wandb=wandb
         ).model
-    wandb.log({"model details": model})
-    wandb.config.update(config)
+    #wandb.log({"model details": model})
+    #wandb.config.update(config)
 
     # Run training routing
     train = Train(

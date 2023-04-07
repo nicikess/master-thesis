@@ -8,7 +8,7 @@ class ResNet:
 
         self.number_of_classes = number_of_classes
         self.model = models.resnet18()
-        wandb.log({"Model size": str(self.model)})
+        #wandb.log({"Model size": str(self.model)})
         self.model.conv1 = nn.Conv2d(
             number_of_input_channels, 64, kernel_size=7, stride=2, padding=3, bias=False
         )
