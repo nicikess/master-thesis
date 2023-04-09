@@ -1,10 +1,8 @@
 import torch.nn as nn
 import torchvision.models as models
 
-from master_thesis_benge_supervised_learning.classification_baseline.config.config import *
-
 class ResNet:
-    def __init__(self, number_of_input_channels, number_of_classes, wandb):
+    def __init__(self, number_of_input_channels, number_of_classes):
 
         self.number_of_classes = number_of_classes
         self.model = models.resnet18()

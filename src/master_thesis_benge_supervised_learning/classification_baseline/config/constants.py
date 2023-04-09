@@ -17,8 +17,9 @@ class RemoteFilesAndDirectoryReferencesSmall():
     # Directories
     SENTINEL_1_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge-s/sentinel-1/s1_npy/"
     SENTINEL_2_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge-s/sentinel-2/s2_npy/"
-    ESA_WORLD_COVER_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge-s/esaworldcover/"
+    ESA_WORLD_COVER_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge-s/esaworldcover/npy"
     ERA5_CSV = "/ds2/remote_sensing/ben-ge/ben-ge-s/ben-ge-s_era-5.csv"
+    GLO_30_DIRECTORY = '/ds2/remote_sensing/ben-ge/ben-ge-s/glo-30_dem'
 
 # Set remote file paths and directories for ben-ge (small)
 class RemoteFilesAndDirectoryReferencesLarge():
@@ -31,8 +32,9 @@ class RemoteFilesAndDirectoryReferencesLarge():
     # Directories
     SENTINEL_1_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge/sentinel-1/"
     SENTINEL_2_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge/sentinel-2/"
-    ESA_WORLD_COVER_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge/esaworldcover/npy/"
+    ESA_WORLD_COVER_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge/esaworldcover/npy"
     ERA5_CSV = "/ds2/remote_sensing/ben-ge/ben-ge/era-5/ben-ge_era-5.csv"
+    GLO_30_DIRECTORY = '/ds2/remote_sensing/ben-ge/ben-ge/glo-30_dem'
 
 # Set local file paths and directories (large)
 class LocalFilesAndDirectoryReferences():
@@ -57,3 +59,29 @@ STACKED_IMAGE_KEY = "stacked_img"
 MULTICLASS_LABEL_KEY = "multiclass_label"
 # File data type
 NUMPY_DTYPE = "float32"
+# Training
+MODEL_KEY = "model"
+MODEL_SIZE_KEY = "model_size"
+MULTI_MODAL_KEY = "multi_modal"
+WEIGHTS_KEY = "weights"
+EPOCHS_KEY = "epochs"
+LEARNING_RATE_KEY = "learning_rate"
+BATCH_SIZE_KEY = "batch_size"
+OPTIMIZER_KEY = "optimizer"
+SCHEDULER_KEY = "scheduler"
+LOSS_KEY = "loss"
+BANDS_KEY = "bands"
+NUMBER_OF_CLASSES_KEY = "number_of_classes"
+NUMBER_OF_INPUT_CHANNELS_S1_KEY = "number_of_input_channels_s1"
+NUMBER_OF_INPUT_CHANNELS_S2_KEY = "number_of_input_channels_s2"
+SEED_KEY = "seed"
+TRANSFORMS_KEY = "transforms"
+NORMALIZATION_VALUE_KEY = "normalization_value"
+LABEL_THRESHOLD_KEY = "label_threshold"
+SCHEDULER_MAX_NUMBER_ITERATIONS_KEY = "scheduler_max_number_iterations"
+SCHEDULER_MIN_LR_KEY = "scheduler_min_lr"
+SAVE_MODEL_KEY = "save_model"
+SHUFFLE_TRAINING_DATA_KEY = "shuffle_training_data"
+SHUFFEL_VALIDATION_DATA_KEY = "shuffle_validation_data"
+DATA_SET_SIZE_SMALL_KEY = "data_set_size_small"
+ENVIRONMENT_KEY = "environment"
