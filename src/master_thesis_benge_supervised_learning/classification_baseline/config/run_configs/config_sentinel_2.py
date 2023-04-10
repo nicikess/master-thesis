@@ -8,7 +8,7 @@ import torchvision.models as models
 from master_thesis_benge_supervised_learning.classification_baseline.training.transforms import Transforms
 
 # Import models
-from master_thesis_benge_supervised_learning.classification_baseline.model.dual_resnet import DualResNet
+from master_thesis_benge_supervised_learning.classification_baseline.model.resnet import ResNet
 
 from master_thesis_benge_supervised_learning.classification_baseline.config.constants import Bands
 
@@ -18,8 +18,8 @@ from master_thesis_benge_supervised_learning.classification_baseline.config.cons
 config = {
     "model": {
     # Model
-        MODEL_KEY: DualResNet,
-        MULTI_MODAL_KEY: True,
+        MODEL_KEY: ResNet,
+        MULTI_MODAL_KEY: False,
         WEIGHTS_KEY: False,
         NUMBER_OF_CLASSES_KEY: 11,
         NUMBER_OF_INPUT_CHANNELS_S1_KEY: 2,
@@ -49,6 +49,6 @@ config = {
     },
     "other": {
         SAVE_MODEL_KEY: False,
-        ENVIRONMENT_KEY: "remote",
+        ENVIRONMENT_KEY: "local",
     }
 }

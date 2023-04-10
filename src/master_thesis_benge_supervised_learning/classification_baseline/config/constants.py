@@ -82,6 +82,12 @@ SCHEDULER_MAX_NUMBER_ITERATIONS_KEY = "scheduler_max_number_iterations"
 SCHEDULER_MIN_LR_KEY = "scheduler_min_lr"
 SAVE_MODEL_KEY = "save_model"
 SHUFFLE_TRAINING_DATA_KEY = "shuffle_training_data"
-SHUFFEL_VALIDATION_DATA_KEY = "shuffle_validation_data"
+SHUFFLE_VALIDATION_DATA_KEY = "shuffle_validation_data"
 DATA_SET_SIZE_SMALL_KEY = "data_set_size_small"
 ENVIRONMENT_KEY = "environment"
+
+# Config keys
+DATA_CONFIG_KEY = "data"
+TRAINING_CONFIG_KEY = "training"
+MODEL_CONFIG_KEY = "model"
+OTHER_CONFIG_KEY = "other"

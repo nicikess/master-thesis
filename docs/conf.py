@@ -89,7 +89,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = "master-thesis-benge-supervised-learning"
+project = "master-thesis-benge"
 copyright = "2023, Nicolas Kesseli"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -228,7 +228,7 @@ html_static_path = ["_static"]
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "master-thesis-benge-supervised-learning-doc"
+htmlhelp_basename = "master-thesis-benge-doc"
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -248,7 +248,7 @@ latex_documents = [
     (
         "index",
         "user_guide.tex",
-        "master-thesis-benge-supervised-learning Documentation",
+        "master-thesis-benge Documentation",
         "Nicolas Kesseli",
         "manual",
     )

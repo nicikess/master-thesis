@@ -3,15 +3,16 @@ from torch.utils.data import DataLoader
 from master_thesis_benge_supervised_learning.classification_baseline.training.train import Train
 import numpy as np
 import wandb
+import torch
 
-from master_thesis_benge_supervised_learning.classification_baseline.config.constants import LocalFilesAndDirectoryReferences
 from master_thesis_benge_supervised_learning.classification_baseline.dataset.ben_ge_s import BenGeS
-from master_thesis_benge_supervised_learning.classification_baseline.config.run_configs.config_sentinel_2_sentinel_1 import *
+from master_thesis_benge_supervised_learning.classification_baseline.config.run_configs.config_sentinel_2 import config
+from master_thesis_benge_supervised_learning.classification_baseline.config.constants import *
 
 
 if __name__ == "__main__":
 
-    environment = config["other"][environment_key]
+    environment = config[OTHER_CONFIG_KEY][ENVIRONMENT_KEY]
 
     if environment == "local":
 
@@ -44,7 +45,7 @@ if __name__ == "__main__":
     if environment == "remote":
 
         # Change import based on dataset size
-        if config["data"][data_set_size_small_key]:
+        if config[DATA_CONFIG_KEY][DATA_SET_SIZE_SMALL_KEY]:
             from master_thesis_benge_supervised_learning.classification_baseline.config.constants import \
                 RemoteFilesAndDirectoryReferencesSmall as RemoteFilesAndDirectoryReferences
         else:
@@ -60,8 +61,8 @@ if __name__ == "__main__":
             era5_data_path=RemoteFilesAndDirectoryReferences.ERA5_CSV,
             esa_world_cover_index_path=RemoteFilesAndDirectoryReferences.ESA_WORLD_COVER_CSV_TRAIN,
             sentinel_1_2_metadata_path=RemoteFilesAndDirectoryReferences.SENTINEL_1_2_METADATA_CSV,
-            s2_bands=config["data"][bands_key],
-            multiclass_label_threshold=config["data"][label_threshold_key]
+            s2_bands=config[DATA_CONFIG_KEY][BANDS_KEY],
+            multiclass_label_threshold=config[DATA_CONFIG_KEY][LABEL_THRESHOLD_KEY]
         )
 
         # Create dataset
@@ -73,15 +74,15 @@ if __name__ == "__main__":
             era5_data_path=RemoteFilesAndDirectoryReferences.ERA5_CSV,
             esa_world_cover_index_path=RemoteFilesAndDirectoryReferences.ESA_WORLD_COVER_CSV_VALIDATION,
             sentinel_1_2_metadata_path=RemoteFilesAndDirectoryReferences.SENTINEL_1_2_METADATA_CSV,
-            s2_bands=config["data"][bands_key],
-            multiclass_label_threshold=config["data"][label_threshold_key]
+            s2_bands=config[DATA_CONFIG_KEY][BANDS_KEY],
+            multiclass_label_threshold=config[DATA_CONFIG_KEY][LABEL_THRESHOLD_KEY]
         )
 
         device = torch.device("cuda")
 
     # Define configurations
-    torch.manual_seed(config["training"][seed_key])
-    np.random.seed(config["training"][seed_key])
+    torch.manual_seed(config[TRAINING_CONFIG_KEY][SEED_KEY])
+    np.random.seed(config[TRAINING_CONFIG_KEY][SEED_KEY])
 
     if environment == "remote":
         wandb.login(key='9da448bfaa162b572403e1551114a17058f249d0')
@@ -90,29 +91,29 @@ if __name__ == "__main__":
     wandb.log({"Dataset size": len(dataset_train)})
 
     # Define training dataloader
-    train_dl = DataLoader(dataset_train, config['training'][batch_size_key], shuffle=config['data'][shuffle_training_data_key])
+    train_dl = DataLoader(dataset_train, config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY], shuffle=config[DATA_CONFIG_KEY][SHUFFLE_TRAINING_DATA_KEY])
 
     # Define validation dataloader
-    validation_dl = DataLoader(dataset_validation, config['training'][batch_size_key], shuffle=config['data'][shuffle_validation_data_key])
+    validation_dl = DataLoader(dataset_validation, config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY], shuffle=config[DATA_CONFIG_KEY][SHUFFLE_VALIDATION_DATA_KEY])
 
     run_description = input("Describe run: ")
     wandb.log({"Run description": run_description})
 
     # Define model
-    if config['model'][multi_modal_key]:
+    if config[MODEL_CONFIG_KEY][MULTI_MODAL_KEY]:
         # Define multi modal model
-        model = config['model'][model_key](
+        model = config[MODEL_CONFIG_KEY][MODEL_KEY](
             # Input channels for s1
-            in_channels_1=config['model'][number_of_input_channels_s1_key],
+            in_channels_1=config[MODEL_CONFIG_KEY][NUMBER_OF_INPUT_CHANNELS_S1_KEY],
             # Input channels for s2
-            in_channels_2=config['model'][number_of_input_channels_s2_key],
-            number_of_classes=config['model'][number_of_classes_key],
+            in_channels_2=config[MODEL_CONFIG_KEY][NUMBER_OF_INPUT_CHANNELS_S2_KEY],
+            number_of_classes=config[MODEL_CONFIG_KEY][NUMBER_OF_CLASSES_KEY],
         )
     else:
         # Define single modal model (usually s2)
-        model = config['model'][model_key](
-            number_of_input_channels=config['model'][number_of_input_channels_s2_key],
-            number_of_classes=config['model'][number_of_classes_key]
+        model = config[MODEL_CONFIG_KEY][MODEL_KEY](
+            number_of_input_channels=config[MODEL_CONFIG_KEY][NUMBER_OF_INPUT_CHANNELS_S2_KEY],
+            number_of_classes=config[MODEL_CONFIG_KEY][NUMBER_OF_CLASSES_KEY]
         ).model
     wandb.log({"model details": model})
     wandb.config.update(config)

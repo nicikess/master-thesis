@@ -7,14 +7,9 @@ from torchmetrics.classification import (
     BinaryF1Score,
 )
 import torch.nn as nn
+import torch
 
-from master_thesis_benge_supervised_learning.classification_baseline.config.constants import (
-    MULTICLASS_LABEL_KEY,
-    S2_IMG_KEY,
-    S1_IMG_KEY,
-    WORLD_COVER_IMG_KEY,
-    ALTITUDE_IMG_KEY
-)
+from master_thesis_benge_supervised_learning.classification_baseline.config.constants import *
 from master_thesis_benge_supervised_learning.classification_baseline.training.train_utils import TrainUtils
 
 class Train:
@@ -35,8 +30,8 @@ class Train:
         self.config = config
 
         # Initialize optimizer and scheduler
-        self.optimizer = config['training'][optimizer_key](model.parameters(), lr=config['training'][learning_rate_key])
-        self.scheduler = config['training'][scheduler_key](self.optimizer, T_max=config['training'][scheduler_max_number_interations_key], eta_min=config['training'][scheduler_min_lr_key])
+        self.optimizer = config[TRAINING_CONFIG_KEY][OPTIMIZER_KEY](model.parameters(), lr=config[TRAINING_CONFIG_KEY][LEARNING_RATE_KEY])
+        self.scheduler = config[TRAINING_CONFIG_KEY][SCHEDULER_KEY](self.optimizer, T_max=config[TRAINING_CONFIG_KEY][SCHEDULER_MAX_NUMBER_ITERATIONS_KEY], eta_min=config[TRAINING_CONFIG_KEY][SCHEDULER_MIN_LR_KEY])
 
     def train(self):
 
@@ -44,16 +39,16 @@ class Train:
         self.model.to(self.device)
 
         # Set metrics
-        metric_accuracy_avg = BinaryAccuracy(num_classes=config.get(number_of_classes_key)).to(self.device)
+        metric_accuracy_avg = BinaryAccuracy(num_classes=self.config[TRAINING_CONFIG_KEY][SCHEDULER_KEY]).to(self.device)
         metric_accuracy_per_class = BinaryAccuracy(multidim_average='samplewise').to(self.device)
-        metric_precision_avg = BinaryPrecision(num_classes=config.get(number_of_classes_key)).to(self.device)
-        metric_recall_avg = BinaryRecall(num_classes=config.get(number_of_classes_key)).to(self.device)
-        metric_f1_avg = BinaryF1Score(num_classes=config.get(number_of_classes_key)).to(self.device)
+        metric_precision_avg = BinaryPrecision(num_classes=self.config[TRAINING_CONFIG_KEY][SCHEDULER_KEY]).to(self.device)
+        metric_recall_avg = BinaryRecall(num_classes=self.config[TRAINING_CONFIG_KEY][SCHEDULER_KEY]).to(self.device)
+        metric_f1_avg = BinaryF1Score(num_classes=self.config[TRAINING_CONFIG_KEY][SCHEDULER_KEY]).to(self.device)
         metric_f1_avg_per_class = BinaryF1Score(multidim_average='samplewise').to(self.device)
 
 
         # For every epoch
-        for epoch in range(config['training'][epochs_key]):
+        for epoch in range(self.config[TRAINING_CONFIG_KEY][EPOCHS_KEY]):
 
             progress = tqdm(
                 enumerate(self.train_dl), desc="Train Loss: ", total=len(self.train_dl)
@@ -75,19 +70,19 @@ class Train:
                 # Transfer data to GPU if available
                 s2_images = ben_ge_data[S2_IMG_KEY].to(self.device)
                 labels = ben_ge_data[MULTICLASS_LABEL_KEY].to(self.device)
-                if config['model'][multi_modal_key]:
+                if self.config[MODEL_CONFIG_KEY][MULTI_MODAL_KEY]:
                     # Transfer other data modalities to GPU if available
                     #s1_images = ben_ge_data[S1_IMG_KEY].to(self.device)
                     world_cover_images = ben_ge_data[WORLD_COVER_IMG_KEY].to(self.device)
 
                 # Make a forward pass
-                if config['model'][multi_modal_key]:
+                if self.config[MODEL_CONFIG_KEY][MULTI_MODAL_KEY]:
                     output = self.model(world_cover_images, s2_images)
                 else:
                     output = self.model(s2_images)
 
                 # Compute the loss
-                loss = config['training'][loss_key](output, labels)
+                loss = self.config[TRAINING_CONFIG_KEY][LOSS_KEY](output, labels)
 
                 # Clear the gradients
                 self.optimizer.zero_grad()
@@ -168,12 +163,12 @@ class Train:
                     # Transfer data to GPU if available
                     s2_images = ben_ge_data[S2_IMG_KEY].to(self.device)
                     labels = ben_ge_data[MULTICLASS_LABEL_KEY].to(self.device)
-                    if config['model'][multi_modal_key]:
+                    if self.config[MODEL_CONFIG_KEY][MULTI_MODAL_KEY]:
                         #s1_images = ben_ge_data[S1_IMG_KEY].to(self.device)
                         world_cover_images = ben_ge_data[WORLD_COVER_IMG_KEY].to(self.device)
 
                     # Make a forward pass
-                    if config['model'][multi_modal_key]:
+                    if self.config[MODEL_CONFIG_KEY][MULTI_MODAL_KEY]:
                         output = self.model(world_cover_images, s2_images)
                     else:
                         output = self.model(s2_images)
@@ -209,7 +204,7 @@ class Train:
                 wandb.log({"Epoch val f1 score": epoch_val_f1_score})
 
 
-            if config['other'][save_model_key]:
+            if self.config[OTHER_CONFIG_KEY][SAVE_MODEL_KEY]:
                 if epoch == 0:
                     best_val = epoch_val_f1_score
                 else:
