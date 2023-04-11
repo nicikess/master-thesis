@@ -24,14 +24,14 @@ class RemoteFilesAndDirectoryReferencesSmall():
 # Set remote file paths and directories for ben-ge (small)
 class RemoteFilesAndDirectoryReferencesLarge():
     # Files
-    ESA_WORLD_COVER_CSV_TRAIN = "/ds2/remote_sensing/ben-ge/ben-ge/data-index/ben-ge-train.csv"
-    ESA_WORLD_COVER_CSV_VALIDATION = "/ds2/remote_sensing/ben-ge/ben-ge/data-index/ben-ge-validation.csv"
-    ESA_WORLD_COVER_CSV_TEST = "/ds2/remote_sensing/ben-ge/ben-ge/data-index/ben-ge-test.csv"
+    ESA_WORLD_COVER_CSV_TRAIN = "/netscratch2/nkesseli/master-thesis-benge/src/master_thesis_benge_supervised_learning/scripts/data-split/data-split-folder/ben-ge-train20.csv"
+    ESA_WORLD_COVER_CSV_VALIDATION = "/netscratch2/nkesseli/master-thesis-benge/src/master_thesis_benge_supervised_learning/scripts/data-split/data-split-folder/ben-ge-validation20.csv"
+    ESA_WORLD_COVER_CSV_TEST = "/netscratch2/nkesseli/master-thesis-benge/src/master_thesis_benge_supervised_learning/scripts/data-split/data-split-folder/ben-ge-test20.csv"
     SENTINEL_1_2_METADATA_CSV = "/ds2/remote_sensing/ben-ge/ben-ge/ben-ge_meta.csv"
 
     # Directories
     SENTINEL_1_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge/sentinel-1/"
-    SENTINEL_2_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge/sentinel-2/"
+    SENTINEL_2_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge/sentinel-2"
     ESA_WORLD_COVER_DIRECTORY = "/ds2/remote_sensing/ben-ge/ben-ge/esaworldcover/npy"
     ERA5_CSV = "/ds2/remote_sensing/ben-ge/ben-ge/era-5/ben-ge_era-5.csv"
     GLO_30_DIRECTORY = '/ds2/remote_sensing/ben-ge/ben-ge/glo-30_dem'
@@ -74,6 +74,7 @@ BANDS_KEY = "bands"
 NUMBER_OF_CLASSES_KEY = "number_of_classes"
 NUMBER_OF_INPUT_CHANNELS_S1_KEY = "number_of_input_channels_s1"
 NUMBER_OF_INPUT_CHANNELS_S2_KEY = "number_of_input_channels_s2"
+NUMBER_OF_INPUT_CHANNELS_ALTITUDE_KEY = "number_of_input_channels_altitude"
 SEED_KEY = "seed"
 TRANSFORMS_KEY = "transforms"
 NORMALIZATION_VALUE_KEY = "normalization_value"

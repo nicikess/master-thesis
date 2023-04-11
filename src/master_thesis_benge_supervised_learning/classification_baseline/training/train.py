@@ -72,14 +72,14 @@ class Train:
                 labels = ben_ge_data[MULTICLASS_LABEL_KEY].to(self.device)
                 if self.config[MODEL_CONFIG_KEY][MULTI_MODAL_KEY]:
                     # Transfer other data modalities to GPU if available
-                    #s1_images = ben_ge_data[S1_IMG_KEY].to(self.device)
-                    world_cover_images = ben_ge_data[WORLD_COVER_IMG_KEY].to(self.device)
-                    #altitude_images = ben_ge_data[ALTITUDE_IMG_KEY].to(self.device)
+                    s1_images = ben_ge_data[S1_IMG_KEY].to(self.device)
+                    #world_cover_images = ben_ge_data[WORLD_COVER_IMG_KEY].to(self.device)
+                    altitude_images = ben_ge_data[ALTITUDE_IMG_KEY].to(self.device)
 
 
                 # Make a forward pass
                 if self.config[MODEL_CONFIG_KEY][MULTI_MODAL_KEY]:
-                    output = self.model(world_cover_images, s2_images)
+                    output = self.model(s1_images, s2_images, altitude_images)
                 else:
                     output = self.model(s2_images)
 
@@ -166,13 +166,13 @@ class Train:
                     s2_images = ben_ge_data[S2_IMG_KEY].to(self.device)
                     labels = ben_ge_data[MULTICLASS_LABEL_KEY].to(self.device)
                     if self.config[MODEL_CONFIG_KEY][MULTI_MODAL_KEY]:
-                        #s1_images = ben_ge_data[S1_IMG_KEY].to(self.device)
-                        world_cover_images = ben_ge_data[WORLD_COVER_IMG_KEY].to(self.device)
-                        #altitude_images = ben_ge_data[ALTITUDE_IMG_KEY].to(self.device)
+                        s1_images = ben_ge_data[S1_IMG_KEY].to(self.device)
+                        #world_cover_images = ben_ge_data[WORLD_COVER_IMG_KEY].to(self.device)
+                        altitude_images = ben_ge_data[ALTITUDE_IMG_KEY].to(self.device)
 
                     # Make a forward pass
                     if self.config[MODEL_CONFIG_KEY][MULTI_MODAL_KEY]:
-                        output = self.model(world_cover_images, s2_images)
+                        output = self.model(s1_images, s2_images, altitude_images)
                     else:
                         output = self.model(s2_images)
 

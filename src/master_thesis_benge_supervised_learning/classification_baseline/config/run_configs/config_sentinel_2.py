@@ -22,7 +22,6 @@ config = {
         MULTI_MODAL_KEY: False,
         WEIGHTS_KEY: False,
         NUMBER_OF_CLASSES_KEY: 11,
-        NUMBER_OF_INPUT_CHANNELS_S1_KEY: 2,
         NUMBER_OF_INPUT_CHANNELS_S2_KEY: 12,
     },
     "training": {
@@ -43,13 +42,13 @@ config = {
         TRANSFORMS_KEY: Transforms().transform,
         NORMALIZATION_VALUE_KEY: 10000,
         LABEL_THRESHOLD_KEY: 0.05,
-        DATA_SET_SIZE_SMALL_KEY: True,
+        DATA_SET_SIZE_SMALL_KEY: False,
         SHUFFLE_TRAINING_DATA_KEY: True,
         SHUFFLE_VALIDATION_DATA_KEY: True,
     },
     "other": {
         CONFIG_NAME_KEY: "sentinel_2",
         SAVE_MODEL_KEY: False,
-        ENVIRONMENT_KEY: "local",
+        ENVIRONMENT_KEY: "remote",
     }
 }

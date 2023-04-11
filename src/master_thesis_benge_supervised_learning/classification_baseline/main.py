@@ -6,7 +6,7 @@ import wandb
 import torch
 
 from master_thesis_benge_supervised_learning.classification_baseline.dataset.ben_ge_s import BenGeS
-from master_thesis_benge_supervised_learning.classification_baseline.config.run_configs.config_sentinel_2_world_cover import config
+from master_thesis_benge_supervised_learning.classification_baseline.config.run_configs.config_sentinel_2 import config
 from master_thesis_benge_supervised_learning.classification_baseline.config.constants import *
 
 
@@ -92,10 +92,10 @@ if __name__ == "__main__":
     wandb.log({"Dataset size": len(dataset_train)})
 
     # Define training dataloader
-    train_dl = DataLoader(dataset_train, config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY], shuffle=config[DATA_CONFIG_KEY][SHUFFLE_TRAINING_DATA_KEY])
+    train_dl = DataLoader(dataset_train, config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY], shuffle=config[DATA_CONFIG_KEY][SHUFFLE_TRAINING_DATA_KEY], num_workers=4)
 
     # Define validation dataloader
-    validation_dl = DataLoader(dataset_validation, config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY], shuffle=config[DATA_CONFIG_KEY][SHUFFLE_VALIDATION_DATA_KEY])
+    validation_dl = DataLoader(dataset_validation, config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY], shuffle=config[DATA_CONFIG_KEY][SHUFFLE_VALIDATION_DATA_KEY], num_workers=4)
 
     run_description = input("Describe run: ")
     wandb.log({"Run description": run_description})
@@ -108,6 +108,7 @@ if __name__ == "__main__":
             in_channels_1=config[MODEL_CONFIG_KEY][NUMBER_OF_INPUT_CHANNELS_S1_KEY],
             # Input channels for s2
             in_channels_2=config[MODEL_CONFIG_KEY][NUMBER_OF_INPUT_CHANNELS_S2_KEY],
+            in_channels_3=config[MODEL_CONFIG_KEY][NUMBER_OF_INPUT_CHANNELS_ALTITUDE_KEY],
             number_of_classes=config[MODEL_CONFIG_KEY][NUMBER_OF_CLASSES_KEY],
         )
     else:
