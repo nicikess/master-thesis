@@ -6,7 +6,7 @@ import wandb
 import torch
 
 from master_thesis_benge_supervised_learning.classification_baseline.dataset.ben_ge_s import BenGeS
-from master_thesis_benge_supervised_learning.classification_baseline.config.run_configs.config_sentinel_2 import config
+from master_thesis_benge_supervised_learning.classification_baseline.config.run_configs.config_sentinel_2_world_cover import config
 from master_thesis_benge_supervised_learning.classification_baseline.config.constants import *
 
 
@@ -88,6 +88,7 @@ if __name__ == "__main__":
         wandb.login(key='9da448bfaa162b572403e1551114a17058f249d0')
         wandb.init(project="master-thesis-experiments", entity="nicikess", config=config)
 
+    wandb.log({"Config reference: ": config[OTHER_CONFIG_KEY][CONFIG_NAME_KEY]})
     wandb.log({"Dataset size": len(dataset_train)})
 
     # Define training dataloader

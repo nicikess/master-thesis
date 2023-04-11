@@ -74,6 +74,8 @@ class Train:
                     # Transfer other data modalities to GPU if available
                     #s1_images = ben_ge_data[S1_IMG_KEY].to(self.device)
                     world_cover_images = ben_ge_data[WORLD_COVER_IMG_KEY].to(self.device)
+                    #altitude_images = ben_ge_data[ALTITUDE_IMG_KEY].to(self.device)
+
 
                 # Make a forward pass
                 if self.config[MODEL_CONFIG_KEY][MULTI_MODAL_KEY]:
@@ -166,6 +168,7 @@ class Train:
                     if self.config[MODEL_CONFIG_KEY][MULTI_MODAL_KEY]:
                         #s1_images = ben_ge_data[S1_IMG_KEY].to(self.device)
                         world_cover_images = ben_ge_data[WORLD_COVER_IMG_KEY].to(self.device)
+                        #altitude_images = ben_ge_data[ALTITUDE_IMG_KEY].to(self.device)
 
                     # Make a forward pass
                     if self.config[MODEL_CONFIG_KEY][MULTI_MODAL_KEY]:

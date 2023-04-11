@@ -22,7 +22,7 @@ config = {
         MULTI_MODAL_KEY: True,
         WEIGHTS_KEY: False,
         NUMBER_OF_CLASSES_KEY: 11,
-        NUMBER_OF_INPUT_CHANNELS_S1_KEY: 2,
+        NUMBER_OF_INPUT_CHANNELS_S1_KEY: 1,
         NUMBER_OF_INPUT_CHANNELS_S2_KEY: 12,
     },
     "training": {
@@ -48,6 +48,7 @@ config = {
         SHUFFLE_VALIDATION_DATA_KEY: True,
     },
     "other": {
+        CONFIG_NAME_KEY: "sentinel_2_world_cover",
         SAVE_MODEL_KEY: False,
         ENVIRONMENT_KEY: "remote",
     }

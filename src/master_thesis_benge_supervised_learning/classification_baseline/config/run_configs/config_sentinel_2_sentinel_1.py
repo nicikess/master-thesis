@@ -48,6 +48,7 @@ config = {
         SHUFFLE_VALIDATION_DATA_KEY: True,
     },
     "other": {
+        CONFIG_NAME_KEY: "sentinel_2_sentinel_1",
         SAVE_MODEL_KEY: False,
         ENVIRONMENT_KEY: "remote",
     }

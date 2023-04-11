@@ -91,3 +91,6 @@ DATA_CONFIG_KEY = "data"
 TRAINING_CONFIG_KEY = "training"
 MODEL_CONFIG_KEY = "model"
 OTHER_CONFIG_KEY = "other"
+
+# Config name key
+CONFIG_NAME_KEY = "config_name"
