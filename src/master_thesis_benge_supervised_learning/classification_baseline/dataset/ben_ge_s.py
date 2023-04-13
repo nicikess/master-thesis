@@ -73,19 +73,19 @@ class BenGeS(Dataset):
         patch_id = self.esa_world_cover_index.loc[:, "patch_id"][idx]
 
         # Load and transform sentinel 1, sentinel 2, world cover and altitude images
-        #img_s1 = self._transform_s1_image(self._load_sentinel_1_image(patch_id))
+        img_s1 = self._transform_s1_image(self._load_sentinel_1_image(patch_id))
         img_s2 = self._transform_s2_image(self._load_sentinel_2_image(patch_id))
         #img_world_cover = self._transform_world_cover_image(self._load_world_cover_image(patch_id))
-        #img_altitude = self._transform_altitude_image(self._load_altitude_image(patch_id))
+        img_altitude = self._transform_altitude_image(self._load_altitude_image(patch_id))
  
         # TODO Climate data
 
         # Define output tensor
         output_tensor = {
-            #S1_IMG_KEY: img_s1,
+            S1_IMG_KEY: img_s1,
             S2_IMG_KEY: img_s2,
             #WORLD_COVER_IMG_KEY: img_world_cover,
-            #ALTITUDE_IMG_KEY: img_altitude,
+            ALTITUDE_IMG_KEY: img_altitude,
         }
         if self.stacked_modalities:
             output_tensor = {

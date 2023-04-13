@@ -6,7 +6,7 @@ import wandb
 import torch
 
 from master_thesis_benge_supervised_learning.classification_baseline.dataset.ben_ge_s import BenGeS
-from master_thesis_benge_supervised_learning.classification_baseline.config.run_configs.config_sentinel_2 import config
+from master_thesis_benge_supervised_learning.classification_baseline.config.run_configs.config_sentinel_1_sentinel_2_altitude import config
 from master_thesis_benge_supervised_learning.classification_baseline.config.constants import *
 
 
