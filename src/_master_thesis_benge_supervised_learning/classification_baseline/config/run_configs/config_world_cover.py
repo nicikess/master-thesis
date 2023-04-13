@@ -5,26 +5,24 @@ import torch
 import torchvision.models as models
 
 # Import transforms
-from master_thesis_benge_supervised_learning.classification_baseline.training.transforms import Transforms
+from _master_thesis_benge_supervised_learning.classification_baseline.training.transforms import Transforms
 
 # Import models
-from master_thesis_benge_supervised_learning.classification_baseline.model.triple_resnet import TripleResNet
+from _master_thesis_benge_supervised_learning.classification_baseline.model.resnet import ResNet
 
-from master_thesis_benge_supervised_learning.classification_baseline.config.constants import Bands
+from _master_thesis_benge_supervised_learning.classification_baseline.config.constants import Bands
 
 # Import constants
-from master_thesis_benge_supervised_learning.classification_baseline.config.constants import *
+from _master_thesis_benge_supervised_learning.classification_baseline.config.constants import *
 
 config = {
     "model": {
     # Model
-        MODEL_KEY: TripleResNet,
-        MULTI_MODAL_KEY: True,
+        MODEL_KEY: ResNet,
+        MULTI_MODAL_KEY: False,
         WEIGHTS_KEY: False,
         NUMBER_OF_CLASSES_KEY: 11,
-        NUMBER_OF_INPUT_CHANNELS_S1_KEY: 2,
-        NUMBER_OF_INPUT_CHANNELS_S2_KEY: 12,
-        NUMBER_OF_INPUT_CHANNELS_ALTITUDE_KEY: 3
+        NUMBER_OF_INPUT_CHANNELS_S2_KEY: 1,
     },
     "training": {
         # Training
@@ -44,12 +42,12 @@ config = {
         TRANSFORMS_KEY: Transforms().transform,
         NORMALIZATION_VALUE_KEY: 10000,
         LABEL_THRESHOLD_KEY: 0.05,
-        DATA_SET_SIZE_SMALL_KEY: False,
+        DATA_SET_SIZE_SMALL_KEY: True,
         SHUFFLE_TRAINING_DATA_KEY: True,
         SHUFFLE_VALIDATION_DATA_KEY: True,
     },
     "other": {
-        CONFIG_NAME_KEY: "sentinel_1_sentinel_2_altitude",
+        CONFIG_NAME_KEY: "world_cover",
         SAVE_MODEL_KEY: False,
         ENVIRONMENT_KEY: "remote",
     }

@@ -11,7 +11,7 @@ import time
 # PyTorch
 from torch.utils.data import Dataset
 
-from master_thesis_benge_supervised_learning.classification_baseline.config.constants import (
+from _master_thesis_benge_supervised_learning.classification_baseline.config.constants import (
     Bands,
     S1_IMG_KEY,
     S2_IMG_KEY,

@@ -9,8 +9,8 @@ from torchmetrics.classification import (
 import torch.nn as nn
 import torch
 
-from master_thesis_benge_supervised_learning.classification_baseline.config.constants import *
-from master_thesis_benge_supervised_learning.classification_baseline.training.train_utils import TrainUtils
+from _master_thesis_benge_supervised_learning.classification_baseline.config.constants import *
+from _master_thesis_benge_supervised_learning.classification_baseline.training.train_utils import TrainUtils
 
 class Train:
     def __init__(
