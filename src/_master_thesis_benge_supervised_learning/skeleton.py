@@ -24,7 +24,7 @@ import argparse
 import logging
 import sys
 
-from master_thesis_benge_supervised_learning import __version__
+from _master_thesis_benge_supervised_learning import __version__
 
 __author__ = "Nicolas Kesseli"
 __copyright__ = "Nicolas Kesseli"

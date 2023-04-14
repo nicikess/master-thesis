@@ -75,16 +75,18 @@ class BenGeS(Dataset):
         # Load and transform sentinel 1, sentinel 2, world cover and altitude images
         img_s1 = self._transform_s1_image(self._load_sentinel_1_image(patch_id))
         img_s2 = self._transform_s2_image(self._load_sentinel_2_image(patch_id))
-        #img_world_cover = self._transform_world_cover_image(self._load_world_cover_image(patch_id))
-        img_altitude = self._transform_altitude_image(self._load_altitude_image(patch_id))
- 
+        # img_world_cover = self._transform_world_cover_image(self._load_world_cover_image(patch_id))
+        img_altitude = self._transform_altitude_image(
+            self._load_altitude_image(patch_id)
+        )
+
         # TODO Climate data
 
         # Define output tensor
         output_tensor = {
             S1_IMG_KEY: img_s1,
             S2_IMG_KEY: img_s2,
-            #WORLD_COVER_IMG_KEY: img_world_cover,
+            # WORLD_COVER_IMG_KEY: img_world_cover,
             ALTITUDE_IMG_KEY: img_altitude,
         }
         if self.stacked_modalities:
@@ -101,11 +103,16 @@ class BenGeS(Dataset):
         file_name_s1 = self.sentinel_1_2_metadata.loc[
             self.sentinel_1_2_metadata["patch_id"] == patch_id, "patch_id_s1"
         ].values[0]
-        path_image_s1 = os.path.join(self.root_dir_s1, file_name_s1, file_name_s1) + "_all_bands.npy"
+        path_image_s1 = (
+            os.path.join(self.root_dir_s1, file_name_s1, file_name_s1)
+            + "_all_bands.npy"
+        )
         return np.load(path_image_s1)
 
     def _load_sentinel_2_image(self, patch_id):
-        path_image_s2 = os.path.join(self.root_dir_s2, patch_id, patch_id) + "_all_bands.npy"
+        path_image_s2 = (
+            os.path.join(self.root_dir_s2, patch_id, patch_id) + "_all_bands.npy"
+        )
         img_s2 = np.load(path_image_s2)
         if self.s2_bands == Bands.RGB:
             img_s2 = img_s2[[3, 2, 1], :, :]
@@ -117,7 +124,9 @@ class BenGeS(Dataset):
         return img_s2
 
     def _load_world_cover_image(self, patch_id):
-        path_image_world_cover = os.path.join(self.root_dir_world_cover, patch_id) + "_esaworldcover.npy"
+        path_image_world_cover = (
+            os.path.join(self.root_dir_world_cover, patch_id) + "_esaworldcover.npy"
+        )
         world_cover_img = np.load(path_image_world_cover)
         return world_cover_img
 
@@ -146,7 +155,7 @@ class BenGeS(Dataset):
         img = (img / 10.0) - 1
         img = img.astype(NUMPY_DTYPE)
         return img
-    
+
     def _transform_altitude_image(self, img: np.array):
         img = img.astype(NUMPY_DTYPE)
         return img

@@ -3,7 +3,6 @@ from classification_baseline.display_example_image import DisplayExampleImage
 import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
-
     txt = input("Enter description for training run: ")
 
     '''

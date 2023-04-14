@@ -1,8 +1,13 @@
 from torch import nn
 from master_thesis_benge_supervised_learning.segmentation.model.unet_blocks import Down
 from master_thesis_benge_supervised_learning.segmentation.model.unet_blocks import Up
-from master_thesis_benge_supervised_learning.segmentation.model.unet_blocks import DoubleConv
-from master_thesis_benge_supervised_learning.segmentation.model.unet_blocks import OutConv
+from master_thesis_benge_supervised_learning.segmentation.model.unet_blocks import (
+    DoubleConv,
+)
+from master_thesis_benge_supervised_learning.segmentation.model.unet_blocks import (
+    OutConv,
+)
+
 
 class UNet(nn.Module):
     def __init__(self, in_channels, n_classes):

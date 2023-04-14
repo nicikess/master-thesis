@@ -1,7 +1,7 @@
 import wandb
 
-class TrainUtils:
 
+class TrainUtils:
     def caluculate_and_log_accuracy_per_class_training(accuracy):
         for i in range(len(accuracy)):
             wandb.log({"Accuracy class training " + str(i): accuracy[i]})

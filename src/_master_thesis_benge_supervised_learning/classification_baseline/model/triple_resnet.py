@@ -2,12 +2,13 @@ from torch import nn
 import numpy as np
 import torch
 import torchvision.models as models
+
+
 class ResNet:
     def __init__(self, number_of_input_channels, number_of_classes):
-
         self.number_of_classes = number_of_classes
         self.model = models.resnet18()
-        #wandb.log({"Model size": str(self.model)})
+        # wandb.log({"Model size": str(self.model)})
         self.model.conv1 = nn.Conv2d(
             number_of_input_channels, 64, kernel_size=7, stride=2, padding=3, bias=False
         )
@@ -22,6 +23,7 @@ class ResNet:
             nn.ReLU(),
             nn.Dropout(0.2),
         )
+
 
 # Create the last convolution block
 class LinearFC(nn.Module):
@@ -52,7 +54,7 @@ class TripleResNet(nn.Module):
         x1 = self.res_net_1(x1)
         # We process Sentinel2 input
         x2 = self.res_net_2(x2)
-        # Altitude data
+        # Altitude data
         x3 = self.res_net_3(x3)
 
         x = torch.cat([x1, x2, x3], dim=1)

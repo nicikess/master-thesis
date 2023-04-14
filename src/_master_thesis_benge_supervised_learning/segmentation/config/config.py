@@ -4,7 +4,9 @@ import pandas as pd
 import torch
 import torchvision.models as models
 
-from master_thesis_benge_supervised_learning.classification_baseline.config.constants import Bands
+from master_thesis_benge_supervised_learning.classification_baseline.config.constants import (
+    Bands,
+)
 
 model_key = "model"
 model_size_key = "model_size"
@@ -34,7 +36,7 @@ environment_key = "environment"
 
 config = {
     # Model
-    #model_key: ResNet,
+    # model_key: ResNet,
     multi_modal_key: False,
     weights_key: False,
     number_of_classes_key: 11,
@@ -52,7 +54,7 @@ config = {
     scheduler_min_lr_key: 0,
     # Data
     bands_key: Bands.RGB,
-    #transforms_key: Transforms().transform,
+    # transforms_key: Transforms().transform,
     normalization_value_key: 10000,
     label_threshold_key: 0.3,
     data_set_size_small_key: True,
@@ -65,15 +67,14 @@ config = {
 
 config_recommendation = {
     "model": {
-    # Model
-        #model_key: ResNet,
+        # Model
+        # model_key: ResNet,
         multi_modal_key: False,
         weights_key: False,
         number_of_classes_key: 11,
         number_of_input_channels_s1_key: 2,
         number_of_input_channels_s2_key: 3,
     },
-
     # Training
     epochs_key: 20,
     learning_rate_key: 0.001,
@@ -87,7 +88,7 @@ config_recommendation = {
     "data": {
         # Data
         bands_key: Bands.RGB,
-        #transforms_key: Transforms().transform,
+        # transforms_key: Transforms().transform,
         normalization_value_key: 10000,
         label_threshold_key: 0.3,
         data_set_size_small_key: True,
@@ -100,8 +101,11 @@ config_recommendation = {
 }
 
 
-if __name__ == '__main__':
-    from master_thesis_benge_supervised_learning.classification_baseline.dataset.ben_ge_s import BenGeS
+if __name__ == "__main__":
+    from master_thesis_benge_supervised_learning.classification_baseline.dataset.ben_ge_s import (
+        BenGeS,
+    )
+
     data = BenGeS(
         esa_world_cover_data=pd.DataFrame({"0": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}),
         **config_recommendation["data"],

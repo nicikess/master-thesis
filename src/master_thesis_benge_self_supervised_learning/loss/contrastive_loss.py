@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+
 class ContrastiveLoss(nn.Module):
     """
     Vanilla Contrastive loss, also called InfoNceLoss as in SimCLR paper
@@ -13,7 +15,9 @@ class ContrastiveLoss(nn.Module):
 
     def calc_similarity_batch(self, a, b):
         representations = torch.cat([a, b], dim=0)
-        return F.cosine_similarity(representations.unsqueeze(1), representations.unsqueeze(0), dim=2)
+        return F.cosine_similarity(
+            representations.unsqueeze(1), representations.unsqueeze(0), dim=2
+        )
 
     def forward(self, proj_1, proj_2):
         """
@@ -35,9 +39,13 @@ class ContrastiveLoss(nn.Module):
 
         nominator = torch.exp(positives / self.temperature)
 
-        self.mask = (~torch.eye(nominator.size(dim=0), nominator.size(dim=0), dtype=bool)).float()
+        self.mask = (
+            ~torch.eye(nominator.size(dim=0), nominator.size(dim=0), dtype=bool)
+        ).float()
 
-        denominator = device_as(self.mask, similarity_matrix) * torch.exp(similarity_matrix / self.temperature)
+        denominator = device_as(self.mask, similarity_matrix) * torch.exp(
+            similarity_matrix / self.temperature
+        )
 
         all_losses = -torch.log(nominator / torch.sum(denominator, dim=1))
 
