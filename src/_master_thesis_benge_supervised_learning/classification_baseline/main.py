@@ -13,7 +13,8 @@ from _master_thesis_benge_supervised_learning.classification_baseline.config.con
 
 from _master_thesis_benge_supervised_learning.classification_baseline.config.constants import (
     OTHER_CONFIG_KEY,
-    S1_IMG_KEY,
+    S1_MODALITY_KEY,
+    S2_MODALITY_KEY,
     MODEL_CONFIG_KEY,
     MODALITIES_CONFIG_KEY,
     DATA_CONFIG_KEY,
@@ -26,9 +27,7 @@ from _master_thesis_benge_supervised_learning.classification_baseline.config.con
 )
 
 from remote_sensing_core.ben_ge.ben_ge_dataset import BenGe
-from _master_thesis_benge_supervised_learning.classification_baseline.config.config_runs.config_files_and_directories import (
-    LocalFilesAndDirectoryReferences,
-)
+from _master_thesis_benge_supervised_learning.classification_baseline.config.config_runs.config_files_and_directories import RemoteFilesAndDirectoryReferences as FileAndDirectoryReferences
 
 if __name__ == "__main__":
     environment = training_config[OTHER_CONFIG_KEY][ENVIRONMENT_KEY]
@@ -40,14 +39,14 @@ if __name__ == "__main__":
         device = torch.device("cuda")
 
     dataset_train = BenGe(
-        data_index_path=LocalFilesAndDirectoryReferences.ESA_WORLD_COVER_CSV_TRAIN,
-        sentinel_1_2_metadata_path=LocalFilesAndDirectoryReferences.SENTINEL_1_2_METADATA_CSV,
+        data_index_path=FileAndDirectoryReferences.ESA_WORLD_COVER_CSV_TRAIN,
+        sentinel_1_2_metadata_path=FileAndDirectoryReferences.SENTINEL_1_2_METADATA_CSV,
         **modalities_config
     )
 
     dataset_validation = BenGe(
-        data_index_path=LocalFilesAndDirectoryReferences.ESA_WORLD_COVER_CSV_VALIDATION,
-        sentinel_1_2_metadata_path=LocalFilesAndDirectoryReferences.SENTINEL_1_2_METADATA_CSV,
+        data_index_path=FileAndDirectoryReferences.ESA_WORLD_COVER_CSV_VALIDATION,
+        sentinel_1_2_metadata_path=FileAndDirectoryReferences.SENTINEL_1_2_METADATA_CSV,
         **modalities_config
     )
 
@@ -55,6 +54,7 @@ if __name__ == "__main__":
     torch.manual_seed(training_config[TRAINING_CONFIG_KEY][SEED_KEY])
     np.random.seed(training_config[TRAINING_CONFIG_KEY][SEED_KEY])
 
+    '''
     if environment == "remote":
         wandb.login(key="9da448bfaa162b572403e1551114a17058f249d0")
         wandb.init(
@@ -62,6 +62,7 @@ if __name__ == "__main__":
             entity="nicikess",
             config=training_config,
         )
+    '''
 
     # wandb.log({"Dataset size": len(dataset_train)})
     # wandb.log({"Dataset modalities": str(dataset_train)})
@@ -82,11 +83,22 @@ if __name__ == "__main__":
         num_workers=4,
     )
 
-    run_description = input("Describe run: ")
+    #run_description = input("Describe run: ")
     # wandb.log({"Run description": run_description})
+    
+    modalities = dataset_train._get_modalities()
 
-    sample = dataset_train[0]
+    # Create a dictionary that maps each modality to the number of input channels
+    channel_modalities = {f"in_channels_{i+1}": str(np.shape(dataset_train[0][modality])[0])
+                        for i, modality in enumerate(modalities)}
 
+    for key, item in channel_modalities.items():
+        print(f'key: {key} item: {item}')
+
+    #sample = np.shape(dataset_train[0][S2_MODALITY_KEY])[0]
+    #print(sample)
+
+    '''
     # Define model
     model = training_config[MODEL_CONFIG_KEY][MODEL_KEY]()
         # Define multi modal model
@@ -98,12 +110,6 @@ if __name__ == "__main__":
             in_channels_3=config[MODEL_CONFIG_KEY][NUMBER_OF_INPUT_CHANNELS_ALTITUDE_KEY],
             number_of_classes=config[MODEL_CONFIG_KEY][NUMBER_OF_CLASSES_KEY],
         )
-    else:
-        # Define single modal model (usually s2)
-        model = config[MODEL_CONFIG_KEY][MODEL_KEY](
-            number_of_input_channels=config[MODEL_CONFIG_KEY][NUMBER_OF_INPUT_CHANNELS_S2_KEY],
-            number_of_classes=config[MODEL_CONFIG_KEY][NUMBER_OF_CLASSES_KEY]
-        ).model
     wandb.log({"model details": model})
     wandb.config.update(config)
 
@@ -117,3 +123,4 @@ if __name__ == "__main__":
         device=device,
         config=config
     ).train()
+    '''

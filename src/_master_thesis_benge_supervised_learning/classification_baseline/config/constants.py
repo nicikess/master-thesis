@@ -15,10 +15,11 @@ class Task(Enum):
 
 
 # Modalities
-S1_IMG_KEY = "s1_img"
-S2_IMG_KEY = "s2_img"
-WORLD_COVER_IMG_KEY = "world_cover_img"
-ALTITUDE_IMG_KEY = "altitude_img"
+S1_MODALITY_KEY = "sentinel_1"
+S2_MODALITY_KEY = "sentinel_2"
+WORLD_COVER_MODALITY_KEY = "esa_worldcover"
+ALTITUDE_MODALITY_KEY = "glo_30_dem"
+ERA_5_MODALITY_KEY = "era_5"
 STACKED_IMAGE_KEY = "stacked_img"
 
 # Labels

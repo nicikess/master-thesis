@@ -38,9 +38,7 @@ from remote_sensing_core.ben_ge.modalities.sentinel_1 import Sentinel1Modality
 from remote_sensing_core.ben_ge.modalities.sentinel_2 import Sentinel2Modality
 from remote_sensing_core.ben_ge.modalities.esa_worldcover import EsaWorldCoverModality
 
-from _master_thesis_benge_supervised_learning.classification_baseline.config.config_runs.config_files_and_directories import (
-    LocalFilesAndDirectoryReferences,
-)
+from _master_thesis_benge_supervised_learning.classification_baseline.config.config_runs.config_files_and_directories import RemoteFilesAndDirectoryReferences as FileAndDirectoryReferences
 
 training_config = {
     "task": {
@@ -70,22 +68,22 @@ training_config = {
     },
     "other": {
         SAVE_MODEL_KEY: False,
-        ENVIRONMENT_KEY: "local",
+        ENVIRONMENT_KEY: "remote",
     },
 }
 
 # Modalities
 sentinel_1_modality = Sentinel1Modality(
-    data_root_path=LocalFilesAndDirectoryReferences.SENTINEL_1_DIRECTORY,
+    data_root_path=FileAndDirectoryReferences.SENTINEL_1_DIRECTORY,
 )
 sentinel_2_modality = Sentinel2Modality(
-    data_root_path=LocalFilesAndDirectoryReferences.SENTINEL_2_DIRECTORY,
+    data_root_path=FileAndDirectoryReferences.SENTINEL_2_DIRECTORY,
     s2_bands=training_config["data"][BANDS_KEY],
     transform=training_config["data"][TRANSFORMS_KEY],
 )
 esa_world_cover_modality = EsaWorldCoverModality(
-    data_root_path=LocalFilesAndDirectoryReferences.ESA_WORLD_COVER_DIRECTORY,
-    esa_world_cover_index_path=LocalFilesAndDirectoryReferences.ESA_WORLD_COVER_CSV_TRAIN,
+    data_root_path=FileAndDirectoryReferences.ESA_WORLD_COVER_DIRECTORY,
+    esa_world_cover_index_path=FileAndDirectoryReferences.ESA_WORLD_COVER_CSV_TRAIN,
 )
 modalities_config = {
     "sentinel_1_modality": sentinel_1_modality,
