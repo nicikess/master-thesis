@@ -6,12 +6,21 @@ from _master_thesis_benge_supervised_learning.classification_baseline.training.t
 )
 
 # Import models
+from _master_thesis_benge_supervised_learning.classification_baseline.model.resnet import (
+    ResNet,
+)
+
 from _master_thesis_benge_supervised_learning.classification_baseline.model.dual_resnet import (
     DualResNet,
 )
 
+from _master_thesis_benge_supervised_learning.classification_baseline.model.triple_resnet import (
+    TripleResNet,
+)
+
 # Import constants
 from _master_thesis_benge_supervised_learning.classification_baseline.config.constants import (
+    Task,
     TASK_KEY,
     WEIGHTS_KEY,
     NUMBER_OF_CLASSES_KEY,
@@ -28,7 +37,6 @@ from _master_thesis_benge_supervised_learning.classification_baseline.config.con
     LABEL_THRESHOLD_KEY,
     SAVE_MODEL_KEY,
     ENVIRONMENT_KEY,
-    Task,
     MODEL_KEY,
     BANDS_KEY,
     TRANSFORMS_KEY,
@@ -45,7 +53,7 @@ training_config = {
         TASK_KEY: Task.Classification,
     },
     "model": {
-        MODEL_KEY: DualResNet,
+        MODEL_KEY: ResNet,
         WEIGHTS_KEY: False,
         NUMBER_OF_CLASSES_KEY: 11,
     },
@@ -69,24 +77,28 @@ training_config = {
     "other": {
         SAVE_MODEL_KEY: False,
         ENVIRONMENT_KEY: "remote",
+
     },
 }
 
 # Modalities
 sentinel_1_modality = Sentinel1Modality(
     data_root_path=FileAndDirectoryReferences.SENTINEL_1_DIRECTORY,
+    numpy_dtype='float32'
 )
 sentinel_2_modality = Sentinel2Modality(
     data_root_path=FileAndDirectoryReferences.SENTINEL_2_DIRECTORY,
     s2_bands=training_config["data"][BANDS_KEY],
     transform=training_config["data"][TRANSFORMS_KEY],
+    numpy_dtype='float32'
 )
 esa_world_cover_modality = EsaWorldCoverModality(
     data_root_path=FileAndDirectoryReferences.ESA_WORLD_COVER_DIRECTORY,
     esa_world_cover_index_path=FileAndDirectoryReferences.ESA_WORLD_COVER_CSV_TRAIN,
+    numpy_dtype='float32'
 )
 modalities_config = {
-    "sentinel_1_modality": sentinel_1_modality,
+    #"sentinel_1_modality": sentinel_1_modality,
     "sentinel_2_modality": sentinel_2_modality,
     "esa_world_cover_modality": esa_world_cover_modality,
 }

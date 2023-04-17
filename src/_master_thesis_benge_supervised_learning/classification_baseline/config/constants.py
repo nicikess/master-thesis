@@ -15,9 +15,9 @@ class Task(Enum):
 
 
 # Modalities
-S1_MODALITY_KEY = "sentinel_1"
-S2_MODALITY_KEY = "sentinel_2"
-WORLD_COVER_MODALITY_KEY = "esa_worldcover"
+S1_MODALITY_KEY = "sentinel_1_modality"
+S2_MODALITY_KEY = "sentinel_2_modality"
+WORLD_COVER_MODALITY_KEY = "esa_worldcover_modality"
 ALTITUDE_MODALITY_KEY = "glo_30_dem"
 ERA_5_MODALITY_KEY = "era_5"
 STACKED_IMAGE_KEY = "stacked_img"
@@ -31,9 +31,6 @@ TASK_KEY = "task"
 # Data
 DATASET_TRAIN_KEY = "dataset_train"
 DATASET_VALIDATION_KEY = "dataset_validation"
-
-# File type
-NUMPY_DTYPE_KEY = "float32"
 
 # Training
 MODEL_KEY = "model"

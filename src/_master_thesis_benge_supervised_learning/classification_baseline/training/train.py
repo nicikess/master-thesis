@@ -33,7 +33,7 @@ class Train:
         self.model = model
         self.train_dl = train_dl
         self.validation_dl = validation_dl
-        self.wandb = (wandb,)
+        self.wandb = wandb
         self.device = device
         self.config = config
 
@@ -90,11 +90,18 @@ class Train:
 
             for i, (ben_ge_data) in progress:
                 # Transfer modalities to GPU if available
-                for key in ben_ge_data:
+                for key in (ben_ge_data):
                     ben_ge_data[key] = ben_ge_data[key].to(self.device)
 
-                # Make a forward pass
-                output = self.model(**ben_ge_data)
+                # Create forward data (remove label from dict)
+                ben_ge_data_forward = ben_ge_data.copy()
+
+                ben_ge_data_forward.pop(MULTICLASS_LABEL_KEY)
+
+                # Rename keys
+                ben_ge_data_forward = {'x{}'.format(i+1): value for i, (key, value) in enumerate(ben_ge_data_forward.items())}
+
+                output = self.model(**ben_ge_data_forward)
 
                 # Compute the loss
                 loss = self.config[TRAINING_CONFIG_KEY][LOSS_KEY](
@@ -200,6 +207,13 @@ class Train:
                     # Transfer modalities to GPU if available
                     for key in ben_ge_data:
                         ben_ge_data[key] = ben_ge_data[key].to(self.device)
+
+                    # Create forward data (remove label from dict)
+                    ben_ge_data_forward = ben_ge_data.copy()
+                    ben_ge_data_forward.pop(MULTICLASS_LABEL_KEY)
+
+                    # Rename keys
+                    ben_ge_data_forward = {'x{}'.format(i+1): value for i, (key, value) in enumerate(ben_ge_data_forward.items())}
 
                     # Make a forward pass
                     output = self.model(**ben_ge_data)
