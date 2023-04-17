@@ -19,7 +19,9 @@ from _master_thesis_benge_supervised_learning.classification_baseline.config.con
     TRAINING_CONFIG_KEY,
     SEED_KEY,
     BATCH_SIZE_KEY,
-    NUMBER_OF_CLASSES_KEY
+    NUMBER_OF_CLASSES_KEY,
+    MULTICLASS_LABEL_KEY,
+    WORLD_COVER_MODALITY_KEY
 )
 
 from remote_sensing_core.ben_ge.ben_ge_dataset import BenGe
@@ -78,6 +80,9 @@ if __name__ == "__main__":
     wandb.log({"Run description": run_description})
     
     modalities = dataset_train._get_modalities()
+
+    # World cover modalities, since its only used to get the label
+    modalities.remove("esa_worldcover")
 
     # Create a dictionary that maps each modality to the number of input channels
     channel_modalities = {f"in_channels_{i+1}": int(str(np.shape(dataset_train[0][modality])[0]))

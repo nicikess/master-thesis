@@ -100,5 +100,5 @@ esa_world_cover_modality = EsaWorldCoverModality(
 modalities_config = {
     #"sentinel_1_modality": sentinel_1_modality,
     "sentinel_2_modality": sentinel_2_modality,
-    "esa_world_cover_modality": esa_world_cover_modality,
+    #"esa_world_cover_modality": esa_world_cover_modality,
 }

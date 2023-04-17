@@ -21,6 +21,7 @@ from _master_thesis_benge_supervised_learning.classification_baseline.config.con
     MULTICLASS_LABEL_KEY,
     OTHER_CONFIG_KEY,
     SAVE_MODEL_KEY,
+    WORLD_COVER_MODALITY_KEY
 )
 
 from _master_thesis_benge_supervised_learning.classification_baseline.training.train_utils import (
@@ -95,8 +96,8 @@ class Train:
 
                 # Create forward data (remove label from dict)
                 ben_ge_data_forward = ben_ge_data.copy()
-
                 ben_ge_data_forward.pop(MULTICLASS_LABEL_KEY)
+                ben_ge_data_forward.pop(WORLD_COVER_MODALITY_KEY)
 
                 # Rename keys
                 ben_ge_data_forward = {'x{}'.format(i+1): value for i, (key, value) in enumerate(ben_ge_data_forward.items())}
@@ -210,7 +211,12 @@ class Train:
 
                     # Create forward data (remove label from dict)
                     ben_ge_data_forward = ben_ge_data.copy()
+
+                    for key, value in ben_ge_data_forward.items():
+                        print(key, " ", value)
+
                     ben_ge_data_forward.pop(MULTICLASS_LABEL_KEY)
+                    ben_ge_data_forward.pop(WORLD_COVER_MODALITY_KEY)
 
                     # Rename keys
                     ben_ge_data_forward = {'x{}'.format(i+1): value for i, (key, value) in enumerate(ben_ge_data_forward.items())}
