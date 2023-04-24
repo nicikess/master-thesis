@@ -51,12 +51,15 @@ from _master_thesis_benge_supervised_learning.supervised_baseline.config.constan
 )
 
 from _master_thesis_benge_supervised_learning.supervised_baseline.config.config_runs.config_files_and_directories import (
-    LocalFilesAndDirectoryReferences as FileAndDirectoryReferences,
+    RemoteFilesAndDirectoryReferences as FileAndDirectoryReferences,
 )
 
 from _master_thesis_benge_supervised_learning.supervised_baseline.training.segmentation.segmentation_utils import (
     SegmentationUtils
 )
+
+from remote_sensing_core.ben_ge.ben_ge_dataset import BenGe
+
 
 training_config = {
     "task": {
@@ -128,3 +131,15 @@ modalities_config_validation = {
     "sentinel_2_modality": sentinel_2_modality,
     "esa_world_cover_modality": esa_world_cover_modality_validation,
 }
+
+dataset_train = BenGe(
+    data_index_path=FileAndDirectoryReferences.ESA_WORLD_COVER_CSV_TRAIN,
+    sentinel_1_2_metadata_path=FileAndDirectoryReferences.SENTINEL_1_2_METADATA_CSV,
+    **modalities_config_train,
+)
+
+dataset_validation = BenGe(
+    data_index_path=FileAndDirectoryReferences.ESA_WORLD_COVER_CSV_VALIDATION,
+    sentinel_1_2_metadata_path=FileAndDirectoryReferences.SENTINEL_1_2_METADATA_CSV,
+    **modalities_config_validation,
+)
