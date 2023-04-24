@@ -40,7 +40,7 @@ class SegmentationUtils(Metric):
         #calculate max on the axis of the (different channels = number of classes)
         arg_max = torch.argmax(softmax_output, dim=1)
 
-        self.epoch_train_jaccard = self.jaccard(arg_max, label)
+        self.epoch_train_jaccard += self.jaccard(arg_max, label)
 
         progress.set_description("Train loss epoch: {:.4f}".format(loss))
         wandb.log({"Step loss": loss})

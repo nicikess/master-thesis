@@ -41,7 +41,7 @@ from _master_thesis_benge_supervised_learning.supervised_baseline.config.constan
 )
 
 from remote_sensing_core.ben_ge.modalities.sentinel_1 import Sentinel1Modality
-from remote_sensing_core.ben_ge.modalities.sentinel_2 import Sentinel2Modality
+from remote_sensing_core.ben_ge.modalities.sentinel_2 import Sentinel2Modality, Sentinel2Transform
 from remote_sensing_core.ben_ge.modalities.esa_worldcover import (
     EsaWorldCoverModality,
     ESAWorldCoverTransform,
@@ -51,11 +51,13 @@ from _master_thesis_benge_supervised_learning.supervised_baseline.config.constan
 )
 
 from _master_thesis_benge_supervised_learning.supervised_baseline.config.config_runs.config_files_and_directories import (
-    LocalFilesAndDirectoryReferences as FileAndDirectoryReferences,
+    RemoteFilesAndDirectoryReferences as FileAndDirectoryReferences,
 )
 from _master_thesis_benge_supervised_learning.supervised_baseline.training.regression.regression_utils import (
     RegressionUtils
 )
+
+from remote_sensing_core.ben_ge.ben_ge_dataset import BenGe
 
 training_config = {
     "task": {
@@ -106,16 +108,17 @@ sentinel_2_modality = Sentinel2Modality(
     s2_bands=training_config["data"][BANDS_KEY],
     # transform=training_config["data"][TRANSFORMS_KEY],
     numpy_dtype="float32",
+    #transform=Sentinel2Transform(clip_values=(0, 10_000), normalization_value=10_000)
 )
 esa_world_cover_modality_train = EsaWorldCoverModality(
     data_root_path=FileAndDirectoryReferences.ESA_WORLD_COVER_DIRECTORY,
     esa_world_cover_index_path=FileAndDirectoryReferences.ESA_WORLD_COVER_CSV_TRAIN,
-    transform=ESAWorldCoverTransform(convert_to_label=True)
+    numpy_dtype="float32",
 )
 esa_world_cover_modality_validation = EsaWorldCoverModality(
     data_root_path=FileAndDirectoryReferences.ESA_WORLD_COVER_DIRECTORY,
     esa_world_cover_index_path=FileAndDirectoryReferences.ESA_WORLD_COVER_CSV_VALIDATION,
-    transform=ESAWorldCoverTransform(convert_to_label=True)
+    numpy_dtype="float32",
 )
 modalities_config_train = {
     # "sentinel_1_modality": sentinel_1_modality,
@@ -127,3 +130,15 @@ modalities_config_validation = {
     "sentinel_2_modality": sentinel_2_modality,
     "esa_world_cover_modality": esa_world_cover_modality_validation,
 }
+
+dataset_train = BenGe(
+    data_index_path=FileAndDirectoryReferences.ESA_WORLD_COVER_CSV_TRAIN,
+    sentinel_1_2_metadata_path=FileAndDirectoryReferences.SENTINEL_1_2_METADATA_CSV,
+    **modalities_config_train,
+)
+
+dataset_validation = BenGe(
+    data_index_path=FileAndDirectoryReferences.ESA_WORLD_COVER_CSV_VALIDATION,
+    sentinel_1_2_metadata_path=FileAndDirectoryReferences.SENTINEL_1_2_METADATA_CSV,
+    **modalities_config_validation,
+)

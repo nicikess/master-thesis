@@ -116,6 +116,7 @@ sentinel_2_modality = Sentinel2Modality(
     s2_bands=training_config["data"][BANDS_KEY],
     # transform=training_config["data"][TRANSFORMS_KEY],
     numpy_dtype="float32",
+    transform=Sentinel2Transform(clip_values=(0, 10_000), normalization_value=10_000)
 )
 esa_world_cover_modality_train = EsaWorldCoverModality(
     data_root_path=FileAndDirectoryReferences.ESA_WORLD_COVER_DIRECTORY,

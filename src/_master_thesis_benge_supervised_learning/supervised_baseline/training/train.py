@@ -71,8 +71,10 @@ class Train:
 
             for i, (ben_ge_data) in progress:
                 # Transfer modalities to GPU if available
+                print(ben_ge_data)
+
                 for key in ben_ge_data:
-                    ben_ge_data[key] = ben_ge_data[key].to(self.device)
+                    ben_ge_data[key] = ben_ge_data[key].to(dtype=torch.long, device=self.device)
 
                 # Create forward data (remove label from dict)
                 ben_ge_data_forward = {
