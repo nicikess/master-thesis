@@ -17,7 +17,7 @@ LOSS:
   value: BCEWithLogitsLoss()
 MODEL:
   desc: null
-  value: classification_baseline.model.resnet.ResNet
+  value: supervised_baseline.model.resnet.ResNet
 MULTI_MODAL:
   desc: null
   value: false

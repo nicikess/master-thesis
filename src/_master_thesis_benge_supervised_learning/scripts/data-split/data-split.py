@@ -14,7 +14,7 @@ def check_if_present(patch_id, df_train, df_validation, df_test):
 
 def make_split():
     # Path to store data files
-    data_path = "/netscratch2/nkesseli/master-thesis-benge/src/master_thesis_benge_supervised_learning/scripts/data-split/data-split-folder/"
+    data_path = "/netscratch2/nkesseli/master-thesis-benge/src/master_thesis_benge_supervised_learning/scripts_/data-split/data-split-folder/"
 
     # Load ben-ge
     df_large = pd.read_csv(

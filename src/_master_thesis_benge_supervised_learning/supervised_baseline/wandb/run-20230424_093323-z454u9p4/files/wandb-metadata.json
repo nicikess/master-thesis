@@ -1,0 +1,42 @@
+{
+    "os": "macOS-11.0.1-x86_64-i386-64bit",
+    "python": "3.8.16",
+    "heartbeatAt": "2023-04-24T07:33:24.055685",
+    "startedAt": "2023-04-24T07:33:23.232813",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/Users/nicolaskesseli/NICOLAS_KESSELI/Programming/Lokal/master-thesis-benge/src/_master_thesis_benge_supervised_learning/classification_baseline/main.py",
+    "codePath": "src/_master_thesis_benge_supervised_learning/classification_baseline/main.py",
+    "git": {
+        "remote": "https://github.com/nicikess/master-thesis-benge.git",
+        "commit": "ee4abda7c1f70efbead07c06242d3efac585cc32"
+    },
+    "email": "nicolaskesseli@gmail.com",
+    "root": "/Users/nicolaskesseli/NICOLAS_KESSELI/Programming/Lokal/master-thesis-benge",
+    "host": "nicolas-macbook",
+    "username": "nicolaskesseli",
+    "executable": "/Users/nicolaskesseli/NICOLAS_KESSELI/Programming/Lokal/master-thesis-benge/venv/bin/python",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 2000,
+        "min": 2000,
+        "max": 2000
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2000,
+            "min": 2000,
+            "max": 2000
+        }
+    ],
+    "disk": {
+        "total": 465.62699127197266,
+        "used": 13.913257598876953
+    },
+    "memory": {
+        "total": 16.0
+    }
+}
