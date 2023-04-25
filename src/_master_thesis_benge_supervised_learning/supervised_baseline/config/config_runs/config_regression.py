@@ -26,15 +26,11 @@ from _master_thesis_benge_supervised_learning.supervised_baseline.config.constan
     SCHEDULER_MAX_NUMBER_ITERATIONS_KEY,
     SCHEDULER_MIN_LR_KEY,
     NORMALIZATION_VALUE_KEY,
-    LABEL_THRESHOLD_KEY,
     SAVE_MODEL_KEY,
     ENVIRONMENT_KEY,
     MODEL_KEY,
     BANDS_KEY,
-    TRANSFORMS_LABEL_KEY,
-    TRAIN_CLASS_KEY,
     MODALITIES_KEY,
-    WORLD_COVER_MODALITY_KEY,
     MODALITIES_LABEL_KEY,
     METRICS_KEY,
     MULTICLASS_NUMERIC_LABEL_KEY
@@ -44,7 +40,6 @@ from remote_sensing_core.ben_ge.modalities.sentinel_1 import Sentinel1Modality
 from remote_sensing_core.ben_ge.modalities.sentinel_2 import Sentinel2Modality, Sentinel2Transform
 from remote_sensing_core.ben_ge.modalities.esa_worldcover import (
     EsaWorldCoverModality,
-    ESAWorldCoverTransform,
 )
 from _master_thesis_benge_supervised_learning.supervised_baseline.config.constants import (
     S2_MODALITY_KEY,
@@ -84,17 +79,13 @@ training_config = {
         SCHEDULER_MIN_LR_KEY: 0,
     },
     "data": {
-        #NORMALIZATION_VALUE_KEY: 10000,
-        #LABEL_THRESHOLD_KEY: 0.05,
+        NORMALIZATION_VALUE_KEY: 10000,
         BANDS_KEY: "RGB",
-    },
-    "label": {
-        #TRANSFORMS_LABEL_KEY: Transforms().get_transform(),
     },
     "metrics": {METRICS_KEY: RegressionUtils},
     "other": {
         SAVE_MODEL_KEY: False,
-        ENVIRONMENT_KEY: "local",
+        ENVIRONMENT_KEY: "remote",
     },
 }
 
@@ -108,7 +99,7 @@ sentinel_2_modality = Sentinel2Modality(
     s2_bands=training_config["data"][BANDS_KEY],
     # transform=training_config["data"][TRANSFORMS_KEY],
     numpy_dtype="float32",
-    #transform=Sentinel2Transform(clip_values=(0, 10_000), normalization_value=10_000)
+    transform=Sentinel2Transform(clip_values=(0, 10_000), normalization_value=training_config["data"][NORMALIZATION_VALUE_KEY])
 )
 esa_world_cover_modality_train = EsaWorldCoverModality(
     data_root_path=FileAndDirectoryReferences.ESA_WORLD_COVER_DIRECTORY,

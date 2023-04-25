@@ -25,7 +25,7 @@ class SegmentationUtils(Metric):
         self.wandb = wandb
         self.device = device,
         self.number_of_classes = number_of_classes
-        self.jaccard = JaccardIndex('multiclass', num_classes=self.number_of_classes)
+        self.jaccard = JaccardIndex('multiclass', num_classes=self.number_of_classes).to(self.device)
 
     def reset_epoch_train_metrics(self):
         self.epoch_train_loss = 0

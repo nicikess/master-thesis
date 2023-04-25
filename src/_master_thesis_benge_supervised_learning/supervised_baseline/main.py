@@ -8,8 +8,6 @@ import torch
 
 from _master_thesis_benge_supervised_learning.supervised_baseline.config.config_runs.config_regression import (
     training_config,
-    modalities_config_train,
-    modalities_config_validation,
     dataset_train,
     dataset_validation
 )
@@ -38,6 +36,7 @@ if __name__ == "__main__":
     # Set device
     if environment == "local":
         device = torch.device("cpu")
+        print("Running locally")
     else:
         device = torch.device("cuda")
 
@@ -47,7 +46,7 @@ if __name__ == "__main__":
 
     wandb.login(key="9da448bfaa162b572403e1551114a17058f249d0")
     wandb.init(
-        project="master-thesis-experiments-test",
+        project="master-thesis-supervised-regression",
         entity="nicikess",
         config=training_config,
     )
@@ -77,10 +76,8 @@ if __name__ == "__main__":
         num_workers=4,
     )
 
-    # run_description = input("Describe run: ")
-    # wandb.log({"Run description": run_description})
-
-    #data = dataset_train[0]
+    run_description = input("Describe run: ")
+    wandb.log({"Run description": run_description})
 
     # Create a dictionary that maps each modality to the number of input channels
     channel_modalities = {
@@ -99,9 +96,9 @@ if __name__ == "__main__":
         number_of_classes=training_config[MODEL_CONFIG_KEY][NUMBER_OF_CLASSES_KEY],
     )
 
-    # wandb.log({"model details": model})
-    # wandb.log({"Notes": f'Modalities: {training_config[TRAINING_CONFIG_KEY][MODALITIES_KEY][MODALITIES_KEY]} with data set train size: {len(dataset_train)}'})
-    # wandb.config.update(training_config)
+    wandb.log({"model details": model})
+    wandb.log({"Notes": f'Modalities: {training_config[TRAINING_CONFIG_KEY][MODALITIES_KEY][MODALITIES_KEY]} with data set train size: {len(dataset_train)}'})
+    wandb.config.update(training_config)
 
     # Run training routing
     train = Train(

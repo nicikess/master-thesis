@@ -96,7 +96,7 @@ training_config = {
     "metrics": {METRICS_KEY: SegmentationUtils},
     "other": {
         SAVE_MODEL_KEY: False,
-        ENVIRONMENT_KEY: "local",
+        ENVIRONMENT_KEY: "remote",
     },
 }
 

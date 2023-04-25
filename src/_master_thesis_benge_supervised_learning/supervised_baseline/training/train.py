@@ -59,6 +59,7 @@ class Train:
 
         # For every epoch
         for epoch in range(self.config[TRAINING_CONFIG_KEY][EPOCHS_KEY]):
+
             progress = tqdm(
                 enumerate(self.train_dl), desc="Train Loss: ", total=len(self.train_dl)
             )
@@ -71,10 +72,9 @@ class Train:
 
             for i, (ben_ge_data) in progress:
                 # Transfer modalities to GPU if available
-                print(ben_ge_data)
 
                 for key in ben_ge_data:
-                    ben_ge_data[key] = ben_ge_data[key].to(dtype=torch.long, device=self.device)
+                    ben_ge_data[key] = ben_ge_data[key].to(device=self.device)
 
                 # Create forward data (remove label from dict)
                 ben_ge_data_forward = {
@@ -96,7 +96,7 @@ class Train:
                 ]
 
                 # Compute the loss
-                loss = self.config[TRAINING_CONFIG_KEY][LOSS_KEY](output, label)
+                loss = self.metrics.calculate_loss(self.config[TRAINING_CONFIG_KEY][LOSS_KEY], output, label)
 
                 # Clear the gradients
                 self.optimizer.zero_grad()
