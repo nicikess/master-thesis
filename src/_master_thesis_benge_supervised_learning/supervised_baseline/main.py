@@ -2,9 +2,9 @@ from torch.utils.data import DataLoader
 import numpy as np
 import wandb
 import torch
-#from ffcv.loader import Loader, OrderOption
-#from ffcv.transforms import ToDevice
-#from ffcv.fields.decoders import SimpleRGBImageDecoder
+from ffcv.loader import Loader, OrderOption
+from ffcv.transforms import ToDevice
+from ffcv.fields.decoders import SimpleRGBImageDecoder
 
 from _master_thesis_benge_supervised_learning.supervised_baseline.config.config_runs.config_regression import (
     training_config,
@@ -24,6 +24,8 @@ from _master_thesis_benge_supervised_learning.supervised_baseline.config.constan
     MODALITIES_KEY,
     METRICS_KEY,
     METRICS_CONFIG_KEY,
+    TASK_CONFIG_KEY,
+    TASK_KEY
 )
 
 from _master_thesis_benge_supervised_learning.supervised_baseline.training.train import (
@@ -35,10 +37,10 @@ if __name__ == "__main__":
 
     # Set device
     if environment == "local":
-        device = torch.device("cpu")
+        device = torch.device('cpu')
         print("Running locally")
     else:
-        device = torch.device("cuda")
+        device = torch.device('cuda')
 
     # Set seed
     torch.manual_seed(training_config[TRAINING_CONFIG_KEY][SEED_KEY])
@@ -46,21 +48,21 @@ if __name__ == "__main__":
 
     wandb.login(key="9da448bfaa162b572403e1551114a17058f249d0")
     wandb.init(
-        project="master-thesis-supervised-regression",
+        project="master-thesis-supervised-"+(training_config[TASK_CONFIG_KEY][TASK_KEY].name).lower(),
         entity="nicikess",
         config=training_config,
     )
 
     '''
+    "Error message: TypeError: only integer tensors of a single element can be converted to an index"
     dataloader_train = Loader('/netscratch2/alontke/master_thesis/data/ffcv/ben-ge-train20_s2_rgb_infrared.beton', 
                                 batch_size=training_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY],
                                 order=OrderOption.RANDOM,
-                                num_workers=4,
-                                pipelines=pipelines
-                                ) '''
+                                num_workers=4
+                                )
+    '''
     
     # Define training dataloader
-    
     dataloader_train = DataLoader(
         dataset_train,
         training_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY],

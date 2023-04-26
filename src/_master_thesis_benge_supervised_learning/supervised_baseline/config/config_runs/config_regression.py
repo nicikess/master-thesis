@@ -69,7 +69,7 @@ training_config = {
             MODALITIES_KEY: [S2_MODALITY_KEY],
         },
         EPOCHS_KEY: 20,
-        LEARNING_RATE_KEY: 0.01,
+        LEARNING_RATE_KEY: 0.001,
         BATCH_SIZE_KEY: 32,
         OPTIMIZER_KEY: torch.optim.Adam,
         SCHEDULER_KEY: torch.optim.lr_scheduler.CosineAnnealingLR,

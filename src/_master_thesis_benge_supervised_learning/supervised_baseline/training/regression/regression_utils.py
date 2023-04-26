@@ -6,7 +6,7 @@ from torchmetrics.regression import (
     MeanSquaredError
 )
 
-from torch import nn
+import torch.nn.functional as F
 
 class RegressionUtils(Metric):
     # Train values
@@ -27,8 +27,7 @@ class RegressionUtils(Metric):
         self.rsme = MeanSquaredError(squared=False).to(self.device)
 
     def calculate_loss(self, loss, output, label):
-        softmax = nn.Softmax()
-        softmax_output = softmax(output)
+        softmax_output = F.softmax(output, dim=1)
         loss = loss(softmax_output, label)
         return loss
 
@@ -40,8 +39,7 @@ class RegressionUtils(Metric):
     def log_batch_train_metrics(self, loss, output, label, progress):
         self.epoch_train_loss += loss
 
-        softmax = nn.Softmax()
-        softmax_output = softmax(output)
+        softmax_output = F.softmax(output, dim=1)
 
         self.epoch_train_mse += self.mse(softmax_output, label)
         self.epoch_train_rmse += self.rsme(softmax_output, label)
@@ -67,8 +65,7 @@ class RegressionUtils(Metric):
         self.epoch_val_rmse = 0
 
     def log_batch_validation_metrics(self, output, label):
-        softmax = nn.Softmax()
-        softmax_output = softmax(output)
+        softmax_output = F.softmax(output, dim=1)
 
         self.epoch_val_mse += self.mse(softmax_output, label)
         self.epoch_val_rmse += self.rsme(softmax_output, label)

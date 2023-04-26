@@ -58,6 +58,10 @@ class ClassificationUtils(Metric):
             self.device
         )
 
+    def calculate_loss(self, loss, output, label):
+        loss = loss(output, label)
+        return loss
+
     def reset_epoch_train_metrics(self):
         # Set metric values to 0
         self.epoch_train_loss = 0

@@ -9,6 +9,8 @@ import torch
 
 from _master_thesis_benge_supervised_learning.supervised_baseline.training.metric import Metric
 
+import torch.nn.functional as F
+
 class SegmentationUtils(Metric):
 
     # Train values
@@ -25,7 +27,11 @@ class SegmentationUtils(Metric):
         self.wandb = wandb
         self.device = device,
         self.number_of_classes = number_of_classes
-        self.jaccard = JaccardIndex('multiclass', num_classes=self.number_of_classes).to(self.device)
+        self.jaccard = JaccardIndex('multiclass', num_classes=self.number_of_classes).to(device=torch.device('cpu'))
+
+    def calculate_loss(self, loss, output, label):
+        loss = loss(output, label)
+        return loss
 
     def reset_epoch_train_metrics(self):
         self.epoch_train_loss = 0
@@ -35,12 +41,14 @@ class SegmentationUtils(Metric):
         # Accumulate the loss over the epoch
         self.epoch_train_loss += loss
         # Calculate probabilities
-        softmax = nn.Softmax()
-        softmax_output = softmax(output)
+        softmax = F.softmax(output, dim=1)
+        #softmax_output = softmax()
         #calculate max on the axis of the (different channels = number of classes)
-        arg_max = torch.argmax(softmax_output, dim=1)
+        arg_max = torch.argmax(softmax, dim=1)
 
         self.epoch_train_jaccard += self.jaccard(arg_max, label)
+
+        jaccard_test = self.jaccard(arg_max, label)
 
         progress.set_description("Train loss epoch: {:.4f}".format(loss))
         wandb.log({"Step loss": loss})
@@ -61,10 +69,9 @@ class SegmentationUtils(Metric):
 
     def log_batch_validation_metrics(self, output, label):
         # Calculate probabilities
-        softmax = nn.Softmax()
-        softmax_output = softmax(output)
+        softmax_output = F.softmax(output, dim=1)
         # calculate max on the 3third z-axis of the tensor
-        arg_max = torch.argmax(softmax_output, dim=2)
+        arg_max = torch.argmax(softmax_output, dim=1)
 
         self.epoch_validation_jaccard = self.jaccard(arg_max, label)
 

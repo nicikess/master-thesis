@@ -9,8 +9,8 @@ class Bands(Enum):
 
 
 class Task(Enum):
-    Classification = ("classification",)
-    Regression = ("regression",)
+    Classification = "classification"
+    Regression = "regression"
     Segmentation = "segmentation"
 
 
