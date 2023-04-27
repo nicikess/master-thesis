@@ -4,7 +4,7 @@ import pandas as pd
 def check_if_present(patch_id, df_train, df_validation, df_test):
     is_present_train = patch_id in df_train["patch_id"].values
     is_present_validation = patch_id in df_validation["patch_id"].values
-    is_present_test = patch_id in df_train["patch_id"].values
+    is_present_test = patch_id in df_test["patch_id"].values
 
     if not is_present_train and not is_present_validation and not is_present_test:
         return True
@@ -14,7 +14,7 @@ def check_if_present(patch_id, df_train, df_validation, df_test):
 
 def make_split():
     # Path to store data files
-    data_path = "/netscratch2/nkesseli/master-thesis-benge/src/master_thesis_benge_supervised_learning/scripts_/data-split/data-split-folder/"
+    data_path = "/netscratch2/nkesseli/master-thesis-benge/src/master_thesis_benge_supervised_learning/scripts_/data-split/data-split-folder-2/"
 
     # Load ben-ge
     df_large = pd.read_csv(
@@ -143,6 +143,10 @@ def check_column_non_inclusion(df1, df2):
 
 
 if __name__ == "__main__":
+
+    make_split()
+
+    '''
     # Check that all values from ben-ge-s are in cluded in the respective train,validation,test splits
     df_small_train = pd.read_csv(
         "/ds2/remote_sensing/ben-ge/ben-ge-s/data-index/ben-ge-s-train.csv"
@@ -170,3 +174,20 @@ if __name__ == "__main__":
     df_test20 = pd.read_csv("data-split-folder/ben-ge-test20.csv")
     print(check_column_non_inclusion(df_train20, df_validation20))
     print(check_column_non_inclusion(df_train20, df_test20))
+
+    df_validation40 = pd.read_csv("data-split-folder/ben-ge-validation40.csv")
+    df_test40 = pd.read_csv("data-split-folder/ben-ge-test40.csv")
+    print(check_column_non_inclusion(df_train40, df_validation40))
+    print(check_column_non_inclusion(df_train40, df_test40))
+
+    df_validation60 = pd.read_csv("data-split-folder/ben-ge-validation60.csv")
+    df_test60 = pd.read_csv("data-split-folder/ben-ge-test60.csv")
+    print(check_column_non_inclusion(df_train60, df_validation60))
+    print(check_column_non_inclusion(df_train60, df_test60))
+
+    df_validation80 = pd.read_csv("data-split-folder/ben-ge-validation80.csv")
+    df_test80 = pd.read_csv("data-split-folder/ben-ge-test80.csv")
+    print(check_column_non_inclusion(df_train80, df_validation80))
+    print(check_column_non_inclusion(df_train80, df_test80))
+
+    '''

@@ -3,8 +3,12 @@ import numpy as np
 import wandb
 import torch
 from ffcv.loader import Loader, OrderOption
-from ffcv.transforms import ToDevice
-from ffcv.fields.decoders import SimpleRGBImageDecoder
+from ffcv.transforms import ToTensor
+from ffcv.fields.decoders import NDArrayDecoder
+
+from datetime import datetime
+
+now = datetime.now()
 
 from _master_thesis_benge_supervised_learning.supervised_baseline.config.config_runs.config_regression import (
     training_config,
@@ -32,6 +36,11 @@ from _master_thesis_benge_supervised_learning.supervised_baseline.training.train
     Train,
 )
 
+from remote_sensing_core.transforms.ffcv.min_max_scaler import MinMaxScaler
+from remote_sensing_core.transforms.ffcv.clipping import Clipping
+
+
+
 if __name__ == "__main__":
     environment = training_config[OTHER_CONFIG_KEY][ENVIRONMENT_KEY]
 
@@ -53,15 +62,19 @@ if __name__ == "__main__":
         config=training_config,
     )
 
-    '''
+    print('start loading...'+now.strftime("%H:%M:%S"))
+    
     "Error message: TypeError: only integer tensors of a single element can be converted to an index"
-    dataloader_train = Loader('/netscratch2/alontke/master_thesis/data/ffcv/ben-ge-train20_s2_rgb_infrared.beton', 
+    dataloader_train = Loader('/ds2/remote_sensing/ben-ge/ffcv/ben-ge-20-train.beton', 
                                 batch_size=training_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY],
                                 order=OrderOption.RANDOM,
-                                num_workers=4
+                                num_workers=4,
+                                #pipelines= {'sentinel_2': [NDArrayDecoder(), Clipping([0, 10_000]), ToTensor()]}
                                 )
-    '''
     
+    print('finished loading...'+now.strftime("%H:%M:%S"))
+
+    '''    
     # Define training dataloader
     dataloader_train = DataLoader(
         dataset_train,
@@ -69,6 +82,11 @@ if __name__ == "__main__":
         shuffle=True,
         num_workers=4,
     )
+    '''
+
+    it = iter(dataloader_train)
+    first = next(it)
+    print(first[0].size())
 
     # Define validation dataloader
     dataloader_validation = DataLoader(
