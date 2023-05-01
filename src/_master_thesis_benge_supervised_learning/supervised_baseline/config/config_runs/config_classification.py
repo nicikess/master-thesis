@@ -47,6 +47,7 @@ from _master_thesis_benge_supervised_learning.supervised_baseline.config.constan
     MODALITIES_KEY,
     TRANSFORMS_LABEL_KEY,
     MULTICLASS_ONE_HOT_LABEL_INDEX_KEY,
+    ESA_WORLD_COVER_INDEX_KEY,
     MODALITIES_KEY,
     METRICS_KEY,
     METRICS_CONFIG_KEY,
@@ -82,7 +83,7 @@ training_config = {
     "training": {
         MODALITIES_KEY: {
             MODALITIES_LABEL_KEY: MULTICLASS_ONE_HOT_LABEL_INDEX_KEY,
-            MODALITIES_KEY: [SENTINEL_2_INDEX_KEY],
+            MODALITIES_KEY: [ESA_WORLD_COVER_INDEX_KEY],
         },
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.001,

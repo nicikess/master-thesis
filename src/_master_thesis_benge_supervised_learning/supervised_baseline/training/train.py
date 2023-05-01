@@ -79,7 +79,7 @@ class Train:
 
                 # Create forward data (remove label from dict)
                 ben_ge_data_forward = {
-                    key: ben_ge_data[key][:,[7, 3, 2, 1], :, :]
+                    key: ben_ge_data[key]#[:,[7, 3, 2, 1], :, :]
                     for key in self.config[TRAINING_CONFIG_KEY][MODALITIES_KEY][
                         MODALITIES_KEY
                     ]
@@ -109,7 +109,8 @@ class Train:
                 self.optimizer.step()
 
                 # Calculate batch train metrics
-                self.metrics.log_batch_train_metrics(loss, output, label, progress)
+                if i%100 == 0:
+                    self.metrics.log_batch_train_metrics(loss, output, label, progress)
 
             self.scheduler.step()
 
@@ -140,7 +141,7 @@ class Train:
 
                     # Create forward data (remove label from dict)
                     ben_ge_data_forward = {
-                        key: ben_ge_data[key][:,[7, 3, 2, 1], :, :]
+                        key: ben_ge_data[key]#[:,[7, 3, 2, 1], :, :]
                         for key in self.config[TRAINING_CONFIG_KEY][MODALITIES_KEY][
                             MODALITIES_KEY
                         ]

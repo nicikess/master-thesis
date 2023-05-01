@@ -93,13 +93,15 @@ if __name__ == "__main__":
     
     #DataloaderUtils = (training_config[TRAINING_CONFIG_KEY][DATALOADER_FILE_KEY], training_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY])
 
-    #it = iter(dataloader_train)
-    #first = next(it)
+    '''
+    it = iter(dataloader_train)
+    first = next(it)
     #print(len(first))
     #assert len(first) == 12   
-    #for key in first:
-        #print(key)
-        #input('key')
+    for key in first:
+        print(key)
+        input('key')
+    '''
     
     print('finished loading...'+now.strftime("%H:%M:%S"))
 
@@ -158,7 +160,7 @@ if __name__ == "__main__":
         # Define multi modal model
         # Input channels for s1
         #in_channels_1=#channel_modalities["in_channels_1"],
-        in_channels_1=4,
+        in_channels_1=1,
         # Input channels for s2
         number_of_classes=training_config[MODEL_CONFIG_KEY][NUMBER_OF_CLASSES_KEY],
     )
