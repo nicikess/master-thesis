@@ -1,0 +1,73 @@
+wandb_version: 1
+
+task:
+  desc: null
+  value:
+    task: Task.Regression
+model:
+  desc: null
+  value:
+    model: _master_thesis_benge_supervised_learning.supervised_baseline.model.resnet.ResNet
+    weights: false
+    number_of_classes: 11
+training:
+  desc: null
+  value:
+    modalities:
+      modalities_label: multiclass_numeric_label
+      modalities:
+      - sentinel_2
+    epochs: 20
+    learning_rate: 0.001
+    batch_size: 32
+    optimizer: torch.optim.adam.Adam
+    scheduler: torch.optim.lr_scheduler.CosineAnnealingLR
+    loss: MSELoss()
+    seed: 42
+    scheduler_max_number_iterations: 20
+    scheduler_min_lr: 0
+data:
+  desc: null
+  value:
+    normalization_value: 10000
+    bands: RGB
+metrics:
+  desc: null
+  value:
+    metrics: _master_thesis_benge_supervised_learning.supervised_baseline.training.regression.regression_utils.RegressionUtils
+other:
+  desc: null
+  value:
+    save_model: false
+    environment: remote
+_wandb:
+  desc: null
+  value:
+    python_version: 3.8.10
+    cli_version: 0.14.2
+    framework: huggingface
+    huggingface_version: 4.28.1
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1682702041.397383
+    t:
+      1:
+      - 1
+      - 11
+      - 41
+      - 49
+      - 55
+      2:
+      - 1
+      - 11
+      - 41
+      - 49
+      - 55
+      3:
+      - 16
+      - 23
+      4: 3.8.10
+      5: 0.14.2
+      6: 4.28.1
+      8:
+      - 5

@@ -46,10 +46,11 @@ from _master_thesis_benge_supervised_learning.supervised_baseline.config.constan
     MODALITIES_LABEL_KEY,
     MODALITIES_KEY,
     TRANSFORMS_LABEL_KEY,
-    MULTICLASS_ONE_HOT_LABEL_KEY,
+    MULTICLASS_ONE_HOT_LABEL_INDEX_KEY,
     MODALITIES_KEY,
     METRICS_KEY,
     METRICS_CONFIG_KEY,
+    SENTINEL_2_INDEX_KEY
 )
 
 from remote_sensing_core.ben_ge.modalities.sentinel_1 import Sentinel1Modality
@@ -80,8 +81,8 @@ training_config = {
     },
     "training": {
         MODALITIES_KEY: {
-            MODALITIES_LABEL_KEY: MULTICLASS_ONE_HOT_LABEL_KEY,
-            MODALITIES_KEY: [S2_MODALITY_KEY],
+            MODALITIES_LABEL_KEY: MULTICLASS_ONE_HOT_LABEL_INDEX_KEY,
+            MODALITIES_KEY: [SENTINEL_2_INDEX_KEY],
         },
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.001,
@@ -102,7 +103,7 @@ training_config = {
     "metrics": {METRICS_KEY: ClassificationUtils},
     "other": {
         SAVE_MODEL_KEY: False,
-        ENVIRONMENT_KEY: "local",
+        ENVIRONMENT_KEY: "remote",
     },
 }
 

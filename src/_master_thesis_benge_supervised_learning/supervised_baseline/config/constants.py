@@ -13,7 +13,6 @@ class Task(Enum):
     Regression = "regression"
     Segmentation = "segmentation"
 
-
 # Modalities
 S1_MODALITY_KEY = "sentinel_1"
 S2_MODALITY_KEY = "sentinel_2"
@@ -21,6 +20,19 @@ WORLD_COVER_MODALITY_KEY = "esa_worldcover"
 ALTITUDE_MODALITY_KEY = "glo_30_dem"
 ERA_5_MODALITY_KEY = "era_5"
 STACKED_IMAGE_KEY = "stacked_img"
+
+# Modalities indicis
+CLIMATE_ZONE_INDEX_KEY = 0
+ELEVATION_DIFFERENCE_LABEL_INDEX_KEY = 1
+ERA_5_INDEX_KEY = 2
+ESA_WORLD_COVER_INDEX_KEY = 3
+GLO_30_DEM_INDEX_KEY = 4
+MULTICLASS_NUMERIC_LABEL_INDEX_KEY = 5
+MULTICLASS_ONE_HOT_LABEL_INDEX_KEY = 6
+SEASON_S1_INDEX_KEY = 7
+SEASON_S2_INDEX_KEY = 8
+SENTINEL_1_INDEX_KEY = 9
+SENTINEL_2_INDEX_KEY = 10
 
 # Labels
 MULTICLASS_NUMERIC_LABEL_KEY = "multiclass_numeric_label"
@@ -35,6 +47,7 @@ DATASET_VALIDATION_KEY = "dataset_validation"
 
 # Training
 TRAIN_CLASS_KEY = "train_class"
+DATALOADER_FILE_KEY = "dataloader_file"
 MODALITIES_KEY = "modalities"
 MODALITIES_LABEL_KEY = "modalities_label"
 MODEL_KEY = "model"

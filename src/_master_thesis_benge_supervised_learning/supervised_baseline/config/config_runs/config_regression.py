@@ -33,7 +33,9 @@ from _master_thesis_benge_supervised_learning.supervised_baseline.config.constan
     MODALITIES_KEY,
     MODALITIES_LABEL_KEY,
     METRICS_KEY,
-    MULTICLASS_NUMERIC_LABEL_KEY
+    MULTICLASS_NUMERIC_LABEL_KEY,
+    MULTICLASS_ONE_HOT_LABEL_INDEX_KEY,
+    DATALOADER_FILE_KEY
 )
 
 from remote_sensing_core.ben_ge.modalities.sentinel_1 import Sentinel1Modality
@@ -65,9 +67,10 @@ training_config = {
     },
     "training": {
         MODALITIES_KEY: {
-            MODALITIES_LABEL_KEY: MULTICLASS_NUMERIC_LABEL_KEY,
+            MODALITIES_LABEL_KEY: MULTICLASS_ONE_HOT_LABEL_INDEX_KEY,
             MODALITIES_KEY: [S2_MODALITY_KEY],
         },
+        DATALOADER_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-20-train.beton',
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.001,
         BATCH_SIZE_KEY: 32,

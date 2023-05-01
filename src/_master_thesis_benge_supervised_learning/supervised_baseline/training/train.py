@@ -73,13 +73,13 @@ class Train:
             for i, (ben_ge_data) in progress:
                 # Transfer modalities to GPU if available
 
-                for item in ben_ge_data:
-                    item.to(device=self.device)
+                #for item in ben_ge_data:
+                    #item.to(device=self.device)
                     #ben_ge_data[ben_ge_data.index(key)] = ben_ge_data[key].to(device=self.device)
 
                 # Create forward data (remove label from dict)
                 ben_ge_data_forward = {
-                    key: ben_ge_data[key]
+                    key: ben_ge_data[key][:,[7, 3, 2, 1], :, :]
                     for key in self.config[TRAINING_CONFIG_KEY][MODALITIES_KEY][
                         MODALITIES_KEY
                     ]
@@ -94,7 +94,7 @@ class Train:
                     self.config[TRAINING_CONFIG_KEY][MODALITIES_KEY][
                         MODALITIES_LABEL_KEY
                     ]
-                ]
+                ].to(self.device)
 
                 # Compute the loss
                 loss = self.metrics.calculate_loss(self.config[TRAINING_CONFIG_KEY][LOSS_KEY], output, label)
@@ -134,12 +134,13 @@ class Train:
 
                 for i, (ben_ge_data) in progress:
                     # Transfer modalities to GPU if available
-                    for key in ben_ge_data:
-                        ben_ge_data[key] = ben_ge_data[key].to(self.device)
+
+                    #for key in ben_ge_data:
+                        #ben_ge_data[key] = ben_ge_data[key].to(device=self.device)
 
                     # Create forward data (remove label from dict)
                     ben_ge_data_forward = {
-                        key: ben_ge_data[key]
+                        key: ben_ge_data[key][:,[7, 3, 2, 1], :, :]
                         for key in self.config[TRAINING_CONFIG_KEY][MODALITIES_KEY][
                             MODALITIES_KEY
                         ]
@@ -156,7 +157,7 @@ class Train:
                         self.config[TRAINING_CONFIG_KEY][MODALITIES_KEY][
                             MODALITIES_LABEL_KEY
                         ]
-                    ]
+                    ].to(self.device)
 
                     # Calculate batch validation metrics
                     self.metrics.log_batch_validation_metrics(output, label)
