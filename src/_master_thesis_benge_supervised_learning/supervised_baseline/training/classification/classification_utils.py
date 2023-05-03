@@ -45,6 +45,7 @@ class ClassificationUtils(Metric):
         self.metric_accuracy_per_class = BinaryAccuracy(
             multidim_average="samplewise"
         ).to(self.device)
+        
         self.metric_precision_avg = BinaryPrecision(num_classes=number_of_classes).to(
             self.device
         )
@@ -72,7 +73,7 @@ class ClassificationUtils(Metric):
         self.epoch_train_f1_score = 0
         self.epoch_train_f1_score_per_class = 0
 
-    def log_batch_train_metrics(self, loss, output, label, progress):
+    def log_batch_train_metrics(self, loss, output, label, progress, epoch):
         # Accumulate the loss over the epoch
         self.epoch_train_loss += loss
         # Calculate probabilities
@@ -94,7 +95,7 @@ class ClassificationUtils(Metric):
             output_transpose, labels_transpose
         )
 
-        progress.set_description("Train loss epoch: {:.4f}".format(loss))
+        progress.set_description("Train loss "+str(epoch)+":{:.4f}".format(loss))
         wandb.log({"Step loss": loss})
 
     def log_epoch_train_metrics(self, len_train_dataloader, scheduler):

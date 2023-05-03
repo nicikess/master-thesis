@@ -1,11 +1,4 @@
-import wandb
 from tqdm import tqdm
-from torchmetrics.classification import (
-    BinaryAccuracy,
-    BinaryPrecision,
-    BinaryRecall,
-    BinaryF1Score,
-)
 import torch.nn as nn
 import torch
 
@@ -71,15 +64,10 @@ class Train:
             self.metrics.reset_epoch_train_metrics()
 
             for i, (ben_ge_data) in progress:
-                # Transfer modalities to GPU if available
-
-                #for item in ben_ge_data:
-                    #item.to(device=self.device)
-                    #ben_ge_data[ben_ge_data.index(key)] = ben_ge_data[key].to(device=self.device)
 
                 # Create forward data (remove label from dict)
                 ben_ge_data_forward = {
-                    key: ben_ge_data[key]#[:,[7, 3, 2, 1], :, :]
+                    key: ben_ge_data[key]
                     for key in self.config[TRAINING_CONFIG_KEY][MODALITIES_KEY][
                         MODALITIES_KEY
                     ]
@@ -109,8 +97,7 @@ class Train:
                 self.optimizer.step()
 
                 # Calculate batch train metrics
-                if i%100 == 0:
-                    self.metrics.log_batch_train_metrics(loss, output, label, progress)
+                self.metrics.log_batch_train_metrics(loss, output, label, progress, epoch)
 
             self.scheduler.step()
 
@@ -134,14 +121,10 @@ class Train:
                 self.metrics.reset_epoch_validation_metrics()
 
                 for i, (ben_ge_data) in progress:
-                    # Transfer modalities to GPU if available
-
-                    #for key in ben_ge_data:
-                        #ben_ge_data[key] = ben_ge_data[key].to(device=self.device)
 
                     # Create forward data (remove label from dict)
                     ben_ge_data_forward = {
-                        key: ben_ge_data[key]#[:,[7, 3, 2, 1], :, :]
+                        key: ben_ge_data[key]
                         for key in self.config[TRAINING_CONFIG_KEY][MODALITIES_KEY][
                             MODALITIES_KEY
                         ]

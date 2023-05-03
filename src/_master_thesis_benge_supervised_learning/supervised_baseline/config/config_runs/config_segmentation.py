@@ -13,7 +13,6 @@ from _master_thesis_benge_supervised_learning.supervised_baseline.model.unet imp
 # Import constants
 from _master_thesis_benge_supervised_learning.supervised_baseline.config.constants import (
     Task,
-    TASK_KEY,
     WEIGHTS_KEY,
     NUMBER_OF_CLASSES_KEY,
     EPOCHS_KEY,
@@ -25,29 +24,20 @@ from _master_thesis_benge_supervised_learning.supervised_baseline.config.constan
     SEED_KEY,
     SCHEDULER_MAX_NUMBER_ITERATIONS_KEY,
     SCHEDULER_MIN_LR_KEY,
-    NORMALIZATION_VALUE_KEY,
-    LABEL_THRESHOLD_KEY,
     SAVE_MODEL_KEY,
     ENVIRONMENT_KEY,
     MODEL_KEY,
-    BANDS_KEY,
-    TRANSFORMS_LABEL_KEY,
-    TRAIN_CLASS_KEY,
+    TASK_KEY,
     MODALITIES_KEY,
-    WORLD_COVER_MODALITY_KEY,
     MODALITIES_LABEL_KEY,
     METRICS_CONFIG_KEY,
-    METRICS_KEY
-)
-
-from remote_sensing_core.ben_ge.modalities.sentinel_1 import Sentinel1Modality
-from remote_sensing_core.ben_ge.modalities.sentinel_2 import Sentinel2Modality
-from remote_sensing_core.ben_ge.modalities.esa_worldcover import (
-    EsaWorldCoverModality,
-    ESAWorldCoverTransform,
-)
-from _master_thesis_benge_supervised_learning.supervised_baseline.config.constants import (
-    S2_MODALITY_KEY,
+    METRICS_KEY,
+    ESA_WORLD_COVER_INDEX_KEY,
+    SENTINEL_2_INDEX_KEY,
+    BANDS_KEY,
+    DATALOADER_TRAIN_FILE_KEY,
+    DATALOADER_VALIDATION_FILE_KEY,
+    PIPELINES_CONFIG_KEY
 )
 
 from _master_thesis_benge_supervised_learning.supervised_baseline.config.config_runs.config_files_and_directories import (
@@ -58,8 +48,17 @@ from _master_thesis_benge_supervised_learning.supervised_baseline.training.segme
     SegmentationUtils
 )
 
-from remote_sensing_core.ben_ge.ben_ge_dataset import BenGe
+from remote_sensing_core.constants import Bands
 
+from remote_sensing_core.transforms.ffcv.min_max_scaler import MinMaxScaler
+from remote_sensing_core.transforms.ffcv.clipping import Clipping
+from remote_sensing_core.transforms.ffcv.channel_selector import ChannelSelector
+from remote_sensing_core.transforms.ffcv.add_1d_channel import Add1dChannel
+from remote_sensing_core.transforms.ffcv.convert import Convert
+from remote_sensing_core.transforms.ffcv.esa_world_cover_transform import EsaWorldCoverTransform
+
+from ffcv.transforms import ToTensor, ToDevice
+from ffcv.fields.decoders import NDArrayDecoder, FloatDecoder, IntDecoder
 
 training_config = {
     "task": {
@@ -72,9 +71,11 @@ training_config = {
     },
     "training": {
         MODALITIES_KEY: {
-            MODALITIES_LABEL_KEY: WORLD_COVER_MODALITY_KEY,
-            MODALITIES_KEY: [S2_MODALITY_KEY],
+            MODALITIES_LABEL_KEY: ESA_WORLD_COVER_INDEX_KEY,
+            MODALITIES_KEY: [SENTINEL_2_INDEX_KEY],
         },
+        DATALOADER_TRAIN_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-40-train.beton',
+        DATALOADER_VALIDATION_FILE_KEY: '/netscratch2/nkesseli/master-thesis-benge/src/_master_thesis_benge_supervised_learning/scripts/data-split/yaml_ffcv_config/ben-ge-40-validation.beton',
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.01,
         BATCH_SIZE_KEY: 32,
@@ -84,62 +85,32 @@ training_config = {
         SEED_KEY: 42,
         SCHEDULER_MAX_NUMBER_ITERATIONS_KEY: 20,
         SCHEDULER_MIN_LR_KEY: 0,
-    },
-    "data": {
-        #NORMALIZATION_VALUE_KEY: 10000,
-        #LABEL_THRESHOLD_KEY: 0.05,
-        BANDS_KEY: "RGB",
-    },
-    "label": {
-        #TRANSFORMS_LABEL_KEY: Transforms().get_transform(),
+        BANDS_KEY: Bands.INFRARED
     },
     "metrics": {METRICS_KEY: SegmentationUtils},
     "other": {
         SAVE_MODEL_KEY: False,
         ENVIRONMENT_KEY: "remote",
     },
-}
+    "pipelines": {
+        'climate_zone': [FloatDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        #'elevation_differ': [FloatDecoder(), ToTensor(), ToDevice(device)],
+        'era_5': [NDArrayDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(), Convert('int64'), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'glo_30_dem': [NDArrayDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        #'multiclass_numer': [NDArrayDecoder(), ToTensor(), ToDevice(device)],
+        'multiclass_one_h': [ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'season_s1': [FloatDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'season_s2': [FloatDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'sentinel_1': [NDArrayDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'sentinel_2': [NDArrayDecoder(), Clipping([0, 10_000]), ChannelSelector(Bands.INFRARED), ToTensor(), ToDevice(device = torch.device('cuda'))], 
+    }
 
-# Modalities that are loaded
-sentinel_1_modality = Sentinel1Modality(
-    data_root_path=FileAndDirectoryReferences.SENTINEL_1_DIRECTORY,
-    numpy_dtype="float32",
-)
-sentinel_2_modality = Sentinel2Modality(
-    data_root_path=FileAndDirectoryReferences.SENTINEL_2_DIRECTORY,
-    s2_bands=training_config["data"][BANDS_KEY],
-    # transform=training_config["data"][TRANSFORMS_KEY],
-    numpy_dtype="float32",
-)
-esa_world_cover_modality_train = EsaWorldCoverModality(
-    data_root_path=FileAndDirectoryReferences.ESA_WORLD_COVER_DIRECTORY,
-    esa_world_cover_index_path=FileAndDirectoryReferences.ESA_WORLD_COVER_CSV_TRAIN,
-    transform=ESAWorldCoverTransform(convert_to_label=True)
-)
-esa_world_cover_modality_validation = EsaWorldCoverModality(
-    data_root_path=FileAndDirectoryReferences.ESA_WORLD_COVER_DIRECTORY,
-    esa_world_cover_index_path=FileAndDirectoryReferences.ESA_WORLD_COVER_CSV_VALIDATION,
-    transform=ESAWorldCoverTransform(convert_to_label=True)
-)
-modalities_config_train = {
-    # "sentinel_1_modality": sentinel_1_modality,
-    "sentinel_2_modality": sentinel_2_modality,
-    "esa_world_cover_modality": esa_world_cover_modality_train,
-}
-modalities_config_validation = {
-    # "sentinel_1_modality": sentinel_1_modality,
-    "sentinel_2_modality": sentinel_2_modality,
-    "esa_world_cover_modality": esa_world_cover_modality_validation,
-}
+    #Modality
+    #'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(), Add1dChannel(), ToTensor(), ToDevice(device = torch.device('cuda'))],
+    
+    #Label
+    #'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(), Convert('int64'), ToTensor(), ToDevice(device = torch.device('cuda'))],
 
-dataset_train = BenGe(
-    data_index_path=FileAndDirectoryReferences.ESA_WORLD_COVER_CSV_TRAIN,
-    sentinel_1_2_metadata_path=FileAndDirectoryReferences.SENTINEL_1_2_METADATA_CSV,
-    **modalities_config_train,
-)
 
-dataset_validation = BenGe(
-    data_index_path=FileAndDirectoryReferences.ESA_WORLD_COVER_CSV_VALIDATION,
-    sentinel_1_2_metadata_path=FileAndDirectoryReferences.SENTINEL_1_2_METADATA_CSV,
-    **modalities_config_validation,
-)
+}

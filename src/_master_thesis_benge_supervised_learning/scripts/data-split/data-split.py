@@ -14,7 +14,7 @@ def check_if_present(patch_id, df_train, df_validation, df_test):
 
 def make_split():
     # Path to store data files
-    data_path = "/netscratch2/nkesseli/master-thesis-benge/src/master_thesis_benge_supervised_learning/scripts_/data-split/data-split-folder-2/"
+    data_path = "/netscratch2/nkesseli/master-thesis-benge/src/_master_thesis_benge_supervised_learning/scripts/data-split/data-split-folder-2/"
 
     # Load ben-ge
     df_large = pd.read_csv(
@@ -144,9 +144,8 @@ def check_column_non_inclusion(df1, df2):
 
 if __name__ == "__main__":
 
-    make_split()
+    #make_split()
 
-    '''
     # Check that all values from ben-ge-s are in cluded in the respective train,validation,test splits
     df_small_train = pd.read_csv(
         "/ds2/remote_sensing/ben-ge/ben-ge-s/data-index/ben-ge-s-train.csv"
@@ -159,35 +158,88 @@ if __name__ == "__main__":
     )
 
     # Load split data for train
-    df_train20 = pd.read_csv("data-split-folder/ben-ge-train20.csv")
-    df_train40 = pd.read_csv("data-split-folder/ben-ge-train40.csv")
-    df_train60 = pd.read_csv("data-split-folder/ben-ge-train60.csv")
-    df_train80 = pd.read_csv("data-split-folder/ben-ge-train80.csv")
+    print('Train subsets check')
+    df_train20 = pd.read_csv("data-split-folder-2/ben-ge-train20.csv")
+    df_train40 = pd.read_csv("data-split-folder-2/ben-ge-train40.csv")
+    df_train60 = pd.read_csv("data-split-folder-2/ben-ge-train60.csv")
+    df_train80 = pd.read_csv("data-split-folder-2/ben-ge-train80.csv")
     df_train = pd.read_csv("data-split-folder/ben-ge-train.csv")
     print(is_subset(df_small_train, df_train20))
     print(is_subset(df_small_train, df_train40))
     print(is_subset(df_small_train, df_train60))
     print(is_subset(df_small_train, df_train80))
     print(is_subset(df_small_train, df_train))
+    print('length 20: '+str(len(df_train20)))
+    print('length 40: '+str(len(df_train40)))
+    print('length 60: '+str(len(df_train60)))
+    print('length 80: '+str(len(df_train80)))
+    print('length 100: '+str(len(df_train)))
+    print('')
 
-    df_validation20 = pd.read_csv("data-split-folder/ben-ge-validation20.csv")
-    df_test20 = pd.read_csv("data-split-folder/ben-ge-test20.csv")
+    print('Validation subsets check')
+    df_validation20 = pd.read_csv("data-split-folder-2/ben-ge-validation20.csv")
+    df_validation40 = pd.read_csv("data-split-folder-2/ben-ge-validation40.csv")
+    df_validation60 = pd.read_csv("data-split-folder-2/ben-ge-validation60.csv")
+    df_validation80 = pd.read_csv("data-split-folder-2/ben-ge-validation80.csv")
+    df_validation = pd.read_csv("data-split-folder/ben-ge-validation.csv")
+    print(is_subset(df_small_validation, df_validation20))
+    print(is_subset(df_small_validation, df_validation40))
+    print(is_subset(df_small_validation, df_validation60))
+    print(is_subset(df_small_validation, df_validation80))
+    print(is_subset(df_small_validation, df_validation))
+    print('length 20: '+str(len(df_validation20)))
+    print('length 40: '+str(len(df_validation40)))
+    print('length 60: '+str(len(df_validation60)))
+    print('length 80: '+str(len(df_validation80)))
+    print('length 100: '+str(len(df_validation)))
+    print('')
+
+    print('Test subsets check')
+    df_test20 = pd.read_csv("data-split-folder-2/ben-ge-test20.csv")
+    df_test40 = pd.read_csv("data-split-folder-2/ben-ge-test40.csv")
+    df_test60 = pd.read_csv("data-split-folder-2/ben-ge-test60.csv")
+    df_test80 = pd.read_csv("data-split-folder-2/ben-ge-test80.csv")
+    df_test = pd.read_csv("data-split-folder/ben-ge-test.csv")
+    print(is_subset(df_small_test, df_test20))
+    print(is_subset(df_small_test, df_test40))
+    print(is_subset(df_small_test, df_test60))
+    print(is_subset(df_small_test, df_test80))
+    print(is_subset(df_small_test, df_test))
+    print('length 20: '+str(len(df_test20)))
+    print('length 40: '+str(len(df_test40)))
+    print('length 60: '+str(len(df_test60)))
+    print('length 80: '+str(len(df_test80)))
+    print('length 100: '+str(len(df_test)))
+    print('')
+
+    print('20 size exlusion')
+    df_validation20 = pd.read_csv("data-split-folder-2/ben-ge-validation20.csv")
+    df_test20 = pd.read_csv("data-split-folder-2/ben-ge-test20.csv")
     print(check_column_non_inclusion(df_train20, df_validation20))
     print(check_column_non_inclusion(df_train20, df_test20))
+    print(check_column_non_inclusion(df_test20, df_validation20))
+    print('')
 
-    df_validation40 = pd.read_csv("data-split-folder/ben-ge-validation40.csv")
-    df_test40 = pd.read_csv("data-split-folder/ben-ge-test40.csv")
+    print('40 size exlusion')
+    df_validation40 = pd.read_csv("data-split-folder-2/ben-ge-validation40.csv")
+    df_test40 = pd.read_csv("data-split-folder-2/ben-ge-test40.csv")
     print(check_column_non_inclusion(df_train40, df_validation40))
     print(check_column_non_inclusion(df_train40, df_test40))
-
-    df_validation60 = pd.read_csv("data-split-folder/ben-ge-validation60.csv")
-    df_test60 = pd.read_csv("data-split-folder/ben-ge-test60.csv")
+    print(check_column_non_inclusion(df_test40, df_validation40))
+    print('')
+    
+    print('60 size exlusion')
+    df_validation60 = pd.read_csv("data-split-folder-2/ben-ge-validation60.csv")
+    df_test60 = pd.read_csv("data-split-folder-2/ben-ge-test60.csv")
     print(check_column_non_inclusion(df_train60, df_validation60))
     print(check_column_non_inclusion(df_train60, df_test60))
+    print(check_column_non_inclusion(df_test60, df_validation60))
+    print('')
 
-    df_validation80 = pd.read_csv("data-split-folder/ben-ge-validation80.csv")
-    df_test80 = pd.read_csv("data-split-folder/ben-ge-test80.csv")
+    print('80 size exlusion')
+    df_validation80 = pd.read_csv("data-split-folder-2/ben-ge-validation80.csv")
+    df_test80 = pd.read_csv("data-split-folder-2/ben-ge-test80.csv")
     print(check_column_non_inclusion(df_train80, df_validation80))
     print(check_column_non_inclusion(df_train80, df_test80))
-
-    '''
+    print(check_column_non_inclusion(df_test80, df_validation80))
+    print('')

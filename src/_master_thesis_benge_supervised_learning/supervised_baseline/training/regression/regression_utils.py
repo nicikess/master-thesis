@@ -36,7 +36,7 @@ class RegressionUtils(Metric):
         self.epoch_train_mse = 0
         self.epoch_train_rmse = 0
 
-    def log_batch_train_metrics(self, loss, output, label, progress):
+    def log_batch_train_metrics(self, loss, output, label, progress, epoch):
         self.epoch_train_loss += loss
 
         softmax_output = F.softmax(output, dim=1)
@@ -44,7 +44,7 @@ class RegressionUtils(Metric):
         self.epoch_train_mse += self.mse(softmax_output, label)
         self.epoch_train_rmse += self.rsme(softmax_output, label)
 
-        progress.set_description("Train loss epoch: {:.4f}".format(loss))
+        progress.set_description("Train loss "+str(epoch)+":{:.4f}".format(loss))
         wandb.log({"Step loss": loss})
 
     def log_epoch_train_metrics(self, len_train_dataloader, scheduler):

@@ -24,5 +24,3 @@ class DataloaderUtils():
                                             #'sentinel_2': [NDArrayDecoder(), Clipping([0, 10_000]), ToTensor()],
                                 }
                             )
-
-    #def 
