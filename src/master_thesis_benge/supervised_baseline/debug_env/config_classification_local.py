@@ -63,7 +63,7 @@ training_config = {
             MODALITIES_LABEL_KEY: MULTICLASS_ONE_HOT_LABEL_KEY,
             MODALITIES_KEY: [S2_MODALITY_KEY],
         },
-        EPOCHS_KEY: 20,
+        EPOCHS_KEY: 1,
         LEARNING_RATE_KEY: 0.001,
         BATCH_SIZE_KEY: 32,
         OPTIMIZER_KEY: torch.optim.Adam,

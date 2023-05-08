@@ -49,8 +49,8 @@ from master_thesis_benge.supervised_baseline.config.constants import (
     DATALOADER_VALIDATION_FILE_KEY,
     TASK_KEY,
     BANDS_KEY,
+    DATASET_SIZE_KEY,
 )
-
 
 from master_thesis_benge.supervised_baseline.config.config_runs.config_files_and_directories import (
     RemoteFilesAndDirectoryReferences as FileAndDirectoryReferences,
@@ -85,8 +85,6 @@ training_config = {
             MODALITIES_LABEL_KEY: MULTICLASS_ONE_HOT_LABEL_INDEX_KEY,
             MODALITIES_KEY: [SENTINEL_2_INDEX_KEY],
         },
-        DATALOADER_TRAIN_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-train.beton',
-        DATALOADER_VALIDATION_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-validation.beton',
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.001,
         BATCH_SIZE_KEY: 32,
@@ -102,17 +100,30 @@ training_config = {
         SAVE_MODEL_KEY: False,
         ENVIRONMENT_KEY: "remote",
     },
+    "data": {
+        DATALOADER_TRAIN_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-8k-train.beton',
+        DATALOADER_VALIDATION_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-8k-validation.beton',
+        DATASET_SIZE_KEY: ["8k", "20", "40", "80", "100"],
+    },
     "pipelines": {
-        'climate_zone': [FloatDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
-        #'elevation_differ': [FloatDecoder(), ToTensor(), ToDevice(device)],
-        'era_5': [NDArrayDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
-        'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), Add1dChannel(), ToTensor(), ToDevice(device = torch.device('cuda'))],
-        'glo_30_dem': [NDArrayDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
-        #'multiclass_numer': [NDArrayDecoder(), ToTensor(), ToDevice(device)],
-        'multiclass_one_h': [ToTensor(), ToDevice(device = torch.device('cuda'))],
-        'season_s1': [FloatDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
-        'season_s2': [FloatDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
-        'sentinel_1': [NDArrayDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
-        'sentinel_2': [NDArrayDecoder(), Clipping([0, 10_000]), ChannelSelector([7, 3, 2, 1]), ToTensor(), ToDevice(device = torch.device('cuda'))], 
+        'climate_zone': [FloatDecoder(), ToTensor(), ToDevice(device=torch.device('cuda'))],
+        # 'elevation_differ': [FloatDecoder(), ToTensor(), ToDevice(device)],
+        'era_5': [NDArrayDecoder(), ToTensor(), ToDevice(device=torch.device('cuda'))],
+        'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10, 1), Add1dChannel(), ToTensor(),
+                           ToDevice(device=torch.device('cuda'))],
+        'glo_30_dem': [NDArrayDecoder(), ToTensor(), ToDevice(device=torch.device('cuda'))],
+        # 'multiclass_numer': [NDArrayDecoder(), ToTensor(), ToDevice(device)],
+        'multiclass_one_h': [ToTensor(), ToDevice(device=torch.device('cuda'))],
+        'season_s1': [FloatDecoder(), ToTensor(), ToDevice(device=torch.device('cuda'))],
+        'season_s2': [FloatDecoder(), ToTensor(), ToDevice(device=torch.device('cuda'))],
+        'sentinel_1': [NDArrayDecoder(), ToTensor(), ToDevice(device=torch.device('cuda'))],
+        'sentinel_2': [NDArrayDecoder(), Clipping([0, 10_000]), ChannelSelector([7, 3, 2, 1]), ToTensor(),
+                       ToDevice(device=torch.device('cuda'))],
     }
 }
+
+
+def get_data_set_files(size: str):
+    train_file = f'/ds2/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-train.beton'
+    validation_file = f'/ds2/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-validation.beton'
+    return train_file, validation_file
