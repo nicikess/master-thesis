@@ -52,6 +52,9 @@ class SegmentationUtils(Metric):
         wandb.log({"Step loss": loss})
 
     def log_epoch_train_metrics(self, len_train_dataloader, scheduler):
+        print()
+        print(len_train_dataloader)
+        print()
         # Calculate average per metric per epoch
         epoch_train_loss = self.epoch_train_loss / len_train_dataloader
         epoch_train_jaccard = self.epoch_train_jaccard / len_train_dataloader
@@ -74,5 +77,8 @@ class SegmentationUtils(Metric):
         self.epoch_validation_jaccard += self.jaccard(arg_max, label)
 
     def log_epoch_validation_metrics(self, len_vali_dataloader):
+        print()
+        print(len_vali_dataloader)
+        print()
         epoch_validation_jaccard = self.epoch_validation_jaccard / len_vali_dataloader
         wandb.log({"Epoch validation jaccard": epoch_validation_jaccard})

@@ -99,6 +99,10 @@ class ClassificationUtils(Metric):
         wandb.log({"Step loss": loss})
 
     def log_epoch_train_metrics(self, len_train_dataloader, scheduler):
+        print()
+        print(len_train_dataloader)
+        print()
+
         # Calculate average per metric per epoch
         epoch_train_loss = self.epoch_train_loss / len_train_dataloader
         epoch_train_accuracy = self.epoch_train_accuracy / len_train_dataloader
@@ -151,6 +155,10 @@ class ClassificationUtils(Metric):
         )
 
     def log_epoch_validation_metrics(self, len_vali_dataloader):
+        print()
+        print(len_vali_dataloader)
+        print()
+
         epoch_val_accuracy = self.epoch_val_accuracy / len_vali_dataloader
         epoch_val_accuracy_per_class = self.epoch_val_accuracy_per_class / len_vali_dataloader
         epoch_val_f1_per_class = self.epoch_val_f1_per_class / len_vali_dataloader

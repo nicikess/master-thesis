@@ -19,7 +19,7 @@ from _master_thesis_benge_supervised_learning.supervised_baseline.config.constan
 
 
 class Train:
-    def __init__(self, model, train_dl, validation_dl, metrics, wandb, device, config):
+    def __init__(self, model, train_dl, validation_dl, metrics, wandb, device, config, task):
         self.model = model
         self.train_dl = train_dl
         self.validation_dl = validation_dl
@@ -27,6 +27,7 @@ class Train:
         self.wandb = wandb
         self.device = device
         self.config = config
+        self.task = task
 
         # Initialize optimizer and scheduler
         self.optimizer = config[TRAINING_CONFIG_KEY][OPTIMIZER_KEY](
@@ -52,6 +53,8 @@ class Train:
 
         # For every epoch
         for epoch in range(self.config[TRAINING_CONFIG_KEY][EPOCHS_KEY]):
+
+            print("Task: "+str(self.task))
 
             progress = tqdm(
                 enumerate(self.train_dl), desc="Train Loss: ", total=len(self.train_dl)

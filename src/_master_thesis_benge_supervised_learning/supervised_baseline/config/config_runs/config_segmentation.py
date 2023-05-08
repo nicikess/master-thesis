@@ -74,8 +74,8 @@ training_config = {
             MODALITIES_LABEL_KEY: ESA_WORLD_COVER_INDEX_KEY,
             MODALITIES_KEY: [SENTINEL_2_INDEX_KEY],
         },
-        DATALOADER_TRAIN_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-40-train.beton',
-        DATALOADER_VALIDATION_FILE_KEY: '/netscratch2/nkesseli/master-thesis-benge/src/_master_thesis_benge_supervised_learning/scripts/data-split/yaml_ffcv_config/ben-ge-40-validation.beton',
+        DATALOADER_TRAIN_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-train.beton',
+        DATALOADER_VALIDATION_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-validation.beton',
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.01,
         BATCH_SIZE_KEY: 32,
@@ -85,7 +85,6 @@ training_config = {
         SEED_KEY: 42,
         SCHEDULER_MAX_NUMBER_ITERATIONS_KEY: 20,
         SCHEDULER_MIN_LR_KEY: 0,
-        BANDS_KEY: Bands.INFRARED
     },
     "metrics": {METRICS_KEY: SegmentationUtils},
     "other": {
@@ -96,15 +95,17 @@ training_config = {
         'climate_zone': [FloatDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'elevation_differ': [FloatDecoder(), ToTensor(), ToDevice(device)],
         'era_5': [NDArrayDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
-        'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(), Convert('int64'), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), Convert('int64'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'glo_30_dem': [NDArrayDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'multiclass_numer': [NDArrayDecoder(), ToTensor(), ToDevice(device)],
         'multiclass_one_h': [ToTensor(), ToDevice(device = torch.device('cuda'))],
         'season_s1': [FloatDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'season_s2': [FloatDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'sentinel_1': [NDArrayDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
-        'sentinel_2': [NDArrayDecoder(), Clipping([0, 10_000]), ChannelSelector(Bands.INFRARED), ToTensor(), ToDevice(device = torch.device('cuda'))], 
+        'sentinel_2': [NDArrayDecoder(), Clipping([0, 10_000]), ChannelSelector([7, 3, 2, 1]), ToTensor(), ToDevice(device = torch.device('cuda'))], 
     }
+    #RGB
+    #[3, 2, 1]
 
     #Modality
     #'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(), Add1dChannel(), ToTensor(), ToDevice(device = torch.device('cuda'))],

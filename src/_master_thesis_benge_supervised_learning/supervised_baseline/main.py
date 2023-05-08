@@ -3,7 +3,7 @@ import numpy as np
 import wandb
 import torch
 
-from _master_thesis_benge_supervised_learning.supervised_baseline.config.config_runs.config_segmentation import (
+from _master_thesis_benge_supervised_learning.supervised_baseline.config.config_runs.config_classification import (
     training_config,
 )
 
@@ -104,4 +104,5 @@ if __name__ == "__main__":
         wandb=wandb,
         device=device,
         config=training_config,
+        task=training_config[TASK_CONFIG_KEY][TASK_KEY]
     ).train()
