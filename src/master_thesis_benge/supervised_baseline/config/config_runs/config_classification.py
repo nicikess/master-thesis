@@ -85,7 +85,7 @@ training_config = {
             MODALITIES_LABEL_KEY: MULTICLASS_ONE_HOT_LABEL_INDEX_KEY,
             MODALITIES_KEY: [SENTINEL_2_INDEX_KEY],
         },
-        EPOCHS_KEY: 20,
+        EPOCHS_KEY: 1,
         LEARNING_RATE_KEY: 0.001,
         BATCH_SIZE_KEY: 32,
         OPTIMIZER_KEY: torch.optim.Adam,
@@ -103,22 +103,20 @@ training_config = {
     "data": {
         DATALOADER_TRAIN_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-8k-train.beton',
         DATALOADER_VALIDATION_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-8k-validation.beton',
-        DATASET_SIZE_KEY: ["8k", "20", "40", "80", "100"],
+        #--DATASET_SIZE_KEY: ["8k", "20", "40", "80", "100"],
     },
     "pipelines": {
         'climate_zone': [FloatDecoder(), ToTensor(), ToDevice(device=torch.device('cuda'))],
-        # 'elevation_differ': [FloatDecoder(), ToTensor(), ToDevice(device)],
+        #'elevation_differ': [FloatDecoder(), ToTensor(), ToDevice(device)],
         'era_5': [NDArrayDecoder(), ToTensor(), ToDevice(device=torch.device('cuda'))],
-        'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10, 1), Add1dChannel(), ToTensor(),
-                           ToDevice(device=torch.device('cuda'))],
+        #'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10, 1), Add1dChannel(), ToTensor(), ToDevice(device=torch.device('cuda'))],
         'glo_30_dem': [NDArrayDecoder(), ToTensor(), ToDevice(device=torch.device('cuda'))],
-        # 'multiclass_numer': [NDArrayDecoder(), ToTensor(), ToDevice(device)],
+        #'multiclass_numer': [NDArrayDecoder(), ToTensor(), ToDevice(device)],
         'multiclass_one_h': [ToTensor(), ToDevice(device=torch.device('cuda'))],
         'season_s1': [FloatDecoder(), ToTensor(), ToDevice(device=torch.device('cuda'))],
         'season_s2': [FloatDecoder(), ToTensor(), ToDevice(device=torch.device('cuda'))],
         'sentinel_1': [NDArrayDecoder(), ToTensor(), ToDevice(device=torch.device('cuda'))],
-        'sentinel_2': [NDArrayDecoder(), Clipping([0, 10_000]), ChannelSelector([7, 3, 2, 1]), ToTensor(),
-                       ToDevice(device=torch.device('cuda'))],
+        'sentinel_2': [NDArrayDecoder(), Clipping([0, 10_000]), ChannelSelector([7, 3, 2, 1]), ToTensor(), ToDevice(device=torch.device('cuda'))],
     }
 }
 

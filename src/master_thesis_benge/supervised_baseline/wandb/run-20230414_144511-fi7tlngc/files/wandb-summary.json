@@ -1,1 +1,0 @@
-{"Dataset size": 6400, "_timestamp": 1681476312.620078, "_runtime": 0.6707329750061035, "_step": 1, "Dataset modalities": "['sentinel_1', 'sentinel_2']", "_wandb": {"runtime": 1}}

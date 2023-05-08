@@ -94,6 +94,8 @@ training_config = {
     "pipelines": {
         'climate_zone': [FloatDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'elevation_differ': [FloatDecoder(), ToTensor(), ToDevice(device)],
+        
+        #Weather
         'era_5': [NDArrayDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), Convert('int64'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'glo_30_dem': [NDArrayDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],

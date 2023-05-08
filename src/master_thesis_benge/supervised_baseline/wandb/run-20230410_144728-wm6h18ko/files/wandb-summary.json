@@ -1,1 +1,0 @@
-{"Config reference: ": "sentinel_2_sentinel_1", "_timestamp": 1681130863.4225254, "_runtime": 14.89919638633728, "_step": 2, "Dataset size": 6400, "Run description": "sentinel 1 and sentinel 2 with output conv", "_wandb": {"runtime": 14}}

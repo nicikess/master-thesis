@@ -45,14 +45,15 @@ if __name__ == "__main__":
         "name": 'sweepy',
         "parameters": {
             "seed": {'values': [42, 43, 44, 45, 46]},
+            "dataset_size": {'values': ["8k", "20", "40", "80", "100"]},
         }
     }
 
     sweep_id = wandb.sweep(sweep=sweep_configuration, project='reproducibility-experiments-dataset-size')
 
-    def run_sweep(size: str):
+    def run_sweep():
 
-        wandb.init()
+        wandb.init(config=training_config)
 
         # Set device
         if environment == "local":
@@ -65,26 +66,27 @@ if __name__ == "__main__":
         torch.manual_seed(wandb.config.seed)
         np.random.seed(wandb.config.seed)
 
-        wandb.login(key="9da448bfaa162b572403e1551114a17058f249d0")
-        wandb.init(
-            project="master-thesis-supervised-"+(training_config[TASK_CONFIG_KEY][TASK_KEY].name).lower(),
-            entity="nicikess",
-            config=training_config,
-        )
-
-        dataloader_train = Loader(get_data_set_files(size),
+        dataloader_train = Loader(get_data_set_files(wandb.config.dataset_size)[0],
                                 batch_size=training_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY],
                                 order=OrderOption.RANDOM,
                                 num_workers=4,
                                 pipelines=training_config[PIPELINES_CONFIG_KEY]
                             )
 
-        dataloader_validation = Loader(get_data_set_files(size),
+        dataloader_validation = Loader(get_data_set_files(wandb.config.dataset_size)[1],
                                 batch_size=training_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY],
                                 order=OrderOption.RANDOM,
                                 num_workers=4,
                                 pipelines=training_config[PIPELINES_CONFIG_KEY]
                             )
+        
+        '''
+        itera = iter(dataloader_train)
+        first = next(itera)
+        for data in first:
+            print(data)
+            input("test")
+        '''
 
         # Create a dictionary that maps each modality to the number of input channels
         channel_modalities = {
@@ -120,6 +122,4 @@ if __name__ == "__main__":
             task=training_config[TASK_CONFIG_KEY][TASK_KEY]
         ).train()
 
-    for size in training_config[DATA_CONFIG_KEY][DATASET_SIZE_KEY]:
-        print("Size: "+size)
-        wandb.agent(sweep_id, function=run_sweep(size))
+    wandb.agent(sweep_id, function=run_sweep)
