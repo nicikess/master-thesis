@@ -1,6 +1,7 @@
 from tqdm import tqdm
 import torch.nn as nn
 import torch
+import os
 
 from master_thesis_benge.supervised_baseline.config.constants import (
     TRAINING_CONFIG_KEY,
@@ -15,6 +16,8 @@ from master_thesis_benge.supervised_baseline.config.constants import (
     MODALITIES_KEY,
     MODALITIES_LABEL_KEY,
     NUMBER_OF_CLASSES_KEY,
+    OTHER_CONFIG_KEY,
+    SAVE_MODEL_KEY
 )
 
 
@@ -152,18 +155,12 @@ class Train:
                 # Calculate epoch validation metrics
                 self.metrics.log_epoch_validation_metrics(len(self.validation_dl))
 
-"""
-            if self.config[OTHER_CONFIG_KEY][SAVE_MODEL_KEY]:
-                if epoch == 0:
-                    best_val = epoch_val_f1_score
-                else:
-                    if self.environment == "remote":
-                        if epoch_val_f1_score <= best_val:
-                            best_val = epoch_val_f1_score
-                            # Save only the best model
-                            run_id = str(wandb.run.id)
-                            save_weights_path = (
-                                "model/" + run_id + "/classification_model"
-                            )
-                            torch.save(self.model.state_dict(), save_weights_path)
-"""
+
+        if self.config[OTHER_CONFIG_KEY][SAVE_MODEL_KEY]:
+            # Save only the best model
+            run_id = str(self.wandb.run.id)
+            os.makedirs("saved_models/" + run_id)
+            save_weights_path = (
+                "saved_models/" + run_id
+            )
+            torch.save(self.model.state_dict(), save_weights_path+'/model.pt')

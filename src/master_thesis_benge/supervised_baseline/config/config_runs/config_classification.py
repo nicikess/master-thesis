@@ -43,13 +43,10 @@ from master_thesis_benge.supervised_baseline.config.constants import (
     ESA_WORLD_COVER_INDEX_KEY,
     MODALITIES_KEY,
     METRICS_KEY,
-    METRICS_CONFIG_KEY,
     SENTINEL_2_INDEX_KEY,
     DATALOADER_TRAIN_FILE_KEY,
     DATALOADER_VALIDATION_FILE_KEY,
     TASK_KEY,
-    BANDS_KEY,
-    DATASET_SIZE_KEY,
 )
 
 from master_thesis_benge.supervised_baseline.config.config_runs.config_files_and_directories import (
@@ -85,7 +82,7 @@ training_config = {
             MODALITIES_LABEL_KEY: MULTICLASS_ONE_HOT_LABEL_INDEX_KEY,
             MODALITIES_KEY: [SENTINEL_2_INDEX_KEY],
         },
-        EPOCHS_KEY: 1,
+        EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.001,
         BATCH_SIZE_KEY: 32,
         OPTIMIZER_KEY: torch.optim.Adam,
@@ -103,7 +100,6 @@ training_config = {
     "data": {
         DATALOADER_TRAIN_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-8k-train.beton',
         DATALOADER_VALIDATION_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-8k-validation.beton',
-        #--DATASET_SIZE_KEY: ["8k", "20", "40", "80", "100"],
     },
     "pipelines": {
         'climate_zone': [FloatDecoder(), ToTensor(), ToDevice(device=torch.device('cuda'))],
