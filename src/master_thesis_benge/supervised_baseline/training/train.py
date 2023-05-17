@@ -22,7 +22,7 @@ from master_thesis_benge.supervised_baseline.config.constants import (
 
 
 class Train:
-    def __init__(self, model, train_dl, validation_dl, metrics, wandb, device, config, task):
+    def __init__(self, model, train_dl, validation_dl, metrics, wandb, device, config, task, modalities):
         self.model = model
         self.train_dl = train_dl
         self.validation_dl = validation_dl
@@ -31,6 +31,7 @@ class Train:
         self.device = device
         self.config = config
         self.task = task
+        self.modalities = modalities
 
         # Initialize optimizer and scheduler
         self.optimizer = config[TRAINING_CONFIG_KEY][OPTIMIZER_KEY](
@@ -74,9 +75,7 @@ class Train:
                 # Create forward data (remove label from dict)
                 ben_ge_data_forward = {
                     key: ben_ge_data[key]
-                    for key in self.config[TRAINING_CONFIG_KEY][MODALITIES_KEY][
-                        MODALITIES_KEY
-                    ]
+                    for key in self.modalities
                 }
 
                 # Rename keys
@@ -131,9 +130,7 @@ class Train:
                     # Create forward data (remove label from dict)
                     ben_ge_data_forward = {
                         key: ben_ge_data[key]
-                        for key in self.config[TRAINING_CONFIG_KEY][MODALITIES_KEY][
-                            MODALITIES_KEY
-                        ]
+                        for key in self.modalities
                     }
 
                     # Rename keys

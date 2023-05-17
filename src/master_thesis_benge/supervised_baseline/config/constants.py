@@ -9,9 +9,12 @@ class Bands(Enum):
 
 
 class Task(Enum):
-    Classification = "classification"
-    Regression = "regression"
-    Segmentation = "segmentation"
+    CLASSIFICATION_CLIMATEZONE = "classification_climatezone"
+    CLASSIFICATION_LANDUSE = "classification_landuse"
+    REGRESSION_ELEVATION_DIFFERENCE = "regression_elevation_difference"
+    REGRESSION_LANDUSE_FRACTION = "regression_landuse_fraction"
+    SEGMENTATION_ELEVATION = "segmentation_elevation"
+    SEGMENTATION_LANDUSE = "segmentation_landuse"
 
 # Modalities indicis
 CLIMATE_ZONE_INDEX_KEY = 0
@@ -25,6 +28,20 @@ SEASON_S1_INDEX_KEY = 7
 SEASON_S2_INDEX_KEY = 8
 SENTINEL_1_INDEX_KEY = 9
 SENTINEL_2_INDEX_KEY = 10
+
+label_from_index = {
+    0: "CLIMATE_ZONE_INDEX_KEY",
+    1: "ELEVATION_DIFFERENCE_LABEL_INDEX_KEY",
+    2: "ERA_5_INDEX_KEY",
+    3: "ESA_WORLD_COVER_INDEX_KEY",
+    4: "GLO_30_DEM_INDEX_KEY",
+    5: "MULTICLASS_NUMERIC_LABEL_INDEX_KEY",
+    6: "MULTICLASS_ONE_HOT_LABEL_INDEX_KEY",
+    7: "SEASON_S1_INDEX_KEY",
+    8: "SEASON_S2_INDEX_KEY",
+    9: "SENTINEL_1_INDEX_KEY",
+    10: "SENTINEL_2_INDEX_KEY"
+}
 
 # Training
 DATALOADER_TRAIN_FILE_KEY = "dataloader_train_file"
@@ -64,3 +81,6 @@ MODEL_CONFIG_KEY = "model"
 OTHER_CONFIG_KEY = "other"
 METRICS_CONFIG_KEY = "metrics"
 PIPELINES_CONFIG_KEY = "pipelines"
+
+def get_label_from_index(index: int):
+    return label_from_index.get(index)
