@@ -37,11 +37,13 @@ class Train:
         self.optimizer = config[TRAINING_CONFIG_KEY][OPTIMIZER_KEY](
             model.parameters(), lr=config[TRAINING_CONFIG_KEY][LEARNING_RATE_KEY]
         )
+        '''
         self.scheduler = config[TRAINING_CONFIG_KEY][SCHEDULER_KEY](
             self.optimizer,
             T_max=config[TRAINING_CONFIG_KEY][SCHEDULER_MAX_NUMBER_ITERATIONS_KEY],
             eta_min=config[TRAINING_CONFIG_KEY][SCHEDULER_MIN_LR_KEY],
         )
+        '''
 
     def train(self):
         # Move the model to the GPU
@@ -104,10 +106,10 @@ class Train:
                 # Calculate batch train metrics
                 self.metrics.log_batch_train_metrics(loss, output, label, progress, epoch)
 
-            self.scheduler.step()
+            #self.scheduler.step()
 
             # Calculate epoch train metrics
-            self.metrics.log_epoch_train_metrics(len(self.train_dl), scheduler=self.scheduler)
+            #self.metrics.log_epoch_train_metrics(len(self.train_dl), scheduler=self.scheduler)
 
             progress = tqdm(
                 enumerate(self.validation_dl),

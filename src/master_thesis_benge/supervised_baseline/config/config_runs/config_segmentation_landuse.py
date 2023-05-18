@@ -6,6 +6,10 @@ from master_thesis_benge.supervised_baseline.training.transforms import (
 )
 
 # Import models
+from master_thesis_benge.supervised_baseline.model.unet import (
+    UNet
+)
+
 from master_thesis_benge.supervised_baseline.model.dual_unet import (
     DualUNet,
 )
@@ -71,10 +75,10 @@ from ffcv.fields.decoders import NDArrayDecoder, FloatDecoder, IntDecoder
 
 training_config = {
     "task": {
-        TASK_KEY: Task.SEGMENTATION_LANDUSE,
+        TASK_KEY: Task.SEGMENTATION_LANDUSE.value,
     },
     "model": {
-        MODEL_KEY: DualUNet,
+        MODEL_KEY: UNet,
         WEIGHTS_KEY: False,
         NUMBER_OF_CLASSES_KEY: 11,
     },
@@ -82,15 +86,15 @@ training_config = {
         MODALITIES_KEY: {
             MODALITIES_LABEL_KEY: ESA_WORLD_COVER_INDEX_KEY,
         },
-        DATALOADER_TRAIN_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-20-train.beton',
-        DATALOADER_VALIDATION_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-20-validation.beton',
+        #DATALOADER_TRAIN_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-20-train.beton',
+        DATALOADER_VALIDATION_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-100-validation.beton',
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.01,
         BATCH_SIZE_KEY: 32,
         OPTIMIZER_KEY: torch.optim.Adam,
-        SCHEDULER_KEY: torch.optim.lr_scheduler.CosineAnnealingLR,
+        #SCHEDULER_KEY: torch.optim.lr_scheduler.CosineAnnealingLR,
         LOSS_KEY: torch.nn.CrossEntropyLoss(),#weight=[0.1, 10, 0.1, 0.1, 10, 10, 0, 0.1, 10, 0, 10]
-        SEED_KEY: 42,
+        #SEED_KEY: 42,
         SCHEDULER_MAX_NUMBER_ITERATIONS_KEY: 20,
         SCHEDULER_MIN_LR_KEY: 0,
     },
@@ -117,3 +121,8 @@ training_config = {
     #Label
     #'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(), Convert('int64'), ToTensor(), ToDevice(device = torch.device('cuda'))],
 }
+
+def get_data_set_files(size: str):
+    train_file = f'/ds2/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-train.beton'
+    validation_file = f'/ds2/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-validation.beton'
+    return train_file, validation_file

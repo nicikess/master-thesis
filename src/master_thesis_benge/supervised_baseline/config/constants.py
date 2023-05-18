@@ -9,12 +9,12 @@ class Bands(Enum):
 
 
 class Task(Enum):
-    CLASSIFICATION_CLIMATEZONE = "classification_climatezone"
-    CLASSIFICATION_LANDUSE = "classification_landuse"
-    REGRESSION_ELEVATION_DIFFERENCE = "regression_elevation_difference"
-    REGRESSION_LANDUSE_FRACTION = "regression_landuse_fraction"
-    SEGMENTATION_ELEVATION = "segmentation_elevation"
-    SEGMENTATION_LANDUSE = "segmentation_landuse"
+    CLASSIFICATION_CLIMATEZONE = "classification-climatezone"
+    CLASSIFICATION_LANDUSE = "classification-landuse"
+    REGRESSION_ELEVATION_DIFFERENCE = "regression-elevation-difference"
+    REGRESSION_LANDUSE_FRACTION = "regression-landuse-fraction"
+    SEGMENTATION_ELEVATION = "segmentation-elevation"
+    SEGMENTATION_LANDUSE = "segmentation-landuse"
 
 # Modalities indicis
 CLIMATE_ZONE_INDEX_KEY = 0

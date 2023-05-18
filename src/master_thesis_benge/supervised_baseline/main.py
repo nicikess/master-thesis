@@ -4,7 +4,8 @@ import wandb
 import torch
 
 from master_thesis_benge.supervised_baseline.config.config_runs.config_classification_climatezone import (
-    training_config
+    training_config,
+    get_data_set_files
 )
 
 from master_thesis_benge.supervised_baseline.config.constants import (
@@ -35,7 +36,7 @@ from master_thesis_benge.supervised_baseline.config.constants import (
     SENTINEL_2_INDEX_KEY,
     MODALITIES_LABEL_KEY,
     ESA_WORLD_COVER_INDEX_KEY,
-    get_label_from_index
+    get_label_from_index,
 )
 
 from master_thesis_benge.supervised_baseline.training.train import (
@@ -52,17 +53,13 @@ if __name__ == "__main__":
         "method": 'grid',
         "name": 'sweepy',
         "parameters": {
-            "modalities": {'values':    [[SENTINEL_2_INDEX_KEY, CLIMATE_ZONE_INDEX_KEY],
-                                        [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
-                                        [SENTINEL_2_INDEX_KEY, ERA_5_INDEX_KEY],
-                                        [SENTINEL_2_INDEX_KEY, SEASON_S2_INDEX_KEY],
-                                        [SENTINEL_2_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
-                                        [SENTINEL_2_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY]]
-                           },
+            "seed": {'values': [42]},
+            "dataset_size": {'values': ["8k", "20", "40", "60", "80", "100"]},
+            "modalities": {'values': [[SENTINEL_2_INDEX_KEY]] },
         }
     }
 
-    sweep_id = wandb.sweep(sweep=sweep_configuration, project='master-thesis-supervised-'+training_config[TASK_CONFIG_KEY][TASK_KEY].name.lower())
+    sweep_id = wandb.sweep(sweep=sweep_configuration, project='master-thesis-supervised-'+training_config[TASK_CONFIG_KEY][TASK_KEY].lower())
 
     def run_sweep():
 
@@ -76,10 +73,10 @@ if __name__ == "__main__":
             device = torch.device('cuda')
 
         # Set seed
-        torch.manual_seed(training_config[TRAINING_CONFIG_KEY][SEED_KEY])
-        np.random.seed(training_config[TRAINING_CONFIG_KEY][SEED_KEY])
+        torch.manual_seed(wandb.config.seed)
+        np.random.seed(wandb.config.seed)
 
-        dataloader_train = Loader(training_config[TRAINING_CONFIG_KEY][DATALOADER_TRAIN_FILE_KEY],
+        dataloader_train = Loader(get_data_set_files(wandb.config.dataset_size)[0],
                                 batch_size=training_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY],
                                 order=OrderOption.RANDOM,
                                 num_workers=4,
@@ -98,6 +95,7 @@ if __name__ == "__main__":
         first = next(itera)
         for data in first:
             print(data)
+            print(data.shape)
             input("test")
         '''
 
@@ -116,7 +114,7 @@ if __name__ == "__main__":
             in_channels_1=channel_modalities["in_channels_1"],
             #in_channels_1=4,
             # Input channels for s2
-            in_channels_2=channel_modalities["in_channels_2"],
+            #in_channels_2=channel_modalities["in_channels_2"],
             number_of_classes=training_config[MODEL_CONFIG_KEY][NUMBER_OF_CLASSES_KEY],
         )
 

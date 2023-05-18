@@ -60,6 +60,13 @@ class ClassificationUtils(Metric):
         )
 
     def calculate_loss(self, loss, output, label):
+        print("output: ", output)
+        print("label: ", label)
+        print("output shape: ", output.shape)
+        print("label shape: ", label.shape)
+        print("output type: ", output.type())
+        print("label type: ", label.type())
+        input()
         loss = loss(output, label)
         return loss
 

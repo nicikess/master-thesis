@@ -51,7 +51,8 @@ from master_thesis_benge.supervised_baseline.config.constants import (
     ERA_5_INDEX_KEY,
     SEASON_S2_INDEX_KEY,
     GLO_30_DEM_INDEX_KEY,
-    MULTICLASS_NUMERIC_LABEL_INDEX_KEY
+    MULTICLASS_NUMERIC_LABEL_INDEX_KEY,
+    ELEVATION_DIFFERENCE_LABEL_INDEX_KEY
 )
 
 from master_thesis_benge.supervised_baseline.config.config_runs.config_files_and_directories import (
@@ -70,7 +71,6 @@ from remote_sensing_core.transforms.ffcv.channel_selector import ChannelSelector
 from remote_sensing_core.transforms.ffcv.add_1d_channel import Add1dChannel
 from remote_sensing_core.transforms.ffcv.convert import Convert
 from remote_sensing_core.transforms.ffcv.esa_world_cover_transform import EsaWorldCoverTransform
-from remote_sensing_core.transforms.ffcv.climate_zones_transform import ClimateZonesTransform
 from remote_sensing_core.transforms.ffcv.blow_up import BlowUp
 from remote_sensing_core.transforms.ffcv.min_max_scaler import MinMaxScaler
 from remote_sensing_core.transforms.ffcv.era5_temperature_s2_transform import Era5TemperatureS2Transform
@@ -80,26 +80,26 @@ from ffcv.fields.decoders import NDArrayDecoder, FloatDecoder, IntDecoder
 
 training_config = {
     "task": {
-        TASK_KEY: Task.REGRESSION_ELEVATION_DIFFERENCE,
+        TASK_KEY: Task.REGRESSION_ELEVATION_DIFFERENCE.value,
     },
     "model": {
-        MODEL_KEY: DualResNet,
+        MODEL_KEY: ResNet,
         WEIGHTS_KEY: False,
-        NUMBER_OF_CLASSES_KEY: 11,
+        NUMBER_OF_CLASSES_KEY: 1,
     },
     "training": {
         MODALITIES_KEY: {
-            MODALITIES_LABEL_KEY: MULTICLASS_NUMERIC_LABEL_INDEX_KEY,
+            MODALITIES_LABEL_KEY: ELEVATION_DIFFERENCE_LABEL_INDEX_KEY,
         },
-        DATALOADER_TRAIN_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-20-train.beton',
-        DATALOADER_VALIDATION_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-20-validation.beton',
+        #DATALOADER_TRAIN_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-20-train.beton',
+        DATALOADER_VALIDATION_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-100-validation.beton',
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.001,
         BATCH_SIZE_KEY: 32,
         OPTIMIZER_KEY: torch.optim.Adam,
-        SCHEDULER_KEY: torch.optim.lr_scheduler.CosineAnnealingLR,
+        #SCHEDULER_KEY: torch.optim.lr_scheduler.CosineAnnealingLR,
         LOSS_KEY: torch.nn.MSELoss(),
-        SEED_KEY: 42,
+        #SEED_KEY: 42,
         SCHEDULER_MAX_NUMBER_ITERATIONS_KEY: 20,
         SCHEDULER_MIN_LR_KEY: 0,
     },
@@ -109,8 +109,8 @@ training_config = {
         ENVIRONMENT_KEY: "remote",
     },
     "pipelines": {
-        'climate_zone': [FloatDecoder(), MinMaxScaler(maximum_value=29, minimum_value=0, interval_max=1, interval_min=0), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
-        #'elevation_differ': [FloatDecoder(), ToTensor(), ToDevice(device)],
+        #'climate_zone': [FloatDecoder(), MinMaxScaler(maximum_value=29, minimum_value=0, interval_max=1, interval_min=0), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'elevation_differ': [FloatDecoder(), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'era_5': [NDArrayDecoder(), Era5TemperatureS2Transform(), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), Convert('int64'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'glo_30_dem': [NDArrayDecoder(), ChannelSelector([0]), ToTensor(), ToDevice(device = torch.device('cuda'))],
@@ -126,3 +126,8 @@ training_config = {
     #Label
     #'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(), Convert('int64'), ToTensor(), ToDevice(device = torch.device('cuda'))],
 }
+
+def get_data_set_files(size: str):
+    train_file = f'/ds2/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-train.beton'
+    validation_file = f'/ds2/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-validation.beton'
+    return train_file, validation_file

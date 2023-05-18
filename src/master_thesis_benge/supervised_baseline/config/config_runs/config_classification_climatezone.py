@@ -65,20 +65,21 @@ from remote_sensing_core.transforms.ffcv.channel_selector import ChannelSelector
 from remote_sensing_core.transforms.ffcv.add_1d_channel import Add1dChannel
 from remote_sensing_core.transforms.ffcv.convert import Convert
 from remote_sensing_core.transforms.ffcv.esa_world_cover_transform import EsaWorldCoverTransform
-from remote_sensing_core.transforms.ffcv.climate_zones_transform import ClimateZonesTransform
 from remote_sensing_core.transforms.ffcv.blow_up import BlowUp
 from remote_sensing_core.transforms.ffcv.min_max_scaler import MinMaxScaler
 from remote_sensing_core.transforms.ffcv.era5_temperature_s2_transform import Era5TemperatureS2Transform
+from remote_sensing_core.transforms.ffcv.remove_1d_channel import Remove1dChannel
+
 
 from ffcv.transforms import ToTensor, ToDevice
 from ffcv.fields.decoders import NDArrayDecoder, FloatDecoder, IntDecoder
 
 training_config = {
     "task": {
-        TASK_KEY: Task.CLASSIFICATION_CLIMATEZONE,
+        TASK_KEY: Task.CLASSIFICATION_CLIMATEZONE.value,
     },
     "model": {
-        MODEL_KEY: DualResNet,
+        MODEL_KEY: ResNet,
         WEIGHTS_KEY: False,
         NUMBER_OF_CLASSES_KEY: 30,
     },
@@ -86,15 +87,15 @@ training_config = {
         MODALITIES_KEY: {
             MODALITIES_LABEL_KEY: CLIMATE_ZONE_INDEX_KEY,
         },
-        DATALOADER_TRAIN_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-8k-train.beton',
-        DATALOADER_VALIDATION_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-8k-validation.beton',
+        #DATALOADER_TRAIN_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-8k-train.beton',
+        DATALOADER_VALIDATION_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-100-validation.beton',
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.001,
         BATCH_SIZE_KEY: 32,
         OPTIMIZER_KEY: torch.optim.Adam,
-        SCHEDULER_KEY: torch.optim.lr_scheduler.CosineAnnealingLR,
+        #SCHEDULER_KEY: torch.optim.lr_scheduler.CosineAnnealingLR,
         LOSS_KEY: torch.nn.CrossEntropyLoss(),
-        SEED_KEY: 42,
+        #SEED_KEY: 42,
         SCHEDULER_MAX_NUMBER_ITERATIONS_KEY: 20,
         SCHEDULER_MIN_LR_KEY: 0,
     },
@@ -104,7 +105,7 @@ training_config = {
         ENVIRONMENT_KEY: "remote",
     },
     "pipelines": {
-        'climate_zone': [FloatDecoder(), Convert('float32'), BlowUp([1,30]), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'climate_zone': [FloatDecoder(), Convert('int64'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'elevation_differ': [FloatDecoder(), ToTensor(), ToDevice(device)],
         'era_5': [NDArrayDecoder(), Era5TemperatureS2Transform(), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), Add1dChannel(), ToTensor(), ToDevice(device = torch.device('cuda'))],
