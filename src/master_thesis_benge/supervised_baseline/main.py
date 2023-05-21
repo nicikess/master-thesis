@@ -98,7 +98,7 @@ if __name__ == "__main__":
             print(data.shape)
             input("test")
         '''
-
+               
         # Create a dictionary that maps each modality to the number of input channels
         channel_modalities = {
             f"in_channels_{i+1}": int(str(np.shape(next(iter(dataloader_train))[modality])[1]))

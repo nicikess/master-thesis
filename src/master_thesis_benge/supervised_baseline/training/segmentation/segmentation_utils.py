@@ -24,18 +24,14 @@ class SegmentationUtils(Metric):
     epoch_validation_jaccard = 0
     epoch_validation_accuracy = 0
 
-    def __init__(self, wandb, device, number_of_classes):
+    def __init__(self, wandb, device, number_of_classes, task):
         self.wandb = wandb
         self.device = device,
         self.number_of_classes = number_of_classes
-        #self.jaccard = JaccardIndex('multiclass').to(device=torch.device('cuda'))
+        self.task = task
+        self.jaccard = JaccardIndex('multiclass').to(device=torch.device('cuda'))
 
     def calculate_loss(self, loss, output, label):
-        print("output: ", output)
-        print("label: ", label)
-        print("output shape: ", output.shape)
-        print("label shape: ", label.shape)
-        input()
         loss = loss(output, label)
         return loss
 
@@ -52,10 +48,9 @@ class SegmentationUtils(Metric):
 
         # Calculate probabilities
         softmax = F.softmax(output, dim=1)
-        #softmax_output = softmax()
         #calculate max on the axis of the (different channels = number of classes)
         arg_max = torch.argmax(softmax, dim=1)
-        #self.epoch_train_jaccard += self.jaccard(arg_max, label)
+        self.epoch_train_jaccard += self.jaccard(arg_max, label)
 
         # Calculate accuracy
         label_flat = label.view(-1)
@@ -89,7 +84,7 @@ class SegmentationUtils(Metric):
         softmax_output = F.softmax(output, dim=1)
         # calculate max on the 3third z-axis of the tensor
         arg_max = torch.argmax(softmax_output, dim=1)
-        #self.epoch_validation_jaccard += self.jaccard(arg_max, label)
+        self.epoch_validation_jaccard += self.jaccard(arg_max, label)
 
         # Calculate accuracy
         label_flat = label.view(-1)

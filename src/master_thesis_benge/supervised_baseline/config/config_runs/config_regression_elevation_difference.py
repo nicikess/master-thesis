@@ -110,7 +110,7 @@ training_config = {
     },
     "pipelines": {
         #'climate_zone': [FloatDecoder(), MinMaxScaler(maximum_value=29, minimum_value=0, interval_max=1, interval_min=0), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
-        'elevation_differ': [FloatDecoder(), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'elevation_differ': [FloatDecoder(), Clipping([0, 200]), MinMaxScaler(minimum_value=0, maximum_value=200, interval_min=0, interval_max=1) ,Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'era_5': [NDArrayDecoder(), Era5TemperatureS2Transform(), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), Convert('int64'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'glo_30_dem': [NDArrayDecoder(), ChannelSelector([0]), ToTensor(), ToDevice(device = torch.device('cuda'))],

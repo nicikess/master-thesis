@@ -69,6 +69,7 @@ from remote_sensing_core.transforms.ffcv.blow_up import BlowUp
 from remote_sensing_core.transforms.ffcv.min_max_scaler import MinMaxScaler
 from remote_sensing_core.transforms.ffcv.era5_temperature_s2_transform import Era5TemperatureS2Transform
 from remote_sensing_core.transforms.ffcv.remove_1d_channel import Remove1dChannel
+from remote_sensing_core.transforms.ffcv.climatezone_transform import ClimateZoneTransform
 
 
 from ffcv.transforms import ToTensor, ToDevice
@@ -94,7 +95,7 @@ training_config = {
         BATCH_SIZE_KEY: 32,
         OPTIMIZER_KEY: torch.optim.Adam,
         #SCHEDULER_KEY: torch.optim.lr_scheduler.CosineAnnealingLR,
-        LOSS_KEY: torch.nn.CrossEntropyLoss(),
+        LOSS_KEY: torch.nn.BCEWithLogitsLoss(),
         #SEED_KEY: 42,
         SCHEDULER_MAX_NUMBER_ITERATIONS_KEY: 20,
         SCHEDULER_MIN_LR_KEY: 0,
@@ -105,7 +106,7 @@ training_config = {
         ENVIRONMENT_KEY: "remote",
     },
     "pipelines": {
-        'climate_zone': [FloatDecoder(), Convert('int64'), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'climate_zone': [FloatDecoder(), ClimateZoneTransform(), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'elevation_differ': [FloatDecoder(), ToTensor(), ToDevice(device)],
         'era_5': [NDArrayDecoder(), Era5TemperatureS2Transform(), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), Add1dChannel(), ToTensor(), ToDevice(device = torch.device('cuda'))],

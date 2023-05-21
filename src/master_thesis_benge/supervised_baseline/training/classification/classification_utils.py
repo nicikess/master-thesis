@@ -34,9 +34,10 @@ class ClassificationUtils(Metric):
     epoch_val_f1_score = 0
     epoch_val_f1_per_class = 0
 
-    def __init__(self, wandb, device, number_of_classes):
+    def __init__(self, wandb, device, number_of_classes, task):
         self.wandb = wandb
         self.device = device
+        self.task = task
 
         # Metrics
         self.metric_accuracy_avg = BinaryAccuracy(num_classes=number_of_classes).to(
@@ -60,13 +61,6 @@ class ClassificationUtils(Metric):
         )
 
     def calculate_loss(self, loss, output, label):
-        print("output: ", output)
-        print("label: ", label)
-        print("output shape: ", output.shape)
-        print("label shape: ", label.shape)
-        print("output type: ", output.type())
-        print("label type: ", label.type())
-        input()
         loss = loss(output, label)
         return loss
 

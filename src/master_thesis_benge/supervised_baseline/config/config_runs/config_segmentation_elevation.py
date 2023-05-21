@@ -53,8 +53,8 @@ from master_thesis_benge.supervised_baseline.config.config_runs.config_files_and
     RemoteFilesAndDirectoryReferences as FileAndDirectoryReferences,
 )
 
-from master_thesis_benge.supervised_baseline.training.segmentation.segmentation_utils import (
-    SegmentationUtils
+from master_thesis_benge.supervised_baseline.training.regression.regression_utils import (
+    RegressionUtils
 )
 
 from remote_sensing_core.constants import Bands
@@ -97,7 +97,7 @@ training_config = {
         SCHEDULER_MAX_NUMBER_ITERATIONS_KEY: 20,
         SCHEDULER_MIN_LR_KEY: 0,
     },
-    "metrics": {METRICS_KEY: SegmentationUtils},
+    "metrics": {METRICS_KEY: RegressionUtils},
     "other": {
         SAVE_MODEL_KEY: False,
         ENVIRONMENT_KEY: "remote",
@@ -107,7 +107,7 @@ training_config = {
         #'elevation_differ': [FloatDecoder(), ToTensor(), ToDevice(device)],
         'era_5': [NDArrayDecoder(), Era5TemperatureS2Transform(), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), Add1dChannel(), ToTensor(), ToDevice(device = torch.device('cuda'))],
-        'glo_30_dem': [NDArrayDecoder(), ChannelSelector([0]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'glo_30_dem': [NDArrayDecoder(), ChannelSelector([0]), MinMaxScaler(maximum_value=1500, minimum_value=0, interval_max=1, interval_min=0), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'multiclass_numer': [NDArrayDecoder(), ToTensor(), ToDevice(device)],
         'multiclass_one_h': [ToTensor(), ToDevice(device = torch.device('cuda'))],
         'season_s1': [FloatDecoder(), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],

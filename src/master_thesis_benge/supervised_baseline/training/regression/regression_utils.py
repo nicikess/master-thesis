@@ -8,6 +8,10 @@ from torchmetrics.regression import (
 
 import torch.nn.functional as F
 
+from master_thesis_benge.supervised_baseline.config.constants import (
+    Task,
+)
+
 class RegressionUtils(Metric):
     # Train values
     epoch_train_loss = 0
@@ -18,17 +22,21 @@ class RegressionUtils(Metric):
     epoch_val_mse = 0
     epoch_val_rmse = 0
 
-    def __init__(self, wandb, device, number_of_classes):
+    def __init__(self, wandb, device, number_of_classes, task):
         self.wandb = wandb
         self.device = device
         self.number_of_classes = number_of_classes
+        self.task = task
 
         self.mse = MeanSquaredError(squared=True).to(self.device)
         self.rsme = MeanSquaredError(squared=False).to(self.device)
 
     def calculate_loss(self, loss, output, label):
-        softmax_output = F.softmax(output, dim=1)
-        loss = loss(softmax_output, label)
+        if self.task == Task.REGRESSION_LANDUSE_FRACTION.value:
+            output = F.softmax(output, dim=1)
+        if self.task == Task.REGRESSION_ELEVATION_DIFFERENCE.value:
+            output = F.sigmoid(output)
+        loss = loss(output, label)
         return loss
 
     def reset_epoch_train_metrics(self):

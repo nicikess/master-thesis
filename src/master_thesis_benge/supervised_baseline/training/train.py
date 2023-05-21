@@ -55,6 +55,7 @@ class Train:
             self.wandb,
             self.device,
             number_of_classes=self.config[MODEL_CONFIG_KEY][NUMBER_OF_CLASSES_KEY],
+            task=self.task,
         )
 
         # For every epoch
