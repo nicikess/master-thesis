@@ -68,7 +68,6 @@ from remote_sensing_core.constants import Bands
 from remote_sensing_core.transforms.ffcv.min_max_scaler import MinMaxScaler
 from remote_sensing_core.transforms.ffcv.clipping import Clipping
 from remote_sensing_core.transforms.ffcv.channel_selector import ChannelSelector
-from remote_sensing_core.transforms.ffcv.add_1d_channel import Add1dChannel
 from remote_sensing_core.transforms.ffcv.convert import Convert
 from remote_sensing_core.transforms.ffcv.esa_world_cover_transform import EsaWorldCoverTransform
 from remote_sensing_core.transforms.ffcv.blow_up import BlowUp
@@ -92,7 +91,7 @@ training_config = {
             MODALITIES_LABEL_KEY: ELEVATION_DIFFERENCE_LABEL_INDEX_KEY,
         },
         #DATALOADER_TRAIN_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-20-train.beton',
-        DATALOADER_VALIDATION_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-100-validation.beton',
+        DATALOADER_VALIDATION_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-validation.beton',
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.001,
         BATCH_SIZE_KEY: 32,
@@ -128,6 +127,6 @@ training_config = {
 }
 
 def get_data_set_files(size: str):
-    train_file = f'/ds2/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-train.beton'
-    validation_file = f'/ds2/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-validation.beton'
+    train_file = f'/raid/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-train.beton'
+    validation_file = f'/raid/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-validation.beton'
     return train_file, validation_file

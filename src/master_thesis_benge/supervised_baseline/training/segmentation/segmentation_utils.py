@@ -25,11 +25,14 @@ class SegmentationUtils(Metric):
     epoch_validation_accuracy = 0
 
     def __init__(self, wandb, device, number_of_classes, task):
+        #input("test")
         self.wandb = wandb
         self.device = device,
         self.number_of_classes = number_of_classes
         self.task = task
-        self.jaccard = JaccardIndex('multiclass').to(device=torch.device('cuda'))
+        #input("test2")
+        self.jaccard = JaccardIndex('multiclass', num_classes=self.number_of_classes).to(device=torch.device('cuda'))
+        #input("test3")
 
     def calculate_loss(self, loss, output, label):
         loss = loss(output, label)

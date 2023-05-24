@@ -2,23 +2,27 @@ from torch import nn
 import torch
 import torch.nn.functional as F
 
-class DualUNet(nn.Module):
-    def __init__(self, in_channels_1, in_channels_2, number_of_classes):
-        super(DualUNet, self).__init__()
+class TripleUNet(nn.Module):
+    def __init__(self, in_channels_1, in_channels_2, in_channels_3, number_of_classes):
+        super(TripleUNet, self).__init__()
         
-        # First stream of UNet() for Sentinel 1 data (in_channels_1 = 2)
+        # First stream of UNet()
         self.unet1 = UNet(in_channels_1, number_of_classes=number_of_classes)
-        # Second stream of UNet() for Sentinel 2 data (in_channels_2 = 13)
+        # Second stream of UNet()
         self.unet2 = UNet(in_channels_2, number_of_classes=number_of_classes)
+        # Third stream of UNet()
+        self.unet3 = UNet(in_channels_3, number_of_classes=number_of_classes)
         
         # Output convolution
-        self.outc = OutConv(2 * 64, number_of_classes)
+        self.outc = OutConv(3 * 64, number_of_classes)
 
-    def forward(self, x1, x2):
+    def forward(self, x1, x2, x3):
         # We process Sentinel1 input
         x1 = self.unet1(x1)
         # We process Sentinel2 input
         x2 = self.unet2(x2)
+
+        x3 = self.unet3(x3)
 
         '''
         Both unet output a tensor of shape [32,64,120,120]
@@ -27,7 +31,7 @@ class DualUNet(nn.Module):
         '''
         
         # We concatenate the two representations
-        x = torch.cat([x1, x2], dim=1)
+        x = torch.cat([x1, x2, x3], dim=1)
         
         # We feed the fused representation to the output convolution
         x = self.outc(x)

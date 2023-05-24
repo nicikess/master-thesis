@@ -3,7 +3,7 @@ import numpy as np
 import wandb
 import torch
 
-from master_thesis_benge.supervised_baseline.config.config_runs.config_classification_climatezone import (
+from master_thesis_benge.supervised_baseline.config.config_runs.config_classification_landuse import (
     training_config,
     get_data_set_files
 )
@@ -49,13 +49,28 @@ if __name__ == "__main__":
 
     environment = training_config[OTHER_CONFIG_KEY][ENVIRONMENT_KEY]
 
+    '''
     sweep_configuration = {
         "method": 'grid',
         "name": 'sweepy',
         "parameters": {
             "seed": {'values': [42]},
             "dataset_size": {'values': ["8k", "20", "40", "60", "80", "100"]},
-            "modalities": {'values': [[SENTINEL_2_INDEX_KEY]] },
+            "modalities": {'values':  [[SENTINEL_2_INDEX_KEY]],
+                           },
+        }
+    }
+    '''
+
+    sweep_configuration = {
+        "method": 'grid',
+        "name": 'sweepy',
+        "parameters": {
+            "seed": {'values': [43]},
+            "dataset_size": {'values': ["8k", "20", "40", "60", "80", "100"]},
+            "modalities": {'values':    [#[SENTINEL_2_INDEX_KEY, CLIMATE_ZONE_INDEX_KEY],
+                                        [SENTINEL_2_INDEX_KEY]]
+                           },
         }
     }
 
@@ -98,6 +113,7 @@ if __name__ == "__main__":
             print(data.shape)
             input("test")
         '''
+        
                
         # Create a dictionary that maps each modality to the number of input channels
         channel_modalities = {
@@ -115,6 +131,7 @@ if __name__ == "__main__":
             #in_channels_1=4,
             # Input channels for s2
             #in_channels_2=channel_modalities["in_channels_2"],
+            #in_channels_3=channel_modalities["in_channels_3"],
             number_of_classes=training_config[MODEL_CONFIG_KEY][NUMBER_OF_CLASSES_KEY],
         )
 
