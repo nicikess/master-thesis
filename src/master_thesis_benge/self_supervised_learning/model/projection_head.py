@@ -1,4 +1,9 @@
 import torch.nn as nn
+from torchvision.models import resnet18
+
+
+def default(val, def_val):
+    return def_val if val is None else val
 
 
 class AddProjection(nn.Module):

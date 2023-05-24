@@ -1,3 +1,47 @@
+import pytorch_lightning as pl
+import wandb
+from torch.optim import Adam
+
+# from pl_bolts.optimizers.lr_scheduler import LinearWarmupCosineAnnealingLR
+
+from master_thesis_benge.self_supervised_learning.model.projection_head import (
+    AddProjection,
+)
+from master_thesis_benge.self_supervised_learning.loss.contrastive_loss import (
+    ContrastiveLoss,
+)
+
+
+def define_param_groups(model, weight_decay, optimizer_name):
+    def exclude_from_wd_and_adaptation(name):
+        if "bn" in name:
+            return True
+        if optimizer_name == "lars" and "bias" in name:
+            return True
+
+    param_groups = [
+        {
+            "params": [
+                p
+                for name, p in model.named_parameters()
+                if not exclude_from_wd_and_adaptation(name)
+            ],
+            "weight_decay": weight_decay,
+            "layer_adaptation": True,
+        },
+        {
+            "params": [
+                p
+                for name, p in model.named_parameters()
+                if exclude_from_wd_and_adaptation(name)
+            ],
+            "weight_decay": 0.0,
+            "layer_adaptation": False,
+        },
+    ]
+    return param_groups
+
+
 class SimCLR_pl(pl.LightningModule):
     def __init__(self, config, model=None, feat_dim=512):
         super().__init__()
@@ -28,38 +72,9 @@ class SimCLR_pl(pl.LightningModule):
         wandb.log({"loss batch": loss})
         return loss
 
-    def define_param_groups(model, weight_decay, optimizer_name):
-        def exclude_from_wd_and_adaptation(name):
-            if "bn" in name:
-                return True
-            if optimizer_name == "lars" and "bias" in name:
-                return True
-
-        param_groups = [
-            {
-                "params": [
-                    p
-                    for name, p in model.named_parameters()
-                    if not exclude_from_wd_and_adaptation(name)
-                ],
-                "weight_decay": weight_decay,
-                "layer_adaptation": True,
-            },
-            {
-                "params": [
-                    p
-                    for name, p in model.named_parameters()
-                    if exclude_from_wd_and_adaptation(name)
-                ],
-                "weight_decay": 0.0,
-                "layer_adaptation": False,
-            },
-        ]
-        return param_groups
-
     def configure_optimizers(self):
         max_epochs = int(self.config.epochs)
-        param_groups = self.define_param_groups(
+        param_groups = define_param_groups(
             self.model, self.config.weight_decay, "adam"
         )
         lr = self.config.lr
@@ -71,8 +86,10 @@ class SimCLR_pl(pl.LightningModule):
             f"Effective batch size {wandb.config.batch_size * self.config.gradient_accumulation_steps}"
         )
 
+        """
         scheduler_warmup = LinearWarmupCosineAnnealingLR(
             optimizer, warmup_epochs=10, max_epochs=max_epochs, warmup_start_lr=0.0
         )
+        """
 
-        return [optimizer], [scheduler_warmup]
+        return [optimizer]  # , [scheduler_warmup]

@@ -1,6 +1,19 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import wandb
+
+
+def device_as(t1, t2):
+    # Moves t1 to the device of t2
+    return t1.to(t2.device)
+
+
+def calc_similarity_batch(a, b):
+    representations = torch.cat([a, b], dim=0)
+    return F.cosine_similarity(
+        representations.unsqueeze(1), representations.unsqueeze(0), dim=2
+    )
 
 
 class ContrastiveLoss(nn.Module):
@@ -13,12 +26,6 @@ class ContrastiveLoss(nn.Module):
         self.batch_size = batch_size
         self.temperature = temperature
 
-    def calc_similarity_batch(self, a, b):
-        representations = torch.cat([a, b], dim=0)
-        return F.cosine_similarity(
-            representations.unsqueeze(1), representations.unsqueeze(0), dim=2
-        )
-
     def forward(self, proj_1, proj_2):
         """
         proj_1 and proj_2 are batched embeddings [batch, embedding_dim]
@@ -30,7 +37,7 @@ class ContrastiveLoss(nn.Module):
         z_i = F.normalize(proj_1, p=2, dim=1)
         z_j = F.normalize(proj_2, p=2, dim=1)
 
-        similarity_matrix = self.calc_similarity_batch(z_i, z_j)
+        similarity_matrix = calc_similarity_batch(z_i, z_j)
 
         sim_ij = torch.diag(similarity_matrix, batch_size)
         sim_ji = torch.diag(similarity_matrix, -batch_size)

@@ -2,6 +2,7 @@ import torchvision.transforms as T
 
 
 class Augment:
+
     """
     A stochastic data augmentation module
     Transforms any given data example randomly
@@ -51,4 +52,4 @@ class Augment:
         )
 
     def __call__(self, x):
-        return self.train_transform(x), self.train_transform(x)
+        return self.train_transform(x), self.test_transform(x)
