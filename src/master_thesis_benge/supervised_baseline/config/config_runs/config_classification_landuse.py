@@ -84,7 +84,7 @@ training_config = {
             MODALITIES_LABEL_KEY: MULTICLASS_ONE_HOT_LABEL_INDEX_KEY,
         },
         #DATALOADER_TRAIN_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-8k-train.beton',
-        DATALOADER_VALIDATION_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-100-validation.beton',
+        DATALOADER_VALIDATION_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-validation.beton',
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.001,
         BATCH_SIZE_KEY: 32,

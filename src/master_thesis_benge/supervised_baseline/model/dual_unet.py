@@ -36,7 +36,8 @@ class DualUNet(nn.Module):
 
 
 class UNet(nn.Module):
-    def __init__(self, in_channels_1):
+    # Leave this otherwise the initialization fails
+    def __init__(self, in_channels_1, number_of_classes):
         super(UNet, self).__init__()
 
         self.inc = DoubleConv(in_channels_1, 64)

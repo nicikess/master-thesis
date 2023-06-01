@@ -79,7 +79,7 @@ training_config = {
         TASK_KEY: Task.SEGMENTATION_ELEVATION.value,
     },
     "model": {
-        MODEL_KEY: TripleUNet,
+        MODEL_KEY: UNet,
         WEIGHTS_KEY: False,
         NUMBER_OF_CLASSES_KEY: 1,
     },
@@ -105,7 +105,7 @@ training_config = {
         ENVIRONMENT_KEY: "remote",
     },
     "pipelines": {
-        'climate_zone': [FloatDecoder(), MinMaxScaler(maximum_value=29, minimum_value=0, interval_max=1, interval_min=0), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'climate_zone': [FloatDecoder(), MinMaxScaler(minimum_value=0, maximum_value=29, interval_min=0, interval_max=1), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'elevation_differ': [FloatDecoder(), ToTensor(), ToDevice(device)],
         'era_5': [NDArrayDecoder(), Era5TemperatureS2Transform(batch_size=16), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), Add1dChannel(), ToTensor(), ToDevice(device = torch.device('cuda'))],

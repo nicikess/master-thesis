@@ -106,16 +106,14 @@ class ClassificationUtils(Metric):
 
         # Calculate average per metric per epoch
         epoch_train_loss = self.epoch_train_loss / len_train_dataloader
-        epoch_train_accuracy = self.epoch_train_accuracy / len_train_dataloader
-        epoch_train_accuracy_per_class = self.epoch_train_accuracy_per_class / len_train_dataloader
-        epoch_train_f1_score_per_class = self.epoch_train_f1_score_per_class / len_train_dataloader
-        self.calculate_and_log_accuracy_per_class_training(
-            epoch_train_accuracy_per_class
-        )
+        epoch_train_accuracy = torch.round((self.epoch_train_accuracy / len_train_dataloader * 100), decimals=2)
+        epoch_train_accuracy_per_class = torch.round((self.epoch_train_accuracy_per_class / len_train_dataloader * 100), decimals=2)
+        epoch_train_f1_score_per_class = torch.round((self.epoch_train_f1_score_per_class / len_train_dataloader * 100), decimals=2)
+        self.calculate_and_log_accuracy_per_class_training(epoch_train_accuracy_per_class)
         self.calculate_and_log_f1_per_class_training(epoch_train_f1_score_per_class)
-        epoch_train_precision = self.epoch_train_precision / len_train_dataloader
-        epoch_train_recall = self.epoch_train_recall / len_train_dataloader
-        epoch_train_f1_score = self.epoch_train_f1_score / len_train_dataloader
+        epoch_train_precision = torch.round((self.epoch_train_precision / len_train_dataloader * 100), decimals=2)
+        epoch_train_recall = torch.round((self.epoch_train_recall / len_train_dataloader * 100), decimals=2)
+        epoch_train_f1_score = torch.round((self.epoch_train_f1_score / len_train_dataloader * 100), decimals=2)
 
         print(f"\n epoch train loss: {epoch_train_loss} \n")
 
@@ -160,16 +158,14 @@ class ClassificationUtils(Metric):
         print(len_vali_dataloader)
         print()
 
-        epoch_val_accuracy = self.epoch_val_accuracy / len_vali_dataloader
-        epoch_val_accuracy_per_class = self.epoch_val_accuracy_per_class / len_vali_dataloader
-        epoch_val_f1_per_class = self.epoch_val_f1_per_class / len_vali_dataloader
-        self.calculate_and_log_accuracy_per_class_validation(
-            epoch_val_accuracy_per_class
-        )
+        epoch_val_accuracy = torch.round((self.epoch_val_accuracy / len_vali_dataloader * 100), decimals=2)
+        epoch_val_accuracy_per_class = torch.round((self.epoch_val_accuracy_per_class / len_vali_dataloader * 100), decimals=2)
+        epoch_val_f1_per_class = torch.round((self.epoch_val_f1_per_class / len_vali_dataloader * 100), decimals=2)
+        self.calculate_and_log_accuracy_per_class_validation(epoch_val_accuracy_per_class)
         self.calculate_and_log_f1_per_class_validation(epoch_val_f1_per_class)
-        epoch_val_precision = self.epoch_val_precision / len_vali_dataloader
-        epoch_val_recall = self.epoch_val_recall / len_vali_dataloader
-        epoch_val_f1_score = self.epoch_val_f1_score / len_vali_dataloader
+        epoch_val_precision = torch.round((self.epoch_val_precision / len_vali_dataloader * 100), decimals=2)
+        epoch_val_recall = torch.round((self.epoch_val_recall / len_vali_dataloader * 100), decimals=2)
+        epoch_val_f1_score = torch.round((self.epoch_val_f1_score / len_vali_dataloader * 100), decimals=2)
 
         wandb.log({"Epoch val accuracy": epoch_val_accuracy})
         wandb.log({"Epoch val precision": epoch_val_precision})

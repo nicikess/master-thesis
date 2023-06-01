@@ -30,17 +30,17 @@ SENTINEL_1_INDEX_KEY = 9
 SENTINEL_2_INDEX_KEY = 10
 
 label_from_index = {
-    0: "CLIMATE_ZONE_INDEX_KEY",
-    1: "ELEVATION_DIFFERENCE_LABEL_INDEX_KEY",
-    2: "ERA_5_INDEX_KEY",
-    3: "ESA_WORLD_COVER_INDEX_KEY",
-    4: "GLO_30_DEM_INDEX_KEY",
-    5: "MULTICLASS_NUMERIC_LABEL_INDEX_KEY",
-    6: "MULTICLASS_ONE_HOT_LABEL_INDEX_KEY",
-    7: "SEASON_S1_INDEX_KEY",
-    8: "SEASON_S2_INDEX_KEY",
-    9: "SENTINEL_1_INDEX_KEY",
-    10: "SENTINEL_2_INDEX_KEY"
+    0: "climatezone",
+    1: "elevation-difference-label",
+    2: "temperature(era5)",
+    3: "worldcover(esa)",
+    4: "elevation(glo-30-dem)",
+    5: "multiclass-numeric-label",
+    6: "multiclass-one-hot-label",
+    7: "season(s1)",
+    8: "season(s2)",
+    9: "sentinel1",
+    10: "sentinel2"
 }
 
 # Training

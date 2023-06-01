@@ -80,7 +80,7 @@ training_config = {
         TASK_KEY: Task.SEGMENTATION_LANDUSE.value,
     },
     "model": {
-        MODEL_KEY: TripleUNet,
+        MODEL_KEY: UNet,
         WEIGHTS_KEY: False,
         NUMBER_OF_CLASSES_KEY: 11,
     },

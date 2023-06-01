@@ -17,6 +17,43 @@ from master_thesis_benge.self_supervised_learning.augmentation.augmentation impo
     Augment,
 )
 
+from master_thesis_benge.supervised_baseline.config.config_runs.config_classification_landuse import (
+    training_config,
+    get_data_set_files
+)
+
+from master_thesis_benge.supervised_baseline.config.constants import (
+    OTHER_CONFIG_KEY,
+    MODEL_CONFIG_KEY,
+    MODEL_KEY,
+    ENVIRONMENT_KEY,
+    TRAINING_CONFIG_KEY,
+    SEED_KEY,
+    BATCH_SIZE_KEY,
+    NUMBER_OF_CLASSES_KEY,
+    MODALITIES_KEY,
+    METRICS_KEY,
+    METRICS_CONFIG_KEY,
+    TASK_CONFIG_KEY,
+    TASK_KEY,
+    DATALOADER_TRAIN_FILE_KEY,
+    DATALOADER_VALIDATION_FILE_KEY,
+    BANDS_KEY,
+    PIPELINES_CONFIG_KEY,
+    DATA_CONFIG_KEY,
+    DATASET_SIZE_KEY,
+    SENTINEL_1_INDEX_KEY,
+    CLIMATE_ZONE_INDEX_KEY,
+    ERA_5_INDEX_KEY,
+    SEASON_S2_INDEX_KEY,
+    GLO_30_DEM_INDEX_KEY,
+    SENTINEL_2_INDEX_KEY,
+    MODALITIES_LABEL_KEY,
+    ESA_WORLD_COVER_INDEX_KEY,
+    get_label_from_index,
+)
+
+from ffcv.loader import Loader, OrderOption
 
 def get_str1_dataloader_ST110(batch_size, transform=None, split="unlabeled"):
     st110 = STL10("./", split=split, transform=transform, download=True)
@@ -52,11 +89,34 @@ def train():
     model = SimCLR_pl(train_config, model=resnet18(pretrained=False), feat_dim=512)
 
     transform = Augment(train_config.img_size)
-    data_loader = get_str1_dataloader_ST110(wandb.config.batch_size, transform)
+    #data_loader = get_str1_dataloader_ST110(wandb.config.batch_size, transform)
+
+    dataloader_train = Loader(get_data_set_files(wandb.config.dataset_size)[0],
+                        batch_size=training_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY],
+                        order=OrderOption.RANDOM,
+                        num_workers=4,
+                        pipelines=training_config[PIPELINES_CONFIG_KEY]
+                    )
+        
+    itera = iter(dataloader_train)
+    first = next(itera)
+    for data in first:
+        print(data)
+        print(data.shape)
+        input("test")
+    
+    # Create a dictionary that maps each modality to the number of input channels
+    channel_modalities = {
+        f"in_channels_{i+1}": int(str(np.shape(next(iter(dataloader_train))[modality])[1]))
+        for i, modality in enumerate(
+            wandb.config.modalities
+        )
+    }
 
     accumulator = GradientAccumulationScheduler(
         scheduling={0: train_config.gradient_accumulation_steps}
     )
+
     checkpoint_callback = ModelCheckpoint(
         filename=filename,
         dirpath=save_model_path,
@@ -80,4 +140,4 @@ def train():
             max_epochs=train_config.epochs,
         )
 
-    trainer.fit(model, data_loader)
+    trainer.fit(model, dataloader_train)

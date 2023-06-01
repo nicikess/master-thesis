@@ -61,7 +61,7 @@ from remote_sensing_core.constants import Bands
 
 from remote_sensing_core.transforms.ffcv.clipping import Clipping
 from remote_sensing_core.transforms.ffcv.channel_selector import ChannelSelector
-from remote_sensing_core.transforms.ffcv.add_1d_channel import Add1dChannel
+from remote_sensing_core.transforms.ffcv.expand_dimension import ExpandDimension
 from remote_sensing_core.transforms.ffcv.convert import Convert
 from remote_sensing_core.transforms.ffcv.esa_world_cover_transform import EsaWorldCoverTransform
 from remote_sensing_core.transforms.ffcv.blow_up import BlowUp
@@ -77,7 +77,7 @@ training_config = {
         TASK_KEY: Task.CLASSIFICATION_CLIMATEZONE.value,
     },
     "model": {
-        MODEL_KEY: DualResNet,
+        MODEL_KEY: ResNet,
         WEIGHTS_KEY: False,
         NUMBER_OF_CLASSES_KEY: 30,
     },
@@ -104,8 +104,8 @@ training_config = {
     "pipelines": {
         'climate_zone': [FloatDecoder(), ClimateZoneTransform(), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'elevation_differ': [FloatDecoder(), ToTensor(), ToDevice(device)],
-        'era_5': [NDArrayDecoder(), Era5TemperatureS2Transform(), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
-        'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), Add1dChannel(), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'era_5': [NDArrayDecoder(), Era5TemperatureS2Transform(batch_size=32), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), ExpandDimension(), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'glo_30_dem': [NDArrayDecoder(), ChannelSelector([0]), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'multiclass_numer': [NDArrayDecoder(), ToTensor(), ToDevice(device)],
         'multiclass_one_h': [ToTensor(), ToDevice(device = torch.device('cuda'))],

@@ -72,6 +72,8 @@ from remote_sensing_core.transforms.ffcv.esa_world_cover_transform import EsaWor
 from remote_sensing_core.transforms.ffcv.blow_up import BlowUp
 from remote_sensing_core.transforms.ffcv.min_max_scaler import MinMaxScaler
 from remote_sensing_core.transforms.ffcv.era5_temperature_s2_transform import Era5TemperatureS2Transform
+from remote_sensing_core.transforms.ffcv.expand_dimension import ExpandDimension
+
 
 from ffcv.transforms import ToTensor, ToDevice
 from ffcv.fields.decoders import NDArrayDecoder, FloatDecoder, IntDecoder
@@ -109,8 +111,8 @@ training_config = {
     "pipelines": {
         'climate_zone': [FloatDecoder(), MinMaxScaler(maximum_value=29, minimum_value=0, interval_max=1, interval_min=0), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'elevation_differ': [FloatDecoder(), ToTensor(), ToDevice(device)],
-        'era_5': [NDArrayDecoder(), Era5TemperatureS2Transform(), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
-        'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), Convert('int64'), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'era_5': [NDArrayDecoder(), Era5TemperatureS2Transform(batch_size=32), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), ExpandDimension(), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'glo_30_dem': [NDArrayDecoder(), ChannelSelector([0]), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'multiclass_numer': [NDArrayDecoder(), ToTensor(), ToDevice(device)],
         'multiclass_one_h': [ToTensor(), ToDevice(device = torch.device('cuda'))],

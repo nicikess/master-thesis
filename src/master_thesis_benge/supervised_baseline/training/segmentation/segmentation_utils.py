@@ -25,14 +25,11 @@ class SegmentationUtils(Metric):
     epoch_validation_accuracy = 0
 
     def __init__(self, wandb, device, number_of_classes, task):
-        #input("test")
         self.wandb = wandb
         self.device = device,
         self.number_of_classes = number_of_classes
         self.task = task
-        #input("test2")
         self.jaccard = JaccardIndex('multiclass', num_classes=self.number_of_classes).to(device=torch.device('cuda'))
-        #input("test3")
 
     def calculate_loss(self, loss, output, label):
         loss = loss(output, label)
@@ -63,13 +60,10 @@ class SegmentationUtils(Metric):
         self.epoch_train_accuracy += accuracy
 
     def log_epoch_train_metrics(self, len_train_dataloader, scheduler):
-        print()
-        print(len_train_dataloader)
-        print()
         # Calculate average per metric per epoch
         epoch_train_loss = self.epoch_train_loss / len_train_dataloader
-        epoch_train_jaccard = self.epoch_train_jaccard / len_train_dataloader
-        epoch_train_accuracy = self.epoch_train_accuracy / len_train_dataloader
+        epoch_train_jaccard = torch.round((self.epoch_train_jaccard / len_train_dataloader) * 100, decimals=2)
+        epoch_train_accuracy = torch.round(self.epoch_train_accuracy / len_train_dataloader, decimals=2)
 
         print(f"\n epoch train loss: {epoch_train_loss} \n")
 
@@ -97,10 +91,7 @@ class SegmentationUtils(Metric):
         self.epoch_validation_accuracy += accuracy
 
     def log_epoch_validation_metrics(self, len_vali_dataloader):
-        print()
-        print(len_vali_dataloader)
-        print()
-        epoch_validation_jaccard = self.epoch_validation_jaccard / len_vali_dataloader
-        epoch_validation_accuracy = self.epoch_validation_accuracy / len_vali_dataloader
+        epoch_validation_jaccard = torch.round((self.epoch_validation_jaccard / len_vali_dataloader * 100), decimals=2)
+        epoch_validation_accuracy = torch.round(self.epoch_validation_accuracy / len_vali_dataloader, decimals=2)
         wandb.log({"Epoch validation jaccard": epoch_validation_jaccard})
         wandb.log({"Epoch validation pixel accuracy": epoch_validation_accuracy})

@@ -3,7 +3,7 @@ import numpy as np
 import wandb
 import torch
 
-from master_thesis_benge.supervised_baseline.config.config_runs.config_classification_landuse import (
+from master_thesis_benge.supervised_baseline.config.config_runs.config_regression_landuse_fraction import (
     training_config,
     get_data_set_files
 )
@@ -49,27 +49,21 @@ if __name__ == "__main__":
 
     environment = training_config[OTHER_CONFIG_KEY][ENVIRONMENT_KEY]
 
-    '''
     sweep_configuration = {
         "method": 'grid',
-        "name": 'sweepy',
+        "name": 'one-modality',
         "parameters": {
-            "seed": {'values': [42]},
-            "dataset_size": {'values': ["8k", "20", "40", "60", "80", "100"]},
-            "modalities": {'values':  [[SENTINEL_2_INDEX_KEY]],
-                           },
-        }
-    }
-    '''
-
-    sweep_configuration = {
-        "method": 'grid',
-        "name": 'sweepy',
-        "parameters": {
-            "seed": {'values': [43]},
-            "dataset_size": {'values': ["8k", "20", "40", "60", "80", "100"]},
-            "modalities": {'values':    [#[SENTINEL_2_INDEX_KEY, CLIMATE_ZONE_INDEX_KEY],
-                                        [SENTINEL_2_INDEX_KEY]]
+            "seed": {'values': [42,43,44,45,46]},
+            "dataset_size": {'values': ["20"]},
+            "modalities": {'values':    [
+                                            [ESA_WORLD_COVER_INDEX_KEY],
+                                            [SENTINEL_1_INDEX_KEY],
+                                            [GLO_30_DEM_INDEX_KEY],
+                                            [SEASON_S2_INDEX_KEY],
+                                            [ERA_5_INDEX_KEY],
+                                            [CLIMATE_ZONE_INDEX_KEY],
+                                            [SEASON_S2_INDEX_KEY],
+                                        ]
                            },
         }
     }
@@ -79,6 +73,8 @@ if __name__ == "__main__":
     def run_sweep():
 
         wandb.init(config=training_config)
+        run_name = '-'.join([get_label_from_index(modality) for modality in wandb.config.modalities])
+        wandb.run.name = run_name
 
         # Set device
         if environment == "local":
@@ -103,17 +99,7 @@ if __name__ == "__main__":
                                 order=OrderOption.RANDOM,
                                 num_workers=4,
                                 pipelines=training_config[PIPELINES_CONFIG_KEY]
-                            )
-        
-        '''
-        itera = iter(dataloader_train)
-        first = next(itera)
-        for data in first:
-            print(data)
-            print(data.shape)
-            input("test")
-        '''
-        
+                            )    
                
         # Create a dictionary that maps each modality to the number of input channels
         channel_modalities = {
