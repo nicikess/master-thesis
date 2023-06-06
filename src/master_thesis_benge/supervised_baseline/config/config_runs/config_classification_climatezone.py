@@ -77,7 +77,7 @@ training_config = {
         TASK_KEY: Task.CLASSIFICATION_CLIMATEZONE.value,
     },
     "model": {
-        MODEL_KEY: ResNet,
+        MODEL_KEY: DualResNet,
         WEIGHTS_KEY: False,
         NUMBER_OF_CLASSES_KEY: 30,
     },

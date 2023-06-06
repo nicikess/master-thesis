@@ -36,6 +36,8 @@ class RegressionUtils(Metric):
             output = F.softmax(output, dim=1)
         if self.task == Task.REGRESSION_ELEVATION_DIFFERENCE.value:
             output = F.sigmoid(output)
+        if self.task == Task.SEGMENTATION_ELEVATION.value:
+            output = F.sigmoid(output)
         loss = loss(output, label)
         return loss
 
@@ -47,10 +49,15 @@ class RegressionUtils(Metric):
     def log_batch_train_metrics(self, loss, output, label, progress, epoch):
         self.epoch_train_loss += loss
 
-        softmax_output = F.softmax(output, dim=1)
+        if self.task == Task.REGRESSION_LANDUSE_FRACTION.value:
+            output = F.softmax(output, dim=1)
+        if self.task == Task.REGRESSION_ELEVATION_DIFFERENCE.value:
+            output = F.sigmoid(output)
+        if self.task == Task.SEGMENTATION_ELEVATION.value:
+            output = F.sigmoid(output)
 
-        self.epoch_train_mse += self.mse(softmax_output, label)
-        self.epoch_train_rmse += self.rsme(softmax_output, label)
+        self.epoch_train_mse += self.mse(output, label)
+        self.epoch_train_rmse += self.rsme(output, label)
 
         progress.set_description("Train loss "+str(epoch)+":{:.4f}".format(loss))
         wandb.log({"Step loss": loss})
@@ -73,10 +80,16 @@ class RegressionUtils(Metric):
         self.epoch_val_rmse = 0
 
     def log_batch_validation_metrics(self, output, label):
-        softmax_output = F.softmax(output, dim=1)
 
-        self.epoch_val_mse += self.mse(softmax_output, label)
-        self.epoch_val_rmse += self.rsme(softmax_output, label)
+        if self.task == Task.REGRESSION_LANDUSE_FRACTION.value:
+            output = F.softmax(output, dim=1)
+        if self.task == Task.REGRESSION_ELEVATION_DIFFERENCE.value:
+            output = F.sigmoid(output)
+        if self.task == Task.SEGMENTATION_ELEVATION.value:
+            output = F.sigmoid(output)
+
+        self.epoch_val_mse += self.mse(output, label)
+        self.epoch_val_rmse += self.rsme(output, label)
 
     def log_epoch_validation_metrics(self, len_vali_dataloader):
         # Calculate average per metric per epoch

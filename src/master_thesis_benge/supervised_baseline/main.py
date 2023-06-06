@@ -51,16 +51,17 @@ if __name__ == "__main__":
 
     sweep_configuration = {
         "method": 'grid',
-        "name": 'one-modality',
+        "name": 'one-modality-seed-43-44-45-46',
         "parameters": {
-            "seed": {'values': [42,43,44,45,46]},
+            "seed": {'values': [43, 44, 45, 46]},
+            #"learning_rate": {'values': [0.0001]},
             "dataset_size": {'values': ["20"]},
             "modalities": {'values':    [
-                                            [ESA_WORLD_COVER_INDEX_KEY],
+                                            [SENTINEL_2_INDEX_KEY],
                                             [SENTINEL_1_INDEX_KEY],
-                                            [GLO_30_DEM_INDEX_KEY],
-                                            [SEASON_S2_INDEX_KEY],
+                                            [ESA_WORLD_COVER_INDEX_KEY],
                                             [ERA_5_INDEX_KEY],
+                                            [GLO_30_DEM_INDEX_KEY],
                                             [CLIMATE_ZONE_INDEX_KEY],
                                             [SEASON_S2_INDEX_KEY],
                                         ]
