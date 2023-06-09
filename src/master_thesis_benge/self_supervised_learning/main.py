@@ -6,7 +6,6 @@ from master_thesis_benge.supervised_baseline.config.constants import (
     SENTINEL_2_INDEX_KEY,
 )
 
-
 if __name__ == "__main__":
 
     sweep_configuration = {
@@ -15,6 +14,7 @@ if __name__ == "__main__":
         "parameters": {
             "batch_size": {"values": [256, 512]},
             "temperature": {"values": [0.2, 0.4, 0.6, 0.8, 1]},
+            "dataset_size": {'values': ["20"]},
             "modalities": {'values':    [#[SENTINEL_2_INDEX_KEY, CLIMATE_ZONE_INDEX_KEY],
                             [SENTINEL_2_INDEX_KEY]]
                 },

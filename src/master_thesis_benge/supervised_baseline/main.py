@@ -3,7 +3,7 @@ import numpy as np
 import wandb
 import torch
 
-from master_thesis_benge.supervised_baseline.config.config_runs.config_regression_landuse_fraction import (
+from master_thesis_benge.supervised_baseline.config.config_runs.config_classification_landuse import (
     training_config,
     get_data_set_files
 )
@@ -51,9 +51,9 @@ if __name__ == "__main__":
 
     sweep_configuration = {
         "method": 'grid',
-        "name": 'one-modality-seed-43-44-45-46',
+        "name": 'one-modality-seed-42-43-44-45-46',
         "parameters": {
-            "seed": {'values': [43, 44, 45, 46]},
+            "seed": {'values': [42, 43, 44, 45, 46]},
             #"learning_rate": {'values': [0.0001]},
             "dataset_size": {'values': ["20"]},
             "modalities": {'values':    [
@@ -100,7 +100,17 @@ if __name__ == "__main__":
                                 order=OrderOption.RANDOM,
                                 num_workers=4,
                                 pipelines=training_config[PIPELINES_CONFIG_KEY]
-                            )    
+                            )
+        
+        '''
+        itera = iter(dataloader_train)
+        first = next(itera)
+        for data in first:
+            print(data)
+            print(data.shape)
+            input("test")
+        '''
+        
                
         # Create a dictionary that maps each modality to the number of input channels
         channel_modalities = {
@@ -109,6 +119,12 @@ if __name__ == "__main__":
                 wandb.config.modalities
             )
         }
+
+        itera = iter(dataloader_train)
+        first = next(itera)
+        for data in first:
+            print(data)
+            input("test")
 
         # Define model
         model = training_config[MODEL_CONFIG_KEY][MODEL_KEY](

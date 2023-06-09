@@ -10,6 +10,8 @@ src/master_thesis_benge/self_supervised_learning/stl10_binary/*
 src/master_thesis_benge/self_supervised_learning/wandb/*
 src/master_thesis_benge/self_supervised_learning/example_data/*
 src/master_thesis_benge/self_supervised_learning/stl10_binary/*
+src/master_thesis_benge/self_supervised_learning/saved_models/*
+src/master_thesis_benge/self_supervised_learning/lightning_logs/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

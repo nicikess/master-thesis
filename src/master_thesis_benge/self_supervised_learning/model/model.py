@@ -43,39 +43,31 @@ def define_param_groups(model, weight_decay, optimizer_name):
 
 
 class SimCLR_pl(pl.LightningModule):
-    def __init__(self, config, model=None, feat_dim=512):
+    def __init__(self, config, feat_dim=512):
         super().__init__()
         self.config = config
-        self.model = AddProjection(config, model=model, mlp_dim=feat_dim)
+        self.model_s2 = AddProjection(in_channels=4, embedding_size = self.config.embedding_size, mlp_dim=feat_dim)
+        self.model_s1 = AddProjection(in_channels=2, embedding_size = self.config.embedding_size, mlp_dim=feat_dim)
         self.loss = ContrastiveLoss(
             wandb.config.batch_size, temperature=wandb.config.temperature
         )
         wandb.log({"batch size": wandb.config.batch_size})
         wandb.log({"temperature": wandb.config.temperature})
 
-    def forward(self, X):
-        return self.model(X)
-
-    def training_step(self, batch, batch_idx):
-        (x1, x2), labels = batch
-        z1 = self.model(x1)
-        z2 = self.model(x2)
+    def training_step(self, batch):
+        (s1, s2) = batch
+        z1 = self.model_s2(s2)
+        z2 = self.model_s1(s1)
         loss = self.loss(z1, z2)
-        self.log(
-            "Contrastive loss",
-            loss,
-            on_step=True,
-            on_epoch=True,
-            prog_bar=True,
-            logger=True,
-        )
+        self.log("Contrastive loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         wandb.log({"loss batch": loss})
         return loss
 
     def configure_optimizers(self):
         max_epochs = int(self.config.epochs)
         param_groups = define_param_groups(
-            self.model, self.config.weight_decay, "adam"
+            # FIX THIS!!!
+            self.model_s1, self.config.weight_decay, "adam"
         )
         lr = self.config.lr
         optimizer = Adam(param_groups, lr=lr, weight_decay=self.config.weight_decay)

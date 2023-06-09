@@ -1,1 +1,0 @@
-{"Step loss": 0.025628162547945976, "_timestamp": 1682372865.6145504, "_runtime": 5033.980024337769, "_step": 4119, "Epoch train loss": 0.025584235787391663, "Epoch train mse": 0.47120559215545654, "Epoch train rmse": 0.22204643487930298, "Learning-rate": 0.0, "Epoch val mse": 3.7696447372436523, "Epoch val rmse": 1.7763714790344238, "_wandb": {"runtime": 5033}}

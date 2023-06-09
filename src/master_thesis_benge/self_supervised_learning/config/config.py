@@ -3,7 +3,7 @@ class Hparams:
         self.epochs = 200  #
         self.seed = 77777
         self.cuda = True
-        self.img_size = 64  # img shape
+        self.img_size = 120  # img shape
         self.save = "./saved_models/"  # save checkpoint
         self.load = False  # load pretrained checkpoint
         self.gradient_accumulation_steps = 5
