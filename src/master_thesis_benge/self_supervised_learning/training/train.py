@@ -54,14 +54,6 @@ from master_thesis_benge.supervised_baseline.config.constants import (
 
 from ffcv.loader import Loader, OrderOption
 
-'''
-def get_str1_dataloader_ST110(batch_size, transform=None, split="unlabeled"):
-    st110 = STL10("./", split=split, transform=transform, download=True)
-    return DataLoader(
-        dataset=st110, batch_size=batch_size, num_workers=cpu_count() // 2
-    )
-'''
-
 def reproducibility(config):
     SEED = int(config.seed)
     torch.manual_seed(SEED)
@@ -86,10 +78,15 @@ def train():
     reproducibility(train_config)
     save_name = filename + ".ckpt"
 
-    model = SimCLR_pl(train_config, feat_dim=512)
+    # Create a dictionary that maps each modality to the number of input channels
+    channel_modalities = {
+        f"in_channels_{i+1}": int(str(np.shape(next(iter(dataloader_train))[modality])[1]))
+        for i, modality in enumerate(
+            wandb.config.modalities
+        )
+    }
 
-    #transform = Augment(train_config.img_size)
-    #data_loader = get_str1_dataloader_ST110(wandb.config.batch_size, transform)
+    model = SimCLR_pl(train_config, feat_dim=512, in_channels_1=channel_modalities["in_channels_1"], in_channels_2=channel_modalities["in_channels_2"])
 
     dataloader_train = Loader(get_data_set_files(wandb.config.dataset_size)[0],
                         batch_size=training_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY],
@@ -105,39 +102,6 @@ def train():
         print(data.shape)
         input("test")
     '''
-    
-    # Create a dictionary that maps each modality to the number of input channels
-
-    '''
-    channel_modalities = {
-        f"in_channels_{i+1}": int(str(np.shape(next(iter(dataloader_train))[modality])[1]))
-        for i, modality in enumerate(
-            wandb.config.modalities
-        )
-    }
-    '''
-
-    dataloader_train = Loader(get_data_set_files(wandb.config.dataset_size)[0],
-                        batch_size=training_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY],
-                        order=OrderOption.RANDOM,
-                        num_workers=4,
-                        pipelines=training_config[PIPELINES_CONFIG_KEY]
-                    )
-        
-    itera = iter(dataloader_train)
-    first = next(itera)
-    for data in first:
-        print(data)
-        print(data.shape)
-        input("test")
-    
-    # Create a dictionary that maps each modality to the number of input channels
-    channel_modalities = {
-        f"in_channels_{i+1}": int(str(np.shape(next(iter(dataloader_train))[modality])[1]))
-        for i, modality in enumerate(
-            wandb.config.modalities
-        )
-    }
 
     accumulator = GradientAccumulationScheduler(
         scheduling={0: train_config.gradient_accumulation_steps}
@@ -151,6 +115,8 @@ def train():
         monitor="Contrastive loss_epoch",
         mode="min",
     )
+
+    print("Running on CPU: Change train initializer in train module cpu -> gpu ")
 
     if resume_from_checkpoint:
         trainer = Trainer(
@@ -167,3 +133,4 @@ def train():
         )
 
     trainer.fit(model, dataloader_train)
+    trainer.save(save_name)

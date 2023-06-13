@@ -7,7 +7,7 @@ from master_thesis_benge.supervised_baseline.training.transforms import (
 
 # Import models
 from master_thesis_benge.supervised_baseline.model.resnet import (
-    ResNet,
+    UniResNet,
 )
 
 from master_thesis_benge.supervised_baseline.model.dual_resnet import (
@@ -77,7 +77,7 @@ training_config = {
         TASK_KEY: Task.CLASSIFICATION_CLIMATEZONE.value,
     },
     "model": {
-        MODEL_KEY: DualResNet,
+        MODEL_KEY: ResNet,
         WEIGHTS_KEY: False,
         NUMBER_OF_CLASSES_KEY: 30,
     },

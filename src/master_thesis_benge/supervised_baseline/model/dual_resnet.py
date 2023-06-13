@@ -4,8 +4,9 @@ import torch
 import torchvision.models as models
 
 
-class ResNet:
+class ResNet(nn.Module):
     def __init__(self, in_channels_1, number_of_classes):
+        super(ResNet, self).__init__()
         self.number_of_classes = number_of_classes
         self.model = models.resnet18(weights=None)
         self.model.conv1 = nn.Conv2d(
@@ -18,6 +19,9 @@ class ResNet:
             nn.ReLU(),
             nn.Dropout(0.2),
         )
+    
+    def forward(self, x):
+        return self.model.forward(x)
 
 
 # Create the last convolution block

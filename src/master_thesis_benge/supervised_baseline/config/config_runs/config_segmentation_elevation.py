@@ -82,7 +82,7 @@ training_config = {
         TASK_KEY: Task.SEGMENTATION_ELEVATION.value,
     },
     "model": {
-        MODEL_KEY: UNet,
+        MODEL_KEY: DualUNet,
         WEIGHTS_KEY: False,
         NUMBER_OF_CLASSES_KEY: 1,
     },

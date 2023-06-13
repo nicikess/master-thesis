@@ -8,8 +8,9 @@ from master_thesis_benge.supervised_baseline.config.constants import (
 
 if __name__ == "__main__":
 
+    
     sweep_configuration = {
-        "method": "random",
+        "method": "grid",
         "name": "sweep",
         "parameters": {
             "batch_size": {"values": [256, 512]},

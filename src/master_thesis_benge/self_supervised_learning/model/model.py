@@ -11,7 +11,6 @@ from master_thesis_benge.self_supervised_learning.loss.contrastive_loss import (
     ContrastiveLoss,
 )
 
-
 def define_param_groups(model, weight_decay, optimizer_name):
     def exclude_from_wd_and_adaptation(name):
         if "bn" in name:
@@ -43,11 +42,13 @@ def define_param_groups(model, weight_decay, optimizer_name):
 
 
 class SimCLR_pl(pl.LightningModule):
-    def __init__(self, config, feat_dim=512):
+    def __init__(self, config, feat_dim=512, in_channels_1 = None, in_channels_2 = None):
         super().__init__()
         self.config = config
-        self.model_s2 = AddProjection(in_channels=4, embedding_size = self.config.embedding_size, mlp_dim=feat_dim)
-        self.model_s1 = AddProjection(in_channels=2, embedding_size = self.config.embedding_size, mlp_dim=feat_dim)
+        assert(in_channels_1==2)
+        assert(in_channels_2==4)
+        self.model_s1 = AddProjection(in_channels=in_channels_1, embedding_size = self.config.embedding_size, mlp_dim=feat_dim)
+        self.model_s2 = AddProjection(in_channels=in_channels_2, embedding_size = self.config.embedding_size, mlp_dim=feat_dim)
         self.loss = ContrastiveLoss(
             wandb.config.batch_size, temperature=wandb.config.temperature
         )
@@ -56,8 +57,8 @@ class SimCLR_pl(pl.LightningModule):
 
     def training_step(self, batch):
         (s1, s2) = batch
-        z1 = self.model_s2(s2)
-        z2 = self.model_s1(s1)
+        z1 = self.model_s1(s1)
+        z2 = self.model_s2(s2)
         loss = self.loss(z1, z2)
         self.log("Contrastive loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         wandb.log({"loss batch": loss})

@@ -7,7 +7,7 @@ from master_thesis_benge.supervised_baseline.training.transforms import (
 
 # Import models
 from master_thesis_benge.supervised_baseline.model.resnet import (
-    ResNet,
+    UniResNet,
 )
 
 from master_thesis_benge.supervised_baseline.model.dual_resnet import (

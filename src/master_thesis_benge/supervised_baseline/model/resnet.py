@@ -2,8 +2,9 @@ import torch.nn as nn
 import torchvision.models as models
 
 
-class ResNet18:
+class ResNet(nn.Module):
     def __init__(self, in_channels_1, number_of_classes):
+        super(ResNet, self).__init__()
         self.number_of_classes = number_of_classes
         self.model = models.resnet18(weights=None)
         # wandb.log({"Model size": str(self.model)})
@@ -18,14 +19,16 @@ class ResNet18:
             nn.Dropout(0.2),
             nn.Linear(256, self.number_of_classes),
         )
+    def forward(self, x):
+        return self.model.forward(x)
 
 
-class ResNet(nn.Module):
+class UniResNet(nn.Module):
     def __init__(self, in_channels_1, number_of_classes):
-        super(ResNet, self).__init__()
+        super(UniResNet, self).__init__()
 
         # First stream of ResNet()
-        self.res_net_1 = ResNet18(in_channels_1, number_of_classes).model
+        self.res_net_1 = ResNet(in_channels_1, number_of_classes).model
 
     def forward(self, x1):
         # Process modality 1 input

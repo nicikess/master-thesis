@@ -3,7 +3,7 @@ import numpy as np
 import wandb
 import torch
 
-from master_thesis_benge.supervised_baseline.config.config_runs.config_classification_landuse import (
+from master_thesis_benge.supervised_baseline.config.config_runs.config_regression_landuse_fraction import (
     training_config,
     get_data_set_files
 )
@@ -51,17 +51,17 @@ if __name__ == "__main__":
 
     sweep_configuration = {
         "method": 'grid',
-        "name": 'one-modality-seed-42-43-44-45-46',
+        "name": 'one-modality-sweep',
         "parameters": {
             "seed": {'values': [42, 43, 44, 45, 46]},
             #"learning_rate": {'values': [0.0001]},
             "dataset_size": {'values': ["20"]},
             "modalities": {'values':    [
-                                            [SENTINEL_2_INDEX_KEY],
                                             [SENTINEL_1_INDEX_KEY],
+                                            [SENTINEL_2_INDEX_KEY],
                                             [ESA_WORLD_COVER_INDEX_KEY],
-                                            [ERA_5_INDEX_KEY],
                                             [GLO_30_DEM_INDEX_KEY],
+                                            [ERA_5_INDEX_KEY],
                                             [CLIMATE_ZONE_INDEX_KEY],
                                             [SEASON_S2_INDEX_KEY],
                                         ]
@@ -119,12 +119,6 @@ if __name__ == "__main__":
                 wandb.config.modalities
             )
         }
-
-        itera = iter(dataloader_train)
-        first = next(itera)
-        for data in first:
-            print(data)
-            input("test")
 
         # Define model
         model = training_config[MODEL_CONFIG_KEY][MODEL_KEY](
