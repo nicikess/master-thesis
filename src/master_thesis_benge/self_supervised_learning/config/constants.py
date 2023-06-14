@@ -27,6 +27,9 @@ label_from_index = {
     10: "sentinel2"
 }
 
+class Task(Enum):
+    SELF_SELFSUPERVISED_LEARNING_FINE_TUNEING = "self-supervised-learning-fine-tuning"
+
 # Training
 EPOCHS_KEY = "epochs"
 SEED_KEY = "seed"
@@ -43,6 +46,19 @@ WEIGHT_DECAY_KEY = "weight_decay"
 EMEDDING_SIZE_KEY = "embedding_size"
 CHECKPOINT_PATH_KEY = "checkpoint_path"
 DATASET_SIZE_KEY = "dataset_size"
+WEIGHTS_KEY = "weights"
+NUMBER_OF_CLASSES_KEY = "number_of_classes"
+BATCH_SIZE_KEY = "batch_size"
+OPTIMIZER_KEY = "optimizer"
+SCHEDULER_KEY = "scheduler"
+LOSS_KEY = "loss"
+SCHEDULER_MAX_NUMBER_ITERATIONS_KEY = "scheduler_max_number_iterations"
+SCHEDULER_MIN_LR_KEY = "scheduler_min_lr"
+MODEL_KEY = "model"
+TASK_KEY = "task"
+PRE_TRAINED_WEIGHTS_KEY = "pre_trained_weights"
+MODALITIES_KEY = "modalities"
+MODALITIES_LABEL_KEY = "modalities_label"
 
 # Environment
 ENVIRONMENT_KEY = "environment"
@@ -54,11 +70,6 @@ METRICS_KEY = "metrics"
 TRAINING_CONFIG_KEY = "training"
 PIPELINES_CONFIG_KEY = "pipelines"
 PARAMETERS_CONFIG_KEY = "parameters"
-
-# Main
-MODE_TRAIN_KEY = "train"
-MODE_EVALUATE_KEY = "evaluate"
-MODE_SAVE_WEIGHTS_KEY = "save_weights"
 
 def get_label_from_index(index: int):
     return label_from_index.get(index)

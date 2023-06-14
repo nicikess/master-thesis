@@ -4,7 +4,7 @@ import torch.nn.functional as F
 
 
 class UNet(nn.Module):
-    def __init__(self, weights, in_channels_1, number_of_classes):
+    def __init__(self, in_channels_1, number_of_classes):
         super(UNet, self).__init__()
 
         self.inc = DoubleConv(in_channels_1, 64)

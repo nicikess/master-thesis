@@ -102,8 +102,7 @@ training_config = {
         LOSS_KEY: torch.nn.MSELoss(),
         #SEED_KEY: 42,
         SCHEDULER_MAX_NUMBER_ITERATIONS_KEY: 20,
-        SCHEDULER_MIN_LR_KEY: 0,
-        PRE_TRAINED_WEIGHTS_KEY: None
+        SCHEDULER_MIN_LR_KEY: 0
     },
     "metrics": {METRICS_KEY: RegressionUtils},
     "other": {

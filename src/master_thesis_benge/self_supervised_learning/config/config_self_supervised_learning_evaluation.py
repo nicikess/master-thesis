@@ -1,25 +1,12 @@
 import torch
 
-# Import transforms
-from master_thesis_benge.supervised_baseline.training.transforms import (
-    Transforms,
-)
-
 # Import models
-from master_thesis_benge.supervised_baseline.model.unet import (
-    UNet
-)
-
-from master_thesis_benge.supervised_baseline.model.dual_unet import (
-    DualUNet,
-)
-
-from master_thesis_benge.supervised_baseline.model.triple_unet import (
-    TripleUNet,
+from master_thesis_benge.self_supervised_learning.model.resnet import (
+    UniResNet,
 )
 
 # Import constants
-from master_thesis_benge.supervised_baseline.config.constants import (
+from master_thesis_benge.self_supervised_learning.config.constants import (
     Task,
     WEIGHTS_KEY,
     NUMBER_OF_CLASSES_KEY,
@@ -35,31 +22,21 @@ from master_thesis_benge.supervised_baseline.config.constants import (
     SAVE_MODEL_KEY,
     ENVIRONMENT_KEY,
     MODEL_KEY,
-    TASK_KEY,
-    MODALITIES_KEY,
     MODALITIES_LABEL_KEY,
-    METRICS_CONFIG_KEY,
-    METRICS_KEY,
+    MODALITIES_KEY,
+    MULTICLASS_ONE_HOT_LABEL_INDEX_KEY,
     ESA_WORLD_COVER_INDEX_KEY,
+    MODALITIES_KEY,
+    METRICS_KEY,
     SENTINEL_2_INDEX_KEY,
-    BANDS_KEY,
     DATALOADER_TRAIN_FILE_KEY,
     DATALOADER_VALIDATION_FILE_KEY,
-    PIPELINES_CONFIG_KEY,
-    SENTINEL_1_INDEX_KEY,
-    CLIMATE_ZONE_INDEX_KEY,
-    ERA_5_INDEX_KEY,
-    SEASON_S2_INDEX_KEY,
-    GLO_30_DEM_INDEX_KEY,
-    PRE_TRAINED_WEIGHTS_KEY
+    PRE_TRAINED_WEIGHTS_KEY,
+    TASK_KEY,
 )
 
-from master_thesis_benge.supervised_baseline.config.config_runs.config_files_and_directories import (
-    RemoteFilesAndDirectoryReferences as FileAndDirectoryReferences,
-)
-
-from master_thesis_benge.supervised_baseline.training.segmentation.segmentation_utils import (
-    SegmentationUtils
+from master_thesis_benge.self_supervised_learning.metrics.classification_utils import (
+    ClassificationUtils,
 )
 
 from remote_sensing_core.constants import Bands
@@ -78,30 +55,31 @@ from ffcv.fields.decoders import NDArrayDecoder, FloatDecoder, IntDecoder
 
 training_config = {
     "task": {
-        TASK_KEY: Task.SEGMENTATION_LANDUSE.value,
+        TASK_KEY: Task.SELF_SELFSUPERVISED_LEARNING_FINE_TUNEING.value
     },
     "model": {
-        MODEL_KEY: UNet,
+        MODEL_KEY: UniResNet,
         WEIGHTS_KEY: False,
         NUMBER_OF_CLASSES_KEY: 11,
     },
     "training": {
         MODALITIES_KEY: {
-            MODALITIES_LABEL_KEY: ESA_WORLD_COVER_INDEX_KEY,
+            MODALITIES_LABEL_KEY: MULTICLASS_ONE_HOT_LABEL_INDEX_KEY,
         },
-        DATALOADER_TRAIN_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-20-train.beton',
-        DATALOADER_VALIDATION_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-validation.beton',
+        DATALOADER_TRAIN_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-test-multi-label-ewc.beton',
+        DATALOADER_VALIDATION_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-validation-multi-label-ewc.beton',
         EPOCHS_KEY: 20,
-        LEARNING_RATE_KEY: 0.01,
+        LEARNING_RATE_KEY: 0.001,
         BATCH_SIZE_KEY: 32,
         OPTIMIZER_KEY: torch.optim.Adam,
         SCHEDULER_KEY: torch.optim.lr_scheduler.CosineAnnealingLR,
-        LOSS_KEY: torch.nn.CrossEntropyLoss(),
+        LOSS_KEY: torch.nn.BCEWithLogitsLoss(),
         #SEED_KEY: 42,
         SCHEDULER_MAX_NUMBER_ITERATIONS_KEY: 20,
-        SCHEDULER_MIN_LR_KEY: 0
+        SCHEDULER_MIN_LR_KEY: 0,
+        PRE_TRAINED_WEIGHTS_KEY: None
     },
-    "metrics": {METRICS_KEY: SegmentationUtils},
+    "metrics": {METRICS_KEY: ClassificationUtils},
     "other": {
         SAVE_MODEL_KEY: False,
         ENVIRONMENT_KEY: "remote",
@@ -110,7 +88,7 @@ training_config = {
         'climate_zone': [FloatDecoder(), MinMaxScaler(maximum_value=29, minimum_value=0, interval_max=1, interval_min=0), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'elevation_differ': [FloatDecoder(), ToTensor(), ToDevice(device)],
         'era_5': [NDArrayDecoder(), Era5TemperatureS2Transform(batch_size=32), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
-        'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), Convert('int64'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'glo_30_dem': [NDArrayDecoder(), ChannelSelector([0]), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'multiclass_numer': [NDArrayDecoder(), ToTensor(), ToDevice(device)],
         'multiclass_one_h': [ToTensor(), ToDevice(device = torch.device('cuda'))],
@@ -119,13 +97,10 @@ training_config = {
         'sentinel_1': [NDArrayDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'sentinel_2': [NDArrayDecoder(), Clipping([0, 10_000]), ChannelSelector([7, 3, 2, 1]), ToTensor(), ToDevice(device=torch.device('cuda'))],
     },
-    #Modality
-    #'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(), Add1dChannel(), ToTensor(), ToDevice(device = torch.device('cuda'))],
-    #Label
-    #'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(), Convert('int64'), ToTensor(), ToDevice(device = torch.device('cuda'))],
 }
+
 
 def get_data_set_files(size: str):
     train_file = f'/raid/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-train.beton'
     validation_file = f'/raid/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-validation.beton'
-    return train_file, validation_file
+    #return train_file, validation_file

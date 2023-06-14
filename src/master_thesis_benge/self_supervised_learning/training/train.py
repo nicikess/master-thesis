@@ -27,7 +27,8 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     DATASET_SIZE_KEY,
     GRADIENT_ACCUMULATION_STEPS_KEY,
     EPOCHS_KEY,
-    CHECKPOINT_PATH_KEY
+    CHECKPOINT_PATH_KEY,
+    get_label_from_index
 )
 
 from ffcv.loader import Loader, OrderOption
@@ -49,7 +50,7 @@ def train():
 
     # Model path
     save_model_path = os.path.join(os.getcwd(), "saved_models/")
-    filename = "SimCLR_ResNet18_adam_"
+    filename = '-'.join([get_label_from_index(modality) for modality in wandb.config.modalities])
     resume_from_checkpoint = False
 
     reproducibility(training_config[PARAMETERS_CONFIG_KEY][SEED_KEY])
@@ -64,16 +65,17 @@ def train():
 
     # Create a dictionary that maps each modality to the number of input channels
     
-    '''
+    input("test")
+    
     channel_modalities = {
         f"in_channels_{i+1}": int(str(np.shape(next(iter(dataloader_train))[modality])[1]))
         for i, modality in enumerate(
             wandb.config.modalities
         )
     }
-    '''
+    
 
-    model = SimCLR_pl(training_config, feat_dim=512, in_channels_1=2, in_channels_2=4)
+    model = SimCLR_pl(training_config, feat_dim=512, in_channels_1=channel_modalities["in_channels_1"], in_channels_2=channel_modalities["in_channels_2"])
 
     '''
     itera = iter(dataloader_train)

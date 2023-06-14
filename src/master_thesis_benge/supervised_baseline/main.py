@@ -124,7 +124,6 @@ if __name__ == "__main__":
         model = training_config[MODEL_CONFIG_KEY][MODEL_KEY](
             # Define multi modal model
             # Input channels for s1
-            weights=training_config[MODEL_CONFIG_KEY][PRE_TRAINED_WEIGHTS_KEY],
             in_channels_1=channel_modalities["in_channels_1"],
             #in_channels_1=4,
             # Input channels for s2

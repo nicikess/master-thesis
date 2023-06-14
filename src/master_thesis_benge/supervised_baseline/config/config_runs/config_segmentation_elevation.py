@@ -84,7 +84,6 @@ training_config = {
     },
     "model": {
         MODEL_KEY: TripleUNet,
-        WEIGHTS_KEY: False,
         NUMBER_OF_CLASSES_KEY: 1,
     },
     "training": {
@@ -101,8 +100,7 @@ training_config = {
         LOSS_KEY: torch.nn.MSELoss(),#weight=[0.1, 10, 0.1, 0.1, 10, 10, 0, 0.1, 10, 0, 10]
         #SEED_KEY: 42,
         SCHEDULER_MAX_NUMBER_ITERATIONS_KEY: 20,
-        SCHEDULER_MIN_LR_KEY: 0,
-        PRE_TRAINED_WEIGHTS_KEY: None
+        SCHEDULER_MIN_LR_KEY: 0
     },
     "metrics": {METRICS_KEY: RegressionUtils},
     "other": {
