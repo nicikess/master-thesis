@@ -48,8 +48,6 @@ from ffcv.loader import Loader, OrderOption
 
 if __name__ == "__main__":
 
-    environment = training_config[OTHER_CONFIG_KEY][ENVIRONMENT_KEY]
-
     sweep_configuration = {
         "method": 'grid',
         "name": 'one-modality',
@@ -78,11 +76,7 @@ if __name__ == "__main__":
         wandb.run.name = run_name
 
         # Set device
-        if environment == "local":
-            device = torch.device('cpu')
-            print("Running locally")
-        else:
-            device = torch.device('cuda')
+        device = torch.device('cuda')
 
         # Set seed
         torch.manual_seed(wandb.config.seed)

@@ -11,9 +11,6 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning import Trainer
 
 from master_thesis_benge.self_supervised_learning.model.model import SimCLR_pl
-from master_thesis_benge.self_supervised_learning.augmentation.augmentation import (
-    Augment,
-)
 
 from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning import (
     training_config,
@@ -28,6 +25,7 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     GRADIENT_ACCUMULATION_STEPS_KEY,
     EPOCHS_KEY,
     CHECKPOINT_PATH_KEY,
+    FEATURE_DIMENSION_KEY,
     get_label_from_index
 )
 
@@ -38,7 +36,7 @@ def reproducibility(seed):
     np.random.seed(seed)
     #torch.cuda.manual_seed(seed)
 
-def train():
+def training():
 
     # Initialize wandb
     wandb.init(config=training_config)
@@ -65,17 +63,14 @@ def train():
 
     # Create a dictionary that maps each modality to the number of input channels
     
-    input("test")
-    
     channel_modalities = {
         f"in_channels_{i+1}": int(str(np.shape(next(iter(dataloader_train))[modality])[1]))
         for i, modality in enumerate(
             wandb.config.modalities
         )
     }
-    
 
-    model = SimCLR_pl(training_config, feat_dim=512, in_channels_1=channel_modalities["in_channels_1"], in_channels_2=channel_modalities["in_channels_2"])
+    model = SimCLR_pl(training_config, feat_dim=training_config[PARAMETERS_CONFIG_KEY][FEATURE_DIMENSION_KEY], in_channels_1=channel_modalities["in_channels_1"], in_channels_2=channel_modalities["in_channels_2"])
 
     '''
     itera = iter(dataloader_train)

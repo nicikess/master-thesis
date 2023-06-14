@@ -16,6 +16,7 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     EMEDDING_SIZE_KEY,
     CHECKPOINT_PATH_KEY,
     DATASET_SIZE_KEY,
+    FEATURE_DIMENSION_KEY
 )
 
 from remote_sensing_core.constants import Bands
@@ -46,6 +47,7 @@ training_config = {
         EMEDDING_SIZE_KEY: 128,
         CHECKPOINT_PATH_KEY: "./SimCLR_ResNet18.ckpt",
         DATASET_SIZE_KEY: "20",
+        FEATURE_DIMENSION_KEY: 512
     },
     "pipelines": {
         'climate_zone': None,

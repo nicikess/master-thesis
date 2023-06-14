@@ -1,4 +1,4 @@
-
+from enum import Enum
 
 # Modalities indicis
 CLIMATE_ZONE_INDEX_KEY = 0
@@ -59,6 +59,7 @@ TASK_KEY = "task"
 PRE_TRAINED_WEIGHTS_KEY = "pre_trained_weights"
 MODALITIES_KEY = "modalities"
 MODALITIES_LABEL_KEY = "modalities_label"
+FEATURE_DIMENSION_KEY = "feature_dimension"
 
 # Environment
 ENVIRONMENT_KEY = "environment"
@@ -70,6 +71,17 @@ METRICS_KEY = "metrics"
 TRAINING_CONFIG_KEY = "training"
 PIPELINES_CONFIG_KEY = "pipelines"
 PARAMETERS_CONFIG_KEY = "parameters"
+
+# Config
+TRAINING_CONFIG_KEY = "training"
+PARAMETERS_CONFIG_KEY = "parameters"
+LABEL_CONFIG_KEY = "label"
+TASK_CONFIG_KEY = "task"
+DATA_CONFIG_KEY = "data"
+MODEL_CONFIG_KEY = "model"
+OTHER_CONFIG_KEY = "other"
+METRICS_CONFIG_KEY = "metrics"
+PIPELINES_CONFIG_KEY = "pipelines"
 
 def get_label_from_index(index: int):
     return label_from_index.get(index)

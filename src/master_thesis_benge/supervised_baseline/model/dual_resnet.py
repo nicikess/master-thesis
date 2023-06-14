@@ -5,10 +5,10 @@ import torchvision.models as models
 
 
 class ResNet(nn.Module):
-    def __init__(self, weights, in_channels_1, number_of_classes):
+    def __init__(self, in_channels_1, number_of_classes):
         super(ResNet, self).__init__()
         self.number_of_classes = number_of_classes
-        self.model = models.resnet18(weights=weights)
+        self.model = models.resnet18(weights=None)
         self.model.conv1 = nn.Conv2d(
             in_channels_1, 64, kernel_size=7, stride=2, padding=3, bias=False
         )
@@ -35,18 +35,13 @@ class LinearFC(nn.Module):
 
 
 class DualResNet(nn.Module):
-    def __init__(self, weights, in_channels_1, in_channels_2, number_of_classes):
+    def __init__(self, in_channels_1, in_channels_2, number_of_classes):
         super(DualResNet, self).__init__()
 
-        if weights == None:
-            self.res_net_1 = ResNet(weights, in_channels_1, number_of_classes).model
-            # Second stream of ResNet()
-            self.res_net_2 = ResNet(weights, in_channels_2, number_of_classes).model
         # First stream of ResNet()
-        if weights != None:
-            self.res_net_1 = ResNet(weights["weights_modality_one"], in_channels_1, number_of_classes).model
-            # Second stream of ResNet()
-            self.res_net_2 = ResNet(weights["weights_modality_two"], in_channels_2, number_of_classes).model
+        self.res_net_1 = ResNet(in_channels_1, number_of_classes).model
+        # Second stream of ResNet()
+        self.res_net_2 = ResNet(in_channels_2, number_of_classes).model
 
         # TODO: Uncomment to test
         self.fc = LinearFC(2 * 256, number_of_classes)
