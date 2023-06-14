@@ -14,10 +14,6 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     TASK_CONFIG_KEY,
 )
 
-from master_thesis_benge.self_supervised_learning.training.train_setup import (
-    train_setup
-)
-
 from master_thesis_benge.self_supervised_learning.model.model import (
     SimCLR_pl
 )
@@ -50,7 +46,7 @@ if __name__ == "__main__":
         }
 
         sweep_id = wandb.sweep(
-            sweep=sweep_configuration, project="self-supervised-test-run"
+            sweep=sweep_configuration, project="master-thesis-ssl-training"
         )
 
         wandb.agent(sweep_id, function=training, count=20)
@@ -60,11 +56,12 @@ if __name__ == "__main__":
 
         sweep_configuration = {
             "method": 'grid',
-            "name": 'two-modality-ssl-test',
+            "name": 'two-modality',
             "parameters": {
                 "seed": {'values': [42, 43, 44, 45, 46]},
                 #"learning_rate": {'values': [0.0001]},
                 #"dataset_size": {'values': ["20"]},
+                "pre_trained_weights_path": {'values': ["src/master_thesis_benge/self_supervised_learning/saved_models/SimCLR_ResNet18_adam_-v1.ckpt"]},
                 "modalities": {'values':    [
                                                 [SENTINEL_1_INDEX_KEY, SENTINEL_2_INDEX_KEY],
                                             ]
@@ -72,7 +69,7 @@ if __name__ == "__main__":
             }
         }
 
-        sweep_id = wandb.sweep(sweep=sweep_configuration, project='master-thesis-self-supervised-'+training_config[TASK_CONFIG_KEY][TASK_KEY].lower())
+        sweep_id = wandb.sweep(sweep=sweep_configuration, project='master-thesis-ssl-evaluation'+training_config[TASK_CONFIG_KEY][TASK_KEY].lower())
 
         wandb.agent(sweep_id, function=evaluation)
 
@@ -81,4 +78,4 @@ if __name__ == "__main__":
     train_setup()
 
     # Evaluate
-    evaluation_setup()
+    #evaluation_setup()

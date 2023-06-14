@@ -6,7 +6,6 @@ class Bands(Enum):
     INFRARED = "infrared"
     ALL = "all"
 
-
 class Task(Enum):
     CLASSIFICATION_CLIMATEZONE = "classification-climatezone"
     CLASSIFICATION_LANDUSE = "classification-landuse"
@@ -49,37 +48,26 @@ DATALOADER_VALIDATION_FILE_KEY = "dataloader_validation_file"
 MODALITIES_KEY = "modalities"
 MODALITIES_LABEL_KEY = "modalities_label"
 MODEL_KEY = "model"
-WEIGHTS_KEY = "weights"
 EPOCHS_KEY = "epochs"
 LEARNING_RATE_KEY = "learning_rate"
 BATCH_SIZE_KEY = "batch_size"
 OPTIMIZER_KEY = "optimizer"
 SCHEDULER_KEY = "scheduler"
 LOSS_KEY = "loss"
-BANDS_KEY = "bands"
 NUMBER_OF_CLASSES_KEY = "number_of_classes"
 SEED_KEY = "seed"
 SCHEDULER_MAX_NUMBER_ITERATIONS_KEY = "scheduler_max_number_iterations"
 SCHEDULER_MIN_LR_KEY = "scheduler_min_lr"
 SAVE_MODEL_KEY = "save_model"
 TASK_KEY = "task"
-BANDS_KEY = "bands"
 DATASET_SIZE_KEY = "dataset_size"
-PRE_TRAINED_WEIGHTS_KEY = "pre_trained_weights"
-
-# Environment
-ENVIRONMENT_KEY = "environment"
 
 # Metrics
 METRICS_KEY = "metrics"
 
 # Config
 TRAINING_CONFIG_KEY = "training"
-PARAMETERS_CONFIG_KEY = "parameters"
-LABEL_CONFIG_KEY = "label"
 TASK_CONFIG_KEY = "task"
-DATA_CONFIG_KEY = "data"
-MODEL_CONFIG_KEY = "model"
 OTHER_CONFIG_KEY = "other"
 METRICS_CONFIG_KEY = "metrics"
 PIPELINES_CONFIG_KEY = "pipelines"

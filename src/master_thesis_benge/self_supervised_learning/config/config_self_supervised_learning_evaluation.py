@@ -8,7 +8,6 @@ from master_thesis_benge.self_supervised_learning.model.resnet import (
 # Import constants
 from master_thesis_benge.self_supervised_learning.config.constants import (
     Task,
-    WEIGHTS_KEY,
     NUMBER_OF_CLASSES_KEY,
     EPOCHS_KEY,
     LEARNING_RATE_KEY,
@@ -20,7 +19,6 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     SCHEDULER_MAX_NUMBER_ITERATIONS_KEY,
     SCHEDULER_MIN_LR_KEY,
     SAVE_MODEL_KEY,
-    ENVIRONMENT_KEY,
     MODEL_KEY,
     MODALITIES_LABEL_KEY,
     MODALITIES_KEY,
@@ -31,7 +29,6 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     SENTINEL_2_INDEX_KEY,
     DATALOADER_TRAIN_FILE_KEY,
     DATALOADER_VALIDATION_FILE_KEY,
-    PRE_TRAINED_WEIGHTS_KEY,
     TASK_KEY,
 )
 
@@ -59,7 +56,6 @@ training_config = {
     },
     "model": {
         MODEL_KEY: UniResNet,
-        WEIGHTS_KEY: False,
         NUMBER_OF_CLASSES_KEY: 11,
     },
     "training": {
@@ -77,12 +73,10 @@ training_config = {
         #SEED_KEY: 42,
         SCHEDULER_MAX_NUMBER_ITERATIONS_KEY: 20,
         SCHEDULER_MIN_LR_KEY: 0,
-        PRE_TRAINED_WEIGHTS_KEY: None
     },
     "metrics": {METRICS_KEY: ClassificationUtils},
     "other": {
         SAVE_MODEL_KEY: False,
-        ENVIRONMENT_KEY: "remote",
     },
     "pipelines": {
         'climate_zone': [FloatDecoder(), MinMaxScaler(maximum_value=29, minimum_value=0, interval_max=1, interval_min=0), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],

@@ -55,8 +55,8 @@ class SimCLR_pl(pl.LightningModule):
         self.training_config = training_config
         assert(in_channels_1==2)
         assert(in_channels_2==4)
-        self.model_s1 = AddProjection(in_channels=in_channels_1, embedding_size = self.training_config[PARAMETERS_CONFIG_KEY][EMEDDING_SIZE_KEY], mlp_dim=feat_dim)
-        self.model_s2 = AddProjection(in_channels=in_channels_2, embedding_size = self.training_config[PARAMETERS_CONFIG_KEY][EMEDDING_SIZE_KEY], mlp_dim=feat_dim)
+        self.model_modality_1 = AddProjection(in_channels=in_channels_1, embedding_size = self.training_config[PARAMETERS_CONFIG_KEY][EMEDDING_SIZE_KEY], mlp_dim=feat_dim)
+        self.model_modality_2 = AddProjection(in_channels=in_channels_2, embedding_size = self.training_config[PARAMETERS_CONFIG_KEY][EMEDDING_SIZE_KEY], mlp_dim=feat_dim)
         self.loss = ContrastiveLoss(
             wandb.config.batch_size, temperature=wandb.config.temperature
         )
@@ -67,32 +67,32 @@ class SimCLR_pl(pl.LightningModule):
         self.automatic_optimization = False
 
     def training_step(self, batch, batch_idx):
-        (s1, s2) = batch
-        z1 = self.model_s1(s1)
-        z2 = self.model_s2(s2)
+        (modality_1, modality_2) = batch
+        z1 = self.model_modality_1(modality_1)
+        z2 = self.model_modality_2(modality_2)
         loss = self.loss(z1, z2)
         self.log("Contrastive loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         wandb.log({"loss batch": loss})
 
-        opt_s1, opt_s2 = self.optimizers()  # Access optimizers
+        opt_modality_1, opt_modality_2 = self.optimizers()  # Access optimizers
 
         self.manual_backward(loss)  # Perform manual backward pass
 
         if (batch_idx + 1) % self.training_config[PARAMETERS_CONFIG_KEY][GRADIENT_ACCUMULATION_STEPS_KEY] == 0:
-            opt_s1.step()
-            opt_s2.step()
-            opt_s1.zero_grad()
-            opt_s2.zero_grad()
+            opt_modality_1.step()
+            opt_modality_2.step()
+            opt_modality_1.zero_grad()
+            opt_modality_2.zero_grad()
 
         return loss
 
     def configure_optimizers(self):
-        param_groups_s1 = define_param_groups(self.model_s1, self.training_config[PARAMETERS_CONFIG_KEY][WEIGHT_DECAY_KEY], "adam")
-        param_groups_s2 = define_param_groups(self.model_s2, self.training_config[PARAMETERS_CONFIG_KEY][WEIGHT_DECAY_KEY], "adam")
+        param_groups_modality_1 = define_param_groups(self.model_s1, self.training_config[PARAMETERS_CONFIG_KEY][WEIGHT_DECAY_KEY], "adam")
+        param_groups_modality_2 = define_param_groups(self.model_s2, self.training_config[PARAMETERS_CONFIG_KEY][WEIGHT_DECAY_KEY], "adam")
         lr = self.training_config[PARAMETERS_CONFIG_KEY][LEARNING_RATE_KEY]
 
-        optimizer_s1 = Adam(param_groups_s1, lr=lr, weight_decay=self.training_config[PARAMETERS_CONFIG_KEY][WEIGHT_DECAY_KEY])
-        optimizer_s2 = Adam(param_groups_s2, lr=lr, weight_decay=self.training_config[PARAMETERS_CONFIG_KEY][WEIGHT_DECAY_KEY])
+        optimizer_s1 = Adam(param_groups_modality_1, lr=lr, weight_decay=self.training_config[PARAMETERS_CONFIG_KEY][WEIGHT_DECAY_KEY])
+        optimizer_s2 = Adam(param_groups_modality_2, lr=lr, weight_decay=self.training_config[PARAMETERS_CONFIG_KEY][WEIGHT_DECAY_KEY])
 
         print(
             f"Optimizer Adam, "

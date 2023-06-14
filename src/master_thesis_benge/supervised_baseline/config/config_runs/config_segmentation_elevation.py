@@ -21,7 +21,6 @@ from master_thesis_benge.supervised_baseline.model.triple_unet import (
 # Import constants
 from master_thesis_benge.supervised_baseline.config.constants import (
     Task,
-    WEIGHTS_KEY,
     NUMBER_OF_CLASSES_KEY,
     EPOCHS_KEY,
     LEARNING_RATE_KEY,
@@ -29,29 +28,17 @@ from master_thesis_benge.supervised_baseline.config.constants import (
     OPTIMIZER_KEY,
     SCHEDULER_KEY,
     LOSS_KEY,
-    SEED_KEY,
     SCHEDULER_MAX_NUMBER_ITERATIONS_KEY,
     SCHEDULER_MIN_LR_KEY,
     SAVE_MODEL_KEY,
-    ENVIRONMENT_KEY,
     MODEL_KEY,
     TASK_KEY,
     MODALITIES_KEY,
     MODALITIES_LABEL_KEY,
-    METRICS_CONFIG_KEY,
     METRICS_KEY,
-    ESA_WORLD_COVER_INDEX_KEY,
-    SENTINEL_2_INDEX_KEY,
-    BANDS_KEY,
     DATALOADER_TRAIN_FILE_KEY,
     DATALOADER_VALIDATION_FILE_KEY,
-    PIPELINES_CONFIG_KEY,
-    SENTINEL_1_INDEX_KEY,
-    CLIMATE_ZONE_INDEX_KEY,
-    ERA_5_INDEX_KEY,
-    SEASON_S2_INDEX_KEY,
     GLO_30_DEM_INDEX_KEY,
-    PRE_TRAINED_WEIGHTS_KEY
 )
 
 from master_thesis_benge.supervised_baseline.config.config_runs.config_files_and_directories import (
@@ -105,7 +92,6 @@ training_config = {
     "metrics": {METRICS_KEY: RegressionUtils},
     "other": {
         SAVE_MODEL_KEY: False,
-        ENVIRONMENT_KEY: "remote",
     },
     "pipelines": {
         'climate_zone': [FloatDecoder(), MinMaxScaler(minimum_value=0, maximum_value=29, interval_min=0, interval_max=1), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
@@ -120,10 +106,6 @@ training_config = {
         'sentinel_1': [NDArrayDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'sentinel_2': [NDArrayDecoder(), Clipping([0, 10_000]), ChannelSelector([7, 3, 2, 1]), ToTensor(), ToDevice(device=torch.device('cuda'))],
     }
-    #Modality
-    #'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(), Add1dChannel(), ToTensor(), ToDevice(device = torch.device('cuda'))],
-    #Label
-    #'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(), Convert('int64'), ToTensor(), ToDevice(device = torch.device('cuda'))],
 }
 
 def get_data_set_files(size: str):

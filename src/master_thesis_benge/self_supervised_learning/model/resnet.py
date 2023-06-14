@@ -32,7 +32,7 @@ class UniResNet(nn.Module):
             self.res_net_1 = ResNet(weights, in_channels_1, number_of_classes).model
 
         if weights != None:
-            self.res_net_1 = ResNet(weights["weights_modality_one"], in_channels_1, number_of_classes).model
+            self.res_net_1 = ResNet(weights["weights_modality_1"], in_channels_1, number_of_classes).model
 
     def forward(self, x1):
         # Process modality 1 input

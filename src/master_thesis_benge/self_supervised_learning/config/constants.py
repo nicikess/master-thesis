@@ -38,15 +38,11 @@ SAVE_MODEL_KEY = "save_model"
 DATALOADER_TRAIN_FILE_KEY = "dataloader_train_file"
 DATALOADER_VALIDATION_FILE_KEY = "dataloader_validation_file"
 DATASET_SIZE_KEY = "dataset_size"
-DEVICE_KEY = "device"
 IMAGE_SIZE_KEY = "image_size"
-LOAD_MODEL_KEY = "load_model"
 GRADIENT_ACCUMULATION_STEPS_KEY = "gradient_accumulation_steps"
 WEIGHT_DECAY_KEY = "weight_decay"
 EMEDDING_SIZE_KEY = "embedding_size"
 CHECKPOINT_PATH_KEY = "checkpoint_path"
-DATASET_SIZE_KEY = "dataset_size"
-WEIGHTS_KEY = "weights"
 NUMBER_OF_CLASSES_KEY = "number_of_classes"
 BATCH_SIZE_KEY = "batch_size"
 OPTIMIZER_KEY = "optimizer"
@@ -56,13 +52,10 @@ SCHEDULER_MAX_NUMBER_ITERATIONS_KEY = "scheduler_max_number_iterations"
 SCHEDULER_MIN_LR_KEY = "scheduler_min_lr"
 MODEL_KEY = "model"
 TASK_KEY = "task"
-PRE_TRAINED_WEIGHTS_KEY = "pre_trained_weights"
 MODALITIES_KEY = "modalities"
 MODALITIES_LABEL_KEY = "modalities_label"
 FEATURE_DIMENSION_KEY = "feature_dimension"
-
-# Environment
-ENVIRONMENT_KEY = "environment"
+RESUME_FROM_CHECKPOINT_KEY = "resume_from_checkpoint"
 
 # Metrics
 METRICS_KEY = "metrics"
@@ -74,14 +67,10 @@ PARAMETERS_CONFIG_KEY = "parameters"
 
 # Config
 TRAINING_CONFIG_KEY = "training"
-PARAMETERS_CONFIG_KEY = "parameters"
-LABEL_CONFIG_KEY = "label"
 TASK_CONFIG_KEY = "task"
-DATA_CONFIG_KEY = "data"
 MODEL_CONFIG_KEY = "model"
 OTHER_CONFIG_KEY = "other"
 METRICS_CONFIG_KEY = "metrics"
-PIPELINES_CONFIG_KEY = "pipelines"
 
 def get_label_from_index(index: int):
     return label_from_index.get(index)

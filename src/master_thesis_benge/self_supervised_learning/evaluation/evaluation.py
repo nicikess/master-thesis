@@ -15,19 +15,24 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     DATALOADER_TRAIN_FILE_KEY,
     DATALOADER_VALIDATION_FILE_KEY,
     PIPELINES_CONFIG_KEY,
-    PRE_TRAINED_WEIGHTS_KEY,
     TASK_CONFIG_KEY,
     MODEL_CONFIG_KEY,
     METRICS_CONFIG_KEY,
+    PARAMETERS_CONFIG_KEY,
+    FEATURE_DIMENSION_KEY,
     get_label_from_index
 )
 
-from master_thesis_benge.supervised_baseline.config.config_runs.config_classification_landuse_multilabel import (
+from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning_evaluation import (
     training_config
 )
 
 from master_thesis_benge.supervised_baseline.training.train import (
     Train
+)
+
+from master_thesis_benge.self_supervised_learning.model.sim_clr_model import (
+    SimCLR_pl
 )
 
 from ffcv.loader import Loader, OrderOption
@@ -68,11 +73,27 @@ def evaluation():
         )
     }
 
+    # Load weights from pre-trained model
+    model_ssl = SimCLR_pl(training_config, feat_dim=training_config[PARAMETERS_CONFIG_KEY][FEATURE_DIMENSION_KEY], in_channels_1=channel_modalities["in_channels_1"], in_channels_2=channel_modalities["in_channels_2"])
+    checkpoint = torch.load(wandb.config.pre_trained_weights_path)
+    model_dict = model_ssl.state_dict()
+    pretrained_dict = {k: v for k, v in checkpoint['state_dict'].items() if k in model_dict}
+    model_dict.update(pretrained_dict)
+    model_ssl.load_state_dict(model_dict)
+
+    backbone_s1_weights = model_ssl.model_modality_1.backbone
+    backbone_s2_weights = model_ssl.model_modality_2.backbone
+
+    weights = {
+        "weights_modality_1": backbone_s1_weights,
+        "weights_modality_2": backbone_s2_weights
+    }
+
     # Define model
-    model = training_config[MODEL_CONFIG_KEY][MODEL_KEY](
+    model_sl = training_config[MODEL_CONFIG_KEY][MODEL_KEY](
         # Define multi modal model
         # Input channels for s1
-        weights=training_config[MODEL_CONFIG_KEY][PRE_TRAINED_WEIGHTS_KEY],
+        weights=weights,
         in_channels_1=channel_modalities["in_channels_1"],
         #in_channels_1=4,
         # Input channels for s2
@@ -81,12 +102,12 @@ def evaluation():
         number_of_classes=training_config[MODEL_CONFIG_KEY][NUMBER_OF_CLASSES_KEY],
     )
 
-    wandb.log({"model details": model})
+    wandb.log({"model details": model_sl})
     wandb.log({"Notes": f'Modalities: {wandb.config.modalities} with data set train size: {len(dataloader_train)}'})
 
     # Run training routing
     train = Train(
-        model,
+        model_sl,
         train_dl=dataloader_train,
         validation_dl=dataloader_validation,
         metrics=training_config[METRICS_CONFIG_KEY][METRICS_KEY],

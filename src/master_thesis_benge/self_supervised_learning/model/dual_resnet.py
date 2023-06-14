@@ -35,13 +35,13 @@ class LinearFC(nn.Module):
 
 
 class DualResNet(nn.Module):
-    def __init__(self, in_channels_1, in_channels_2, number_of_classes):
+    def __init__(self, weights, in_channels_1, in_channels_2, number_of_classes):
         super(DualResNet, self).__init__()
 
         # First stream of ResNet()
-        self.res_net_1 = ResNet(in_channels_1, number_of_classes).model
+        self.res_net_1 = ResNet(weights["weights_modality_1"], in_channels_1, number_of_classes).model
         # Second stream of ResNet()
-        self.res_net_2 = ResNet(in_channels_2, number_of_classes).model
+        self.res_net_2 = ResNet(weights["weights_modality_2"], in_channels_2, number_of_classes).model
 
         # TODO: Uncomment to test
         self.fc = LinearFC(2 * 256, number_of_classes)

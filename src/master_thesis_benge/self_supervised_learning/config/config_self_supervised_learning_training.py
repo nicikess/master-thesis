@@ -8,15 +8,13 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     LEARNING_RATE_KEY,
     SEED_KEY,
     SAVE_MODEL_KEY,
-    DEVICE_KEY,
-    IMAGE_SIZE_KEY,
-    LOAD_MODEL_KEY,
     GRADIENT_ACCUMULATION_STEPS_KEY,
     WEIGHT_DECAY_KEY,
     EMEDDING_SIZE_KEY,
     CHECKPOINT_PATH_KEY,
     DATASET_SIZE_KEY,
-    FEATURE_DIMENSION_KEY
+    FEATURE_DIMENSION_KEY,
+    RESUME_FROM_CHECKPOINT_KEY
 )
 
 from remote_sensing_core.constants import Bands
@@ -38,16 +36,15 @@ training_config = {
         EPOCHS_KEY: 50,
         SEED_KEY: 42,
         LEARNING_RATE_KEY: 3e-4,
-        DEVICE_KEY: torch.device('cuda'),
-        IMAGE_SIZE_KEY: 120,
-        SAVE_MODEL_KEY: "./saved_models/",
-        LOAD_MODEL_KEY: False,
+        #IMAGE_SIZE_KEY: 120, -> use for augmentation
+        SAVE_MODEL_KEY: "saved_models/",
         GRADIENT_ACCUMULATION_STEPS_KEY: 5,
         WEIGHT_DECAY_KEY: 1e-6,
         EMEDDING_SIZE_KEY: 128,
         CHECKPOINT_PATH_KEY: "./SimCLR_ResNet18.ckpt",
         DATASET_SIZE_KEY: "20",
-        FEATURE_DIMENSION_KEY: 512
+        FEATURE_DIMENSION_KEY: 512,
+        RESUME_FROM_CHECKPOINT_KEY: False,
     },
     "pipelines": {
         'climate_zone': None,

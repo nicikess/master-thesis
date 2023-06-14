@@ -10,9 +10,9 @@ from torch.utils.data import DataLoader
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning import Trainer
 
-from master_thesis_benge.self_supervised_learning.model.model import SimCLR_pl
+from master_thesis_benge.self_supervised_learning.model.sim_clr_model import SimCLR_pl
 
-from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning import (
+from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning_training import (
     training_config,
     get_data_set_files
 )
@@ -26,6 +26,8 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     EPOCHS_KEY,
     CHECKPOINT_PATH_KEY,
     FEATURE_DIMENSION_KEY,
+    RESUME_FROM_CHECKPOINT_KEY,
+    SAVE_MODEL_KEY,
     get_label_from_index
 )
 
@@ -47,12 +49,11 @@ def training():
     print("available_gpus:", available_gpus)
 
     # Model path
-    save_model_path = os.path.join(os.getcwd(), "saved_models/")
+    save_model_path = os.path.join(os.getcwd(), training_config[PARAMETERS_CONFIG_KEY][SAVE_MODEL_KEY])
     filename = '-'.join([get_label_from_index(modality) for modality in wandb.config.modalities])
-    resume_from_checkpoint = False
+    resume_from_checkpoint = training_config[PARAMETERS_CONFIG_KEY][RESUME_FROM_CHECKPOINT_KEY]
 
     reproducibility(training_config[PARAMETERS_CONFIG_KEY][SEED_KEY])
-    save_name = filename + ".ckpt"
 
     dataloader_train = Loader(get_data_set_files(training_config[PARAMETERS_CONFIG_KEY][DATASET_SIZE_KEY])[0],
                     batch_size=wandb.config.batch_size,
@@ -101,7 +102,7 @@ def training():
             callbacks=[checkpoint_callback],
             accelerator="gpu",
             max_epochs=training_config[PARAMETERS_CONFIG_KEY][EPOCHS_KEY],
-            resume_from_checkpoint=training_config[PARAMETERS_CONFIG_KEY][CHECKPOINT_PATH_KEY],
+            resume_from_checkpoint=training_config[PARAMETERS_CONFIG_KEY][CHECKPOINT_PATH_KEY], # -> check in config for correct path of checkpoint (if this needs to be executed at some point)
         )
     else:
         trainer = Trainer(
@@ -111,4 +112,4 @@ def training():
         )
 
     trainer.fit(model, dataloader_train)
-    trainer.save(save_name)
+    trainer.save(filename + ".ckpt")
