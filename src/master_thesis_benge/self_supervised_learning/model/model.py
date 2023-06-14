@@ -11,6 +11,14 @@ from master_thesis_benge.self_supervised_learning.loss.contrastive_loss import (
     ContrastiveLoss,
 )
 
+from master_thesis_benge.self_supervised_learning.config.constants import (
+    PARAMETERS_CONFIG_KEY,
+    EMEDDING_SIZE_KEY,
+    WEIGHT_DECAY_KEY,
+    GRADIENT_ACCUMULATION_STEPS_KEY,
+    LEARNING_RATE_KEY
+)
+
 def define_param_groups(model, weight_decay, optimizer_name):
     def exclude_from_wd_and_adaptation(name):
         if "bn" in name:
@@ -42,47 +50,55 @@ def define_param_groups(model, weight_decay, optimizer_name):
 
 
 class SimCLR_pl(pl.LightningModule):
-    def __init__(self, config, feat_dim=512, in_channels_1 = None, in_channels_2 = None):
+    def __init__(self, training_config, feat_dim=512, in_channels_1 = None, in_channels_2 = None):
         super().__init__()
-        self.config = config
+        self.training_config = training_config
         assert(in_channels_1==2)
         assert(in_channels_2==4)
-        self.model_s1 = AddProjection(in_channels=in_channels_1, embedding_size = self.config.embedding_size, mlp_dim=feat_dim)
-        self.model_s2 = AddProjection(in_channels=in_channels_2, embedding_size = self.config.embedding_size, mlp_dim=feat_dim)
+        self.model_s1 = AddProjection(in_channels=in_channels_1, embedding_size = self.training_config[PARAMETERS_CONFIG_KEY][EMEDDING_SIZE_KEY], mlp_dim=feat_dim)
+        self.model_s2 = AddProjection(in_channels=in_channels_2, embedding_size = self.training_config[PARAMETERS_CONFIG_KEY][EMEDDING_SIZE_KEY], mlp_dim=feat_dim)
         self.loss = ContrastiveLoss(
             wandb.config.batch_size, temperature=wandb.config.temperature
         )
         wandb.log({"batch size": wandb.config.batch_size})
         wandb.log({"temperature": wandb.config.temperature})
 
-    def training_step(self, batch):
+        print("disabling automatic optimization")
+        self.automatic_optimization = False
+
+    def training_step(self, batch, batch_idx):
         (s1, s2) = batch
         z1 = self.model_s1(s1)
         z2 = self.model_s2(s2)
         loss = self.loss(z1, z2)
         self.log("Contrastive loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         wandb.log({"loss batch": loss})
+
+        opt_s1, opt_s2 = self.optimizers()  # Access optimizers
+
+        self.manual_backward(loss)  # Perform manual backward pass
+
+        if (batch_idx + 1) % self.training_config[PARAMETERS_CONFIG_KEY][GRADIENT_ACCUMULATION_STEPS_KEY] == 0:
+            opt_s1.step()
+            opt_s2.step()
+            opt_s1.zero_grad()
+            opt_s2.zero_grad()
+
         return loss
 
     def configure_optimizers(self):
-        max_epochs = int(self.config.epochs)
-        param_groups = define_param_groups(
-            # FIX THIS!!!
-            self.model_s1, self.config.weight_decay, "adam"
-        )
-        lr = self.config.lr
-        optimizer = Adam(param_groups, lr=lr, weight_decay=self.config.weight_decay)
+        param_groups_s1 = define_param_groups(self.model_s1, self.training_config[PARAMETERS_CONFIG_KEY][WEIGHT_DECAY_KEY], "adam")
+        param_groups_s2 = define_param_groups(self.model_s2, self.training_config[PARAMETERS_CONFIG_KEY][WEIGHT_DECAY_KEY], "adam")
+        lr = self.training_config[PARAMETERS_CONFIG_KEY][LEARNING_RATE_KEY]
+
+        optimizer_s1 = Adam(param_groups_s1, lr=lr, weight_decay=self.training_config[PARAMETERS_CONFIG_KEY][WEIGHT_DECAY_KEY])
+        optimizer_s2 = Adam(param_groups_s2, lr=lr, weight_decay=self.training_config[PARAMETERS_CONFIG_KEY][WEIGHT_DECAY_KEY])
 
         print(
             f"Optimizer Adam, "
-            f"Learning Rate {lr}"
-            f"Effective batch size {wandb.config.batch_size * self.config.gradient_accumulation_steps}"
+            f"Learning Rate {lr}, "
+            f"Effective batch size {wandb.config.batch_size * self.training_config[PARAMETERS_CONFIG_KEY][GRADIENT_ACCUMULATION_STEPS_KEY]}"
         )
 
-        """
-        scheduler_warmup = LinearWarmupCosineAnnealingLR(
-            optimizer, warmup_epochs=10, max_epochs=max_epochs, warmup_start_lr=0.0
-        )
-        """
+        return [optimizer_s1, optimizer_s2]
 
-        return [optimizer]  # , [scheduler_warmup]

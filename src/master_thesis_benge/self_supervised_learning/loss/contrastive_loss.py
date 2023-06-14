@@ -21,7 +21,7 @@ class ContrastiveLoss(nn.Module):
     Vanilla Contrastive loss, also called InfoNceLoss as in SimCLR paper
     """
 
-    def __init__(self, batch_size, temperature=0.5):
+    def __init__(self, batch_size, temperature):
         super().__init__()
         self.batch_size = batch_size
         self.temperature = temperature

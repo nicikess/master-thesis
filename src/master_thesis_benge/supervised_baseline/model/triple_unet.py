@@ -3,7 +3,7 @@ import torch
 import torch.nn.functional as F
 
 class TripleUNet(nn.Module):
-    def __init__(self, in_channels_1, in_channels_2, in_channels_3, number_of_classes):
+    def __init__(self, weights, in_channels_1, in_channels_2, in_channels_3, number_of_classes):
         super(TripleUNet, self).__init__()
         
         # First stream of UNet()

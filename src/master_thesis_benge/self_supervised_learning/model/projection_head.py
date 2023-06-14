@@ -21,16 +21,8 @@ class AddProjection(nn.Module):
             nn.BatchNorm1d(embedding_size),
         )
 
-    def forward(self, x_s2=None, x_s1=None, return_embedding=False):
-        if x_s2 is not None:
-            embedding = self.backbone(x_s2)
+    def forward(self, x, return_embedding=False):
+            embedding = self.backbone(x)
             if return_embedding:
                 return embedding
             return self.projection(embedding)
-        elif x_s1 is not None:
-            embedding = self.backbone(x_s1)
-            if return_embedding:
-                return embedding
-            return self.projection(embedding)
-        else:
-            raise ValueError("Either x_s2 or x_s1 must be provided.")

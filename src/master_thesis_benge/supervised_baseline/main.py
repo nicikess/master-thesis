@@ -3,7 +3,7 @@ import numpy as np
 import wandb
 import torch
 
-from master_thesis_benge.supervised_baseline.config.config_runs.config_regression_landuse_fraction import (
+from master_thesis_benge.supervised_baseline.config.config_runs.config_classification_landuse_multilabel import (
     training_config,
     get_data_set_files
 )
@@ -36,6 +36,7 @@ from master_thesis_benge.supervised_baseline.config.constants import (
     SENTINEL_2_INDEX_KEY,
     MODALITIES_LABEL_KEY,
     ESA_WORLD_COVER_INDEX_KEY,
+    PRE_TRAINED_WEIGHTS_KEY,
     get_label_from_index,
 )
 
@@ -51,19 +52,18 @@ if __name__ == "__main__":
 
     sweep_configuration = {
         "method": 'grid',
-        "name": 'one-modality-sweep',
+        "name": 'one-modality',
         "parameters": {
             "seed": {'values': [42, 43, 44, 45, 46]},
             #"learning_rate": {'values': [0.0001]},
-            "dataset_size": {'values': ["20"]},
+            #"dataset_size": {'values': ["20"]},
             "modalities": {'values':    [
                                             [SENTINEL_1_INDEX_KEY],
-                                            [SENTINEL_2_INDEX_KEY],
-                                            [ESA_WORLD_COVER_INDEX_KEY],
-                                            [GLO_30_DEM_INDEX_KEY],
-                                            [ERA_5_INDEX_KEY],
                                             [CLIMATE_ZONE_INDEX_KEY],
+                                            [ERA_5_INDEX_KEY],
                                             [SEASON_S2_INDEX_KEY],
+                                            [GLO_30_DEM_INDEX_KEY],
+                                            [ESA_WORLD_COVER_INDEX_KEY],
                                         ]
                            },
         }
@@ -88,7 +88,8 @@ if __name__ == "__main__":
         torch.manual_seed(wandb.config.seed)
         np.random.seed(wandb.config.seed)
 
-        dataloader_train = Loader(get_data_set_files(wandb.config.dataset_size)[0],
+        #get_data_set_files(wandb.config.dataset_size)[0]
+        dataloader_train = Loader(training_config[TRAINING_CONFIG_KEY][DATALOADER_TRAIN_FILE_KEY],
                                 batch_size=training_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY],
                                 order=OrderOption.RANDOM,
                                 num_workers=4,
@@ -110,7 +111,6 @@ if __name__ == "__main__":
             print(data.shape)
             input("test")
         '''
-        
                
         # Create a dictionary that maps each modality to the number of input channels
         channel_modalities = {
@@ -124,6 +124,7 @@ if __name__ == "__main__":
         model = training_config[MODEL_CONFIG_KEY][MODEL_KEY](
             # Define multi modal model
             # Input channels for s1
+            weights=training_config[MODEL_CONFIG_KEY][PRE_TRAINED_WEIGHTS_KEY],
             in_channels_1=channel_modalities["in_channels_1"],
             #in_channels_1=4,
             # Input channels for s2

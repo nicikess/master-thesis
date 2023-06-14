@@ -10,91 +10,72 @@ from torch.utils.data import DataLoader
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning import Trainer
 
-from master_thesis_benge.self_supervised_learning.config.config import Hparams
 from master_thesis_benge.self_supervised_learning.model.model import SimCLR_pl
 from master_thesis_benge.self_supervised_learning.augmentation.augmentation import (
     Augment,
 )
 
-from master_thesis_benge.self_supervised_learning.config.config_ssl_test import (
+from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning import (
     training_config,
     get_data_set_files
 )
 
-from master_thesis_benge.supervised_baseline.config.constants import (
-    OTHER_CONFIG_KEY,
-    MODEL_CONFIG_KEY,
-    MODEL_KEY,
-    ENVIRONMENT_KEY,
-    TRAINING_CONFIG_KEY,
-    SEED_KEY,
-    BATCH_SIZE_KEY,
-    NUMBER_OF_CLASSES_KEY,
-    MODALITIES_KEY,
-    METRICS_KEY,
-    METRICS_CONFIG_KEY,
-    TASK_CONFIG_KEY,
-    TASK_KEY,
-    DATALOADER_TRAIN_FILE_KEY,
-    DATALOADER_VALIDATION_FILE_KEY,
-    BANDS_KEY,
+from master_thesis_benge.self_supervised_learning.config.constants import (
     PIPELINES_CONFIG_KEY,
-    DATA_CONFIG_KEY,
+    PARAMETERS_CONFIG_KEY,
+    SEED_KEY,
     DATASET_SIZE_KEY,
-    SENTINEL_1_INDEX_KEY,
-    CLIMATE_ZONE_INDEX_KEY,
-    ERA_5_INDEX_KEY,
-    SEASON_S2_INDEX_KEY,
-    GLO_30_DEM_INDEX_KEY,
-    SENTINEL_2_INDEX_KEY,
-    MODALITIES_LABEL_KEY,
-    ESA_WORLD_COVER_INDEX_KEY,
-    get_label_from_index,
+    GRADIENT_ACCUMULATION_STEPS_KEY,
+    EPOCHS_KEY,
+    CHECKPOINT_PATH_KEY
 )
 
 from ffcv.loader import Loader, OrderOption
 
-def reproducibility(config):
-    SEED = int(config.seed)
-    torch.manual_seed(SEED)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-    np.random.seed(SEED)
-    if config.cuda:
-        torch.cuda.manual_seed(SEED)
-
+def reproducibility(seed):
+    torch.manual_seed(seed)
+    np.random.seed(seed)
+    #torch.cuda.manual_seed(seed)
 
 def train():
-    wandb.init()
-    available_gpus = len(
-        [torch.cuda.device(i) for i in range(torch.cuda.device_count())]
-    )
-    save_model_path = os.path.join(os.getcwd(), "saved_models/")
+
+    # Initialize wandb
+    wandb.init(config=training_config)
+
+    # Print available gpus
+
+    available_gpus = len([torch.cuda.device(i) for i in range(torch.cuda.device_count())])
     print("available_gpus:", available_gpus)
+
+    # Model path
+    save_model_path = os.path.join(os.getcwd(), "saved_models/")
     filename = "SimCLR_ResNet18_adam_"
     resume_from_checkpoint = False
-    train_config = Hparams()
 
-    reproducibility(train_config)
+    reproducibility(training_config[PARAMETERS_CONFIG_KEY][SEED_KEY])
     save_name = filename + ".ckpt"
 
+    dataloader_train = Loader(get_data_set_files(training_config[PARAMETERS_CONFIG_KEY][DATASET_SIZE_KEY])[0],
+                    batch_size=wandb.config.batch_size,
+                    order=OrderOption.RANDOM,
+                    num_workers=4,
+                    pipelines=training_config[PIPELINES_CONFIG_KEY]
+                )
+
     # Create a dictionary that maps each modality to the number of input channels
+    
+    '''
     channel_modalities = {
         f"in_channels_{i+1}": int(str(np.shape(next(iter(dataloader_train))[modality])[1]))
         for i, modality in enumerate(
             wandb.config.modalities
         )
     }
+    '''
 
-    model = SimCLR_pl(train_config, feat_dim=512, in_channels_1=channel_modalities["in_channels_1"], in_channels_2=channel_modalities["in_channels_2"])
+    model = SimCLR_pl(training_config, feat_dim=512, in_channels_1=2, in_channels_2=4)
 
-    dataloader_train = Loader(get_data_set_files(wandb.config.dataset_size)[0],
-                        batch_size=training_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY],
-                        order=OrderOption.RANDOM,
-                        num_workers=4,
-                        pipelines=training_config[PIPELINES_CONFIG_KEY]
-                    )
-    '''   
+    '''
     itera = iter(dataloader_train)
     first = next(itera)
     for data in first:
@@ -103,9 +84,11 @@ def train():
         input("test")
     '''
 
+    '''
     accumulator = GradientAccumulationScheduler(
-        scheduling={0: train_config.gradient_accumulation_steps}
+        scheduling={0: training_config[PARAMETERS_CONFIG_KEY][GRADIENT_ACCUMULATION_STEPS_KEY]}
     )
+    '''
 
     checkpoint_callback = ModelCheckpoint(
         filename=filename,
@@ -116,20 +99,18 @@ def train():
         mode="min",
     )
 
-    print("Running on CPU: Change train initializer in train module cpu -> gpu ")
-
     if resume_from_checkpoint:
         trainer = Trainer(
-            callbacks=[accumulator, checkpoint_callback],
-            accelerator="cpu",
-            max_epochs=train_config.epochs,
-            resume_from_checkpoint=train_config.checkpoint_path,
+            callbacks=[checkpoint_callback],
+            accelerator="gpu",
+            max_epochs=training_config[PARAMETERS_CONFIG_KEY][EPOCHS_KEY],
+            resume_from_checkpoint=training_config[PARAMETERS_CONFIG_KEY][CHECKPOINT_PATH_KEY],
         )
     else:
         trainer = Trainer(
-            callbacks=[accumulator, checkpoint_callback],
-            accelerator="cpu",
-            max_epochs=train_config.epochs,
+            callbacks=[checkpoint_callback],
+            accelerator="gpu",
+            max_epochs=training_config[PARAMETERS_CONFIG_KEY][EPOCHS_KEY],
         )
 
     trainer.fit(model, dataloader_train)

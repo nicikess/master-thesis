@@ -52,7 +52,8 @@ from master_thesis_benge.supervised_baseline.config.constants import (
     SEASON_S2_INDEX_KEY,
     GLO_30_DEM_INDEX_KEY,
     MULTICLASS_NUMERIC_LABEL_INDEX_KEY,
-    ELEVATION_DIFFERENCE_LABEL_INDEX_KEY
+    ELEVATION_DIFFERENCE_LABEL_INDEX_KEY,
+    PRE_TRAINED_WEIGHTS_KEY
 )
 
 from master_thesis_benge.supervised_baseline.config.config_runs.config_files_and_directories import (
@@ -83,7 +84,7 @@ training_config = {
         TASK_KEY: Task.REGRESSION_ELEVATION_DIFFERENCE.value,
     },
     "model": {
-        MODEL_KEY: ResNet,
+        MODEL_KEY: UniResNet,
         WEIGHTS_KEY: False,
         NUMBER_OF_CLASSES_KEY: 1,
     },
@@ -91,7 +92,7 @@ training_config = {
         MODALITIES_KEY: {
             MODALITIES_LABEL_KEY: ELEVATION_DIFFERENCE_LABEL_INDEX_KEY,
         },
-        #DATALOADER_TRAIN_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-20-train.beton',
+        DATALOADER_TRAIN_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-20-train.beton',
         DATALOADER_VALIDATION_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-validation.beton',
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.001,
@@ -102,6 +103,7 @@ training_config = {
         #SEED_KEY: 42,
         SCHEDULER_MAX_NUMBER_ITERATIONS_KEY: 20,
         SCHEDULER_MIN_LR_KEY: 0,
+        PRE_TRAINED_WEIGHTS_KEY: None
     },
     "metrics": {METRICS_KEY: RegressionUtils},
     "other": {

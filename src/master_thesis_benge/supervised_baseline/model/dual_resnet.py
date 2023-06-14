@@ -5,10 +5,10 @@ import torchvision.models as models
 
 
 class ResNet(nn.Module):
-    def __init__(self, in_channels_1, number_of_classes):
+    def __init__(self, weights, in_channels_1, number_of_classes):
         super(ResNet, self).__init__()
         self.number_of_classes = number_of_classes
-        self.model = models.resnet18(weights=None)
+        self.model = models.resnet18(weights=weights)
         self.model.conv1 = nn.Conv2d(
             in_channels_1, 64, kernel_size=7, stride=2, padding=3, bias=False
         )

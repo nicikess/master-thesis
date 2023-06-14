@@ -21,32 +21,19 @@ from master_thesis_benge.supervised_baseline.model.triple_resnet import (
 from remote_sensing_core.ben_ge.ben_ge_dataset import BenGe
 
 # Import constants
-from master_thesis_benge.supervised_baseline.config.constants import (
-    Task,
-    WEIGHTS_KEY,
-    NUMBER_OF_CLASSES_KEY,
+from master_thesis_benge.self_supervised_learning.config.constants import (
     EPOCHS_KEY,
     LEARNING_RATE_KEY,
-    BATCH_SIZE_KEY,
-    OPTIMIZER_KEY,
-    SCHEDULER_KEY,
-    LOSS_KEY,
     SEED_KEY,
-    SCHEDULER_MAX_NUMBER_ITERATIONS_KEY,
-    SCHEDULER_MIN_LR_KEY,
     SAVE_MODEL_KEY,
-    ENVIRONMENT_KEY,
-    MODEL_KEY,
-    MODALITIES_LABEL_KEY,
-    MODALITIES_KEY,
-    MULTICLASS_ONE_HOT_LABEL_INDEX_KEY,
-    ESA_WORLD_COVER_INDEX_KEY,
-    MODALITIES_KEY,
-    METRICS_KEY,
-    SENTINEL_2_INDEX_KEY,
-    DATALOADER_TRAIN_FILE_KEY,
-    DATALOADER_VALIDATION_FILE_KEY,
-    TASK_KEY,
+    DEVICE_KEY,
+    IMAGE_SIZE_KEY,
+    LOAD_MODEL_KEY,
+    GRADIENT_ACCUMULATION_STEPS_KEY,
+    WEIGHT_DECAY_KEY,
+    EMEDDING_SIZE_KEY,
+    CHECKPOINT_PATH_KEY,
+    DATASET_SIZE_KEY,
 )
 
 from master_thesis_benge.supervised_baseline.config.config_runs.config_files_and_directories import (
@@ -71,6 +58,20 @@ from ffcv.transforms import ToTensor, ToDevice
 from ffcv.fields.decoders import NDArrayDecoder, FloatDecoder, IntDecoder
 
 training_config = {
+    "parameters": {
+        EPOCHS_KEY: 50,
+        SEED_KEY: 42,
+        LEARNING_RATE_KEY: 3e-4,
+        DEVICE_KEY: torch.device('cuda'),
+        IMAGE_SIZE_KEY: 120,
+        SAVE_MODEL_KEY: "./saved_models/",
+        LOAD_MODEL_KEY: False,
+        GRADIENT_ACCUMULATION_STEPS_KEY: 5,
+        WEIGHT_DECAY_KEY: 1e-6,
+        EMEDDING_SIZE_KEY: 128,
+        CHECKPOINT_PATH_KEY: "./SimCLR_ResNet18.ckpt",
+        DATASET_SIZE_KEY: "20",
+    },
     "pipelines": {
         'climate_zone': None,
         'elevation_differ': None,

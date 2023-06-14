@@ -1,6 +1,5 @@
 from enum import Enum
 
-
 # Set bands
 class Bands(Enum):
     RGB = "RGB"
@@ -11,6 +10,7 @@ class Bands(Enum):
 class Task(Enum):
     CLASSIFICATION_CLIMATEZONE = "classification-climatezone"
     CLASSIFICATION_LANDUSE = "classification-landuse"
+    CLASSIFICATION_LANDUSE_MULTICLASS = "classification-landuse-multiclass"
     REGRESSION_ELEVATION_DIFFERENCE = "regression-elevation-difference"
     REGRESSION_LANDUSE_FRACTION = "regression-landuse-fraction"
     SEGMENTATION_ELEVATION = "segmentation-elevation"
@@ -65,6 +65,7 @@ SAVE_MODEL_KEY = "save_model"
 TASK_KEY = "task"
 BANDS_KEY = "bands"
 DATASET_SIZE_KEY = "dataset_size"
+PRE_TRAINED_WEIGHTS_KEY = "pre_trained_weights"
 
 # Environment
 ENVIRONMENT_KEY = "environment"
@@ -74,6 +75,7 @@ METRICS_KEY = "metrics"
 
 # Config
 TRAINING_CONFIG_KEY = "training"
+PARAMETERS_CONFIG_KEY = "parameters"
 LABEL_CONFIG_KEY = "label"
 TASK_CONFIG_KEY = "task"
 DATA_CONFIG_KEY = "data"
