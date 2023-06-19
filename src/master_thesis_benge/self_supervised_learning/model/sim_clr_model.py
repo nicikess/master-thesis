@@ -12,7 +12,7 @@ from master_thesis_benge.self_supervised_learning.loss.contrastive_loss import (
 )
 
 from master_thesis_benge.self_supervised_learning.config.constants import (
-    PARAMETERS_CONFIG_KEY,
+    TRAINING_CONFIG_KEY,
     EMEDDING_SIZE_KEY,
     WEIGHT_DECAY_KEY,
     GRADIENT_ACCUMULATION_STEPS_KEY,
@@ -48,15 +48,14 @@ def define_param_groups(model, weight_decay, optimizer_name):
     ]
     return param_groups
 
-
 class SimCLR_pl(pl.LightningModule):
     def __init__(self, training_config, feat_dim=512, in_channels_1 = None, in_channels_2 = None):
         super().__init__()
         self.training_config = training_config
-        assert(in_channels_1==2)
-        assert(in_channels_2==4)
-        self.model_modality_1 = AddProjection(in_channels=in_channels_1, embedding_size = self.training_config[PARAMETERS_CONFIG_KEY][EMEDDING_SIZE_KEY], mlp_dim=feat_dim)
-        self.model_modality_2 = AddProjection(in_channels=in_channels_2, embedding_size = self.training_config[PARAMETERS_CONFIG_KEY][EMEDDING_SIZE_KEY], mlp_dim=feat_dim)
+        #assert(in_channels_1==2)
+        #assert(in_channels_2==4)
+        self.model_modality_1 = AddProjection(in_channels=in_channels_1, embedding_size = self.training_config[TRAINING_CONFIG_KEY][EMEDDING_SIZE_KEY], mlp_dim=feat_dim)
+        self.model_modality_2 = AddProjection(in_channels=in_channels_2, embedding_size = self.training_config[TRAINING_CONFIG_KEY][EMEDDING_SIZE_KEY], mlp_dim=feat_dim)
         self.loss = ContrastiveLoss(
             wandb.config.batch_size, temperature=wandb.config.temperature
         )
@@ -67,7 +66,8 @@ class SimCLR_pl(pl.LightningModule):
         self.automatic_optimization = False
 
     def training_step(self, batch, batch_idx):
-        (modality_1, modality_2) = batch
+        modality_1 = batch[int(wandb.config.modalities[0])]
+        modality_2 = batch[int(wandb.config.modalities[1])]
         z1 = self.model_modality_1(modality_1)
         z2 = self.model_modality_2(modality_2)
         loss = self.loss(z1, z2)
@@ -78,7 +78,7 @@ class SimCLR_pl(pl.LightningModule):
 
         self.manual_backward(loss)  # Perform manual backward pass
 
-        if (batch_idx + 1) % self.training_config[PARAMETERS_CONFIG_KEY][GRADIENT_ACCUMULATION_STEPS_KEY] == 0:
+        if (batch_idx + 1) % self.training_config[TRAINING_CONFIG_KEY][GRADIENT_ACCUMULATION_STEPS_KEY] == 0:
             opt_modality_1.step()
             opt_modality_2.step()
             opt_modality_1.zero_grad()
@@ -87,18 +87,17 @@ class SimCLR_pl(pl.LightningModule):
         return loss
 
     def configure_optimizers(self):
-        param_groups_modality_1 = define_param_groups(self.model_s1, self.training_config[PARAMETERS_CONFIG_KEY][WEIGHT_DECAY_KEY], "adam")
-        param_groups_modality_2 = define_param_groups(self.model_s2, self.training_config[PARAMETERS_CONFIG_KEY][WEIGHT_DECAY_KEY], "adam")
-        lr = self.training_config[PARAMETERS_CONFIG_KEY][LEARNING_RATE_KEY]
+        param_groups_modality_1 = define_param_groups(self.model_modality_1, self.training_config[TRAINING_CONFIG_KEY][WEIGHT_DECAY_KEY], "adam")
+        param_groups_modality_2 = define_param_groups(self.model_modality_2, self.training_config[TRAINING_CONFIG_KEY][WEIGHT_DECAY_KEY], "adam")
+        lr = self.training_config[TRAINING_CONFIG_KEY][LEARNING_RATE_KEY]
 
-        optimizer_s1 = Adam(param_groups_modality_1, lr=lr, weight_decay=self.training_config[PARAMETERS_CONFIG_KEY][WEIGHT_DECAY_KEY])
-        optimizer_s2 = Adam(param_groups_modality_2, lr=lr, weight_decay=self.training_config[PARAMETERS_CONFIG_KEY][WEIGHT_DECAY_KEY])
+        optimizer_s1 = Adam(param_groups_modality_1, lr=lr, weight_decay=self.training_config[TRAINING_CONFIG_KEY][WEIGHT_DECAY_KEY])
+        optimizer_s2 = Adam(param_groups_modality_2, lr=lr, weight_decay=self.training_config[TRAINING_CONFIG_KEY][WEIGHT_DECAY_KEY])
 
         print(
             f"Optimizer Adam, "
             f"Learning Rate {lr}, "
-            f"Effective batch size {wandb.config.batch_size * self.training_config[PARAMETERS_CONFIG_KEY][GRADIENT_ACCUMULATION_STEPS_KEY]}"
+            f"Effective batch size {wandb.config.batch_size * self.training_config[TRAINING_CONFIG_KEY][GRADIENT_ACCUMULATION_STEPS_KEY]}"
         )
 
         return [optimizer_s1, optimizer_s2]
-

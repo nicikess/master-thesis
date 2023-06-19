@@ -26,13 +26,13 @@ from remote_sensing_core.transforms.ffcv.convert import Convert
 from remote_sensing_core.transforms.ffcv.esa_world_cover_transform import EsaWorldCoverTransform
 from remote_sensing_core.transforms.ffcv.blow_up import BlowUp
 from remote_sensing_core.transforms.ffcv.min_max_scaler import MinMaxScaler
-from remote_sensing_core.transforms.ffcv.era5_temperature_s2_transform import Era5TemperatureS2Transform
+from remote_sensing_core.transforms.ffcv.expand_dimension import ExpandDimension
 
 from ffcv.transforms import ToTensor, ToDevice
 from ffcv.fields.decoders import NDArrayDecoder, FloatDecoder, IntDecoder
 
 training_config = {
-    "parameters": {
+    "training": {
         EPOCHS_KEY: 50,
         SEED_KEY: 42,
         LEARNING_RATE_KEY: 3e-4,
@@ -42,26 +42,24 @@ training_config = {
         WEIGHT_DECAY_KEY: 1e-6,
         EMEDDING_SIZE_KEY: 128,
         CHECKPOINT_PATH_KEY: "./SimCLR_ResNet18.ckpt",
-        DATASET_SIZE_KEY: "20",
+        #DATASET_SIZE_KEY: "20",
         FEATURE_DIMENSION_KEY: 512,
         RESUME_FROM_CHECKPOINT_KEY: False,
     },
     "pipelines": {
-        'climate_zone': None,
-        'elevation_differ': None,
-        'era_5': None,
-        'esa_worldcover': None,
-        'glo_30_dem': None,
-        'multiclass_numer': None,
-        'multiclass_one_h': None,
-        'season_s1': None,
-        'season_s2': None,
+        #'climate_zone': [FloatDecoder(), MinMaxScaler(maximum_value=29, minimum_value=0, interval_max=1, interval_min=0), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        #'elevation_differ': [FloatDecoder(), ToTensor(), ToDevice(device)],
+        #'era_5': [NDArrayDecoder(), Era5TemperatureS2Transform(batch_size=32), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), ExpandDimension(), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'glo_30_dem': [NDArrayDecoder(), ChannelSelector([0]), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        #'multiclass_numer': [NDArrayDecoder(), ToTensor(), ToDevice(device)],
+        #'multiclass_one_h': [ToTensor(), ToDevice(device = torch.device('cuda'))],
+        #'season_s1': [FloatDecoder(), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        #'season_s2': [FloatDecoder(), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'sentinel_1': [NDArrayDecoder(), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'sentinel_2': [NDArrayDecoder(), Clipping([0, 10_000]), ChannelSelector([7, 3, 2, 1]), ToTensor(), ToDevice(device=torch.device('cuda'))],
-        'field_names': None,
     },
 }
-
 
 def get_data_set_files(size: str):
     train_file = f'/raid/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-train.beton'

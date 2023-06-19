@@ -22,6 +22,7 @@ from master_thesis_benge.supervised_baseline.config.constants import (
     DATALOADER_VALIDATION_FILE_KEY,
     PIPELINES_CONFIG_KEY,
     SENTINEL_1_INDEX_KEY,
+    SENTINEL_2_INDEX_KEY,
     CLIMATE_ZONE_INDEX_KEY,
     ERA_5_INDEX_KEY,
     SEASON_S2_INDEX_KEY,
@@ -40,18 +41,13 @@ if __name__ == "__main__":
 
     sweep_configuration = {
         "method": 'grid',
-        "name": 'one-modality',
+        "name": 'data-set-size-classification-multi-label',
         "parameters": {
             "seed": {'values': [42, 43, 44, 45, 46]},
             #"learning_rate": {'values': [0.0001]},
-            #"dataset_size": {'values': ["20"]},
+            "dataset_size": {'values': ["8k","20","40", "60", "80", "100"]},
             "modalities": {'values':    [
-                                            [SENTINEL_1_INDEX_KEY],
-                                            [CLIMATE_ZONE_INDEX_KEY],
-                                            [ERA_5_INDEX_KEY],
-                                            [SEASON_S2_INDEX_KEY],
-                                            [GLO_30_DEM_INDEX_KEY],
-                                            [ESA_WORLD_COVER_INDEX_KEY],
+                                            [SENTINEL_2_INDEX_KEY],
                                         ]
                            },
         }
@@ -73,7 +69,7 @@ if __name__ == "__main__":
         np.random.seed(wandb.config.seed)
 
         #get_data_set_files(wandb.config.dataset_size)[0]
-        dataloader_train = Loader(training_config[TRAINING_CONFIG_KEY][DATALOADER_TRAIN_FILE_KEY],
+        dataloader_train = Loader(get_data_set_files(wandb.config.dataset_size)[0],
                                 batch_size=training_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY],
                                 order=OrderOption.RANDOM,
                                 num_workers=4,

@@ -19,7 +19,7 @@ from master_thesis_benge.self_supervised_learning.config.config_self_supervised_
 
 from master_thesis_benge.self_supervised_learning.config.constants import (
     PIPELINES_CONFIG_KEY,
-    PARAMETERS_CONFIG_KEY,
+    TRAINING_CONFIG_KEY,
     SEED_KEY,
     DATASET_SIZE_KEY,
     GRADIENT_ACCUMULATION_STEPS_KEY,
@@ -42,6 +42,8 @@ def training():
 
     # Initialize wandb
     wandb.init(config=training_config)
+    run_name = '-'.join([get_label_from_index(modality) for modality in wandb.config.modalities])
+    wandb.run.name = run_name
 
     # Print available gpus
 
@@ -49,13 +51,15 @@ def training():
     print("available_gpus:", available_gpus)
 
     # Model path
-    save_model_path = os.path.join(os.getcwd(), training_config[PARAMETERS_CONFIG_KEY][SAVE_MODEL_KEY])
+    save_model_path = os.path.join(os.getcwd(), training_config[TRAINING_CONFIG_KEY][SAVE_MODEL_KEY])
     filename = '-'.join([get_label_from_index(modality) for modality in wandb.config.modalities])
-    resume_from_checkpoint = training_config[PARAMETERS_CONFIG_KEY][RESUME_FROM_CHECKPOINT_KEY]
+    resume_from_checkpoint = training_config[TRAINING_CONFIG_KEY][RESUME_FROM_CHECKPOINT_KEY]
 
-    reproducibility(training_config[PARAMETERS_CONFIG_KEY][SEED_KEY])
+    reproducibility(training_config[TRAINING_CONFIG_KEY][SEED_KEY])
 
-    dataloader_train = Loader(get_data_set_files(training_config[PARAMETERS_CONFIG_KEY][DATASET_SIZE_KEY])[0],
+
+    #training_config[TRAINING_CONFIG_KEY][DATASET_SIZE_KEY]
+    dataloader_train = Loader(get_data_set_files(wandb.config.dataset_size)[0],
                     batch_size=wandb.config.batch_size,
                     order=OrderOption.RANDOM,
                     num_workers=4,
@@ -71,7 +75,7 @@ def training():
         )
     }
 
-    model = SimCLR_pl(training_config, feat_dim=training_config[PARAMETERS_CONFIG_KEY][FEATURE_DIMENSION_KEY], in_channels_1=channel_modalities["in_channels_1"], in_channels_2=channel_modalities["in_channels_2"])
+    model = SimCLR_pl(training_config, feat_dim=training_config[TRAINING_CONFIG_KEY][FEATURE_DIMENSION_KEY], in_channels_1=channel_modalities["in_channels_1"], in_channels_2=channel_modalities["in_channels_2"])
 
     '''
     itera = iter(dataloader_train)
@@ -101,15 +105,14 @@ def training():
         trainer = Trainer(
             callbacks=[checkpoint_callback],
             accelerator="gpu",
-            max_epochs=training_config[PARAMETERS_CONFIG_KEY][EPOCHS_KEY],
-            resume_from_checkpoint=training_config[PARAMETERS_CONFIG_KEY][CHECKPOINT_PATH_KEY], # -> check in config for correct path of checkpoint (if this needs to be executed at some point)
+            max_epochs=training_config[TRAINING_CONFIG_KEY][EPOCHS_KEY],
+            resume_from_checkpoint=training_config[TRAINING_CONFIG_KEY][CHECKPOINT_PATH_KEY], # -> check in config for correct path of checkpoint (if this needs to be executed at some point)
         )
     else:
         trainer = Trainer(
             callbacks=[checkpoint_callback],
             accelerator="gpu",
-            max_epochs=training_config[PARAMETERS_CONFIG_KEY][EPOCHS_KEY],
+            max_epochs=training_config[TRAINING_CONFIG_KEY][EPOCHS_KEY],
         )
 
     trainer.fit(model, dataloader_train)
-    trainer.save(filename + ".ckpt")

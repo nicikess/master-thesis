@@ -2,8 +2,6 @@ import wandb
 import torch
 import numpy as np
 
-from master_thesis_benge.self_supervised_learning.training.train import train
-
 
 from master_thesis_benge.self_supervised_learning.config.constants import (
     MODEL_KEY,
@@ -18,12 +16,11 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     TASK_CONFIG_KEY,
     MODEL_CONFIG_KEY,
     METRICS_CONFIG_KEY,
-    PARAMETERS_CONFIG_KEY,
     FEATURE_DIMENSION_KEY,
     get_label_from_index
 )
 
-from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning_evaluation import (
+from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning_evaluation_segmentaion_landuse import (
     training_config
 )
 
@@ -74,30 +71,30 @@ def evaluation():
     }
 
     # Load weights from pre-trained model
-    model_ssl = SimCLR_pl(training_config, feat_dim=training_config[PARAMETERS_CONFIG_KEY][FEATURE_DIMENSION_KEY], in_channels_1=channel_modalities["in_channels_1"], in_channels_2=channel_modalities["in_channels_2"])
+    model_ssl = SimCLR_pl(training_config, feat_dim=training_config[TRAINING_CONFIG_KEY][FEATURE_DIMENSION_KEY], in_channels_1=channel_modalities["in_channels_1"], in_channels_2=channel_modalities["in_channels_2"])
     checkpoint = torch.load(wandb.config.pre_trained_weights_path)
     model_dict = model_ssl.state_dict()
     pretrained_dict = {k: v for k, v in checkpoint['state_dict'].items() if k in model_dict}
     model_dict.update(pretrained_dict)
     model_ssl.load_state_dict(model_dict)
 
-    backbone_s1_weights = model_ssl.model_modality_1.backbone
-    backbone_s2_weights = model_ssl.model_modality_2.backbone
+    state_dict_modality_1 = model_ssl.model_modality_1.backbone.state_dict()
+    state_dict_modality_2 = model_ssl.model_modality_2.backbone.state_dict()
 
-    weights = {
-        "weights_modality_1": backbone_s1_weights,
-        "weights_modality_2": backbone_s2_weights
+    state_dict = {
+        "state_dict_modality_1": state_dict_modality_1,
+        "state_dict_modality_2": state_dict_modality_2
     }
 
     # Define model
     model_sl = training_config[MODEL_CONFIG_KEY][MODEL_KEY](
         # Define multi modal model
         # Input channels for s1
-        weights=weights,
+        state_dict=state_dict,
         in_channels_1=channel_modalities["in_channels_1"],
         #in_channels_1=4,
         # Input channels for s2
-        #in_channels_2=channel_modalities["in_channels_2"],
+        in_channels_2=channel_modalities["in_channels_2"],
         #in_channels_3=channel_modalities["in_channels_3"],
         number_of_classes=training_config[MODEL_CONFIG_KEY][NUMBER_OF_CLASSES_KEY],
     )

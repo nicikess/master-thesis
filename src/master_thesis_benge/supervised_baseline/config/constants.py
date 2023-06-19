@@ -71,6 +71,7 @@ TASK_CONFIG_KEY = "task"
 OTHER_CONFIG_KEY = "other"
 METRICS_CONFIG_KEY = "metrics"
 PIPELINES_CONFIG_KEY = "pipelines"
+MODEL_CONFIG_KEY = "model"
 
 def get_label_from_index(index: int):
     return label_from_index.get(index)

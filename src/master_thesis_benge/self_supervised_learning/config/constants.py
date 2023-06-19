@@ -28,7 +28,8 @@ label_from_index = {
 }
 
 class Task(Enum):
-    SELF_SELFSUPERVISED_LEARNING_FINE_TUNEING = "self-supervised-learning-fine-tuning"
+    SSL_CLASSIFICATION_LANDUSE_MULTILABEL = "ssl-classification-landuse-multilabel"
+    SSL_SEGMENTATION_LANDUSE = "ssl-segmentation-landuse"
 
 # Training
 EPOCHS_KEY = "epochs"

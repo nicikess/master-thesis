@@ -2,27 +2,23 @@ from torch import nn
 import torch
 import torch.nn.functional as F
 
-class TripleUNet(nn.Module):
-    def __init__(self, in_channels_1, in_channels_2, in_channels_3, number_of_classes):
-        super(TripleUNet, self).__init__()
+class DualUNet(nn.Module):
+    def __init__(self, state_dict, in_channels_1, in_channels_2, number_of_classes):
+        super(DualUNet, self).__init__()
         
-        # First stream of UNet()
-        self.unet1 = UNet(in_channels_1, number_of_classes=number_of_classes)
-        # Second stream of UNet()
-        self.unet2 = UNet(in_channels_2, number_of_classes=number_of_classes)
-        # Third stream of UNet()
-        self.unet3 = UNet(in_channels_3, number_of_classes=number_of_classes)
+        # First stream of UNet() for Sentinel 1 data (in_channels_1 = 2)
+        self.unet1 = UNet(state_dict["state_dict_modality_1"], in_channels_1, number_of_classes=number_of_classes)
+        # Second stream of UNet() for Sentinel 2 data (in_channels_2 = 13)
+        self.unet2 = UNet(state_dict["state_dict_modality_2"], in_channels_2, number_of_classes=number_of_classes)
         
         # Output convolution
-        self.outc = OutConv(3 * 64, number_of_classes)
+        self.outc = OutConv(2 * 64, number_of_classes)
 
-    def forward(self, x1, x2, x3):
+    def forward(self, x1, x2):
         # We process Sentinel1 input
         x1 = self.unet1(x1)
         # We process Sentinel2 input
         x2 = self.unet2(x2)
-
-        x3 = self.unet3(x3)
 
         '''
         Both unet output a tensor of shape [32,64,120,120]
@@ -31,7 +27,7 @@ class TripleUNet(nn.Module):
         '''
         
         # We concatenate the two representations
-        x = torch.cat([x1, x2, x3], dim=1)
+        x = torch.cat([x1, x2], dim=1)
         
         # We feed the fused representation to the output convolution
         x = self.outc(x)
@@ -40,7 +36,8 @@ class TripleUNet(nn.Module):
 
 
 class UNet(nn.Module):
-    def __init__(self, in_channels_1, number_of_classes):
+    # Leave this otherwise the initialization fails
+    def __init__(self, state_dict_from_checkpoint, in_channels_1, number_of_classes):
         super(UNet, self).__init__()
 
         self.inc = DoubleConv(in_channels_1, 64)
@@ -56,6 +53,30 @@ class UNet(nn.Module):
         self.up2 = Up(512, 256 // 2)
         self.up3 = Up(256, 128 // 2)
         self.up4 = Up(128, 64)
+
+        unet_state_dict = self.state_dict()
+        common_keys = set(unet_state_dict.keys()) & set(state_dict_from_checkpoint.keys())
+        new_state_dict = {k: v for k, v in state_dict_from_checkpoint.items() if k in common_keys}
+        unet_state_dict.update(new_state_dict)
+        self.load_state_dict(unet_state_dict)
+
+        # Check if weights are initialized correctly
+        state_dict1 = self.state_dict()
+        state_dict2 = state_dict_from_checkpoint
+
+        for key1, value1 in state_dict1.items():
+            if key1 in state_dict2:
+                value2 = state_dict2[key1]
+                if torch.allclose(value1, value2):
+                    print(f"Weights for key '{key1}' are the same.")
+                else:
+                    print(f"Weights for key '{key1}' are different.")
+            else:
+                print(f"Key '{key1}' does not exist in the second network's state dictionary.")
+
+        for key2 in state_dict2.keys():
+            if key2 not in state_dict1:
+                print(f"Key '{key2}' does not exist in the first network's state dictionary.")
 
     def forward(self, x1):
         x1 = self.inc(x1)

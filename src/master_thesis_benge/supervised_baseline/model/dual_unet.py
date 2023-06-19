@@ -3,7 +3,7 @@ import torch
 import torch.nn.functional as F
 
 class DualUNet(nn.Module):
-    def __init__(self, weights, in_channels_1, in_channels_2, number_of_classes):
+    def __init__(self, in_channels_1, in_channels_2, number_of_classes):
         super(DualUNet, self).__init__()
         
         # First stream of UNet() for Sentinel 1 data (in_channels_1 = 2)

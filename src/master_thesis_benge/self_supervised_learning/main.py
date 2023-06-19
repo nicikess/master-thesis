@@ -14,11 +14,11 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     TASK_CONFIG_KEY,
 )
 
-from master_thesis_benge.self_supervised_learning.model.model import (
+from master_thesis_benge.self_supervised_learning.model.sim_clr_model import (
     SimCLR_pl
 )
 
-from master_thesis_benge.supervised_baseline.config.config_runs.config_classification_landuse_multilabel import (
+from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning_evaluation_segmentaion_landuse import (
     training_config
 )
 
@@ -35,13 +35,15 @@ if __name__ == "__main__":
     def train_setup():
         sweep_configuration = {
             "method": "grid",
-            "name": "sweep",
+            "name": "dataset-size-evaluation-ssl",
             "parameters": {
                 "batch_size": {"values": [128]},
                 "temperature": {"values": [0.1]},
-                "modalities": {"values": [
-                                            [SENTINEL_1_INDEX_KEY, SENTINEL_2_INDEX_KEY]
-                                        ]},
+                "dataset_size": {'values': ["8k","20","40", "60", "80", "100"]},
+                "modalities": {'values':    [
+                                                [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
+                                            ]
+                            },
             },
         }
 
@@ -61,7 +63,9 @@ if __name__ == "__main__":
                 "seed": {'values': [42, 43, 44, 45, 46]},
                 #"learning_rate": {'values': [0.0001]},
                 #"dataset_size": {'values': ["20"]},
-                "pre_trained_weights_path": {'values': ["src/master_thesis_benge/self_supervised_learning/saved_models/SimCLR_ResNet18_adam_-v1.ckpt"]},
+                "batch_size": {"values": [128]}, # only to init the SimCLR model
+                "temperature": {"values": [0.1]},  # only to init the SimCLR model
+                "pre_trained_weights_path": {'values': ["saved_models/SimCLR_ResNet18_adam_-v1.ckpt"]},
                 "modalities": {'values':    [
                                                 [SENTINEL_1_INDEX_KEY, SENTINEL_2_INDEX_KEY],
                                             ]
@@ -69,7 +73,7 @@ if __name__ == "__main__":
             }
         }
 
-        sweep_id = wandb.sweep(sweep=sweep_configuration, project='master-thesis-ssl-evaluation'+training_config[TASK_CONFIG_KEY][TASK_KEY].lower())
+        sweep_id = wandb.sweep(sweep=sweep_configuration, project='master-thesis-ssl-evaluation-'+training_config[TASK_CONFIG_KEY][TASK_KEY].lower())
 
         wandb.agent(sweep_id, function=evaluation)
 
