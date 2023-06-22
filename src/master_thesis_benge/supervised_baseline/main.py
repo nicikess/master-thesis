@@ -69,7 +69,7 @@ if __name__ == "__main__":
         np.random.seed(wandb.config.seed)
 
         #get_data_set_files(wandb.config.dataset_size)[0]
-        dataloader_train = Loader(get_data_set_files(wandb.config.dataset_size)[0],
+        dataloader_train = Loader(training_config[TRAINING_CONFIG_KEY][DATALOADER_TRAIN_FILE_KEY],
                                 batch_size=training_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY],
                                 order=OrderOption.RANDOM,
                                 num_workers=4,
@@ -83,14 +83,13 @@ if __name__ == "__main__":
                                 pipelines=training_config[PIPELINES_CONFIG_KEY]
                             )
         
-        '''
+        
         itera = iter(dataloader_train)
         first = next(itera)
         for data in first:
             print(data)
             print(data.shape)
             input("test")
-        '''
                
         # Create a dictionary that maps each modality to the number of input channels
         channel_modalities = {

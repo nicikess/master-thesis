@@ -65,9 +65,21 @@ if __name__ == "__main__":
                 #"dataset_size": {'values': ["20"]},
                 "batch_size": {"values": [128]}, # only to init the SimCLR model
                 "temperature": {"values": [0.1]},  # only to init the SimCLR model
-                "pre_trained_weights_path": {'values': ["saved_models/SimCLR_ResNet18_adam_-v1.ckpt"]},
+                "pre_trained_weights_path": {'values': [#'saved_models/sentinel2-sentinel1-modality-run-6g8bi57r.ckpt',
+                                                        #'saved_models/worldcover(esa)-sentinel1.ckpt',
+                                                        #'saved_models/worldcover(esa)-sentinel2.ckpt',
+                                                        #'saved_models/worldcover(esa)-elevation(glo-30-dem).ckpt',
+                                                        #'saved_models/sentinel2-elevation(glo-30-dem).ckpt',
+                                                        'saved_models/sentinel1-elevation(glo-30-dem).ckpt',
+                                                        ]
+                                                        },
                 "modalities": {'values':    [
-                                                [SENTINEL_2_INDEX_KEY],
+                                                #[SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
+                                                #[ESA_WORLD_COVER_INDEX_KEY, SENTINEL_1_INDEX_KEY],
+                                                #[ESA_WORLD_COVER_INDEX_KEY, SENTINEL_2_INDEX_KEY],
+                                                #[ESA_WORLD_COVER_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
+                                                #[SENTINEL_2_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
+                                                [SENTINEL_1_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
                                             ]
                             },
             }

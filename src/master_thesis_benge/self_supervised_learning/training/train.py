@@ -96,7 +96,7 @@ def training():
         filename=filename,
         dirpath=save_model_path,
         save_last=True,
-        save_top_k=2,
+        save_top_k=1,
         monitor="Contrastive loss_epoch",
         mode="min",
     )

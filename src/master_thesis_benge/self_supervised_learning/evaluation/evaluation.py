@@ -20,7 +20,7 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     get_label_from_index
 )
 
-from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning_evaluation_segmentaion_landuse import (
+from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning_evaluation_classification_landuse_multilabel import (
     training_config
 )
 
@@ -70,6 +70,15 @@ def evaluation():
         )
     }
 
+    '''
+    itera = iter(dataloader_train)
+    first = next(itera)
+    for data in first:
+        print(data)
+        print(data.shape)
+        input("test")
+    '''
+
     # Load weights from pre-trained model
     model_ssl = SimCLR_pl(training_config, feat_dim=training_config[TRAINING_CONFIG_KEY][FEATURE_DIMENSION_KEY], in_channels_1=channel_modalities["in_channels_1"], in_channels_2=channel_modalities["in_channels_2"])
     checkpoint = torch.load(wandb.config.pre_trained_weights_path)
@@ -94,7 +103,7 @@ def evaluation():
         in_channels_1=channel_modalities["in_channels_1"],
         #in_channels_1=4,
         # Input channels for s2
-        #in_channels_2=channel_modalities["in_channels_2"],
+        in_channels_2=channel_modalities["in_channels_2"],
         #in_channels_3=channel_modalities["in_channels_3"],
         number_of_classes=training_config[MODEL_CONFIG_KEY][NUMBER_OF_CLASSES_KEY],
     )
