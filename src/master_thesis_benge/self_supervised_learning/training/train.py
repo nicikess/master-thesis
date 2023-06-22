@@ -52,7 +52,7 @@ def training():
 
     # Model path
     save_model_path = os.path.join(os.getcwd(), training_config[TRAINING_CONFIG_KEY][SAVE_MODEL_KEY])
-    filename = '-'.join([get_label_from_index(modality) for modality in wandb.config.modalities])
+    filename = '-'.join([get_label_from_index(modality) for modality in wandb.config.modalities])+str(wandb.config.dataset_size)
     resume_from_checkpoint = training_config[TRAINING_CONFIG_KEY][RESUME_FROM_CHECKPOINT_KEY]
 
     reproducibility(training_config[TRAINING_CONFIG_KEY][SEED_KEY])

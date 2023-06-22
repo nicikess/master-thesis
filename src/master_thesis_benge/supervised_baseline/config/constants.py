@@ -9,7 +9,7 @@ class Bands(Enum):
 class Task(Enum):
     CLASSIFICATION_CLIMATEZONE = "classification-climatezone"
     CLASSIFICATION_LANDUSE = "classification-landuse"
-    CLASSIFICATION_LANDUSE_MULTICLASS = "classification-landuse-multiclass"
+    CLASSIFICATION_LANDUSE_MULTILABEL = "classification-landuse-multilabel"
     REGRESSION_ELEVATION_DIFFERENCE = "regression-elevation-difference"
     REGRESSION_LANDUSE_FRACTION = "regression-landuse-fraction"
     SEGMENTATION_ELEVATION = "segmentation-elevation"

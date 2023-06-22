@@ -67,7 +67,7 @@ from ffcv.fields.decoders import NDArrayDecoder, FloatDecoder, IntDecoder
 
 training_config = {
     "task": {
-        TASK_KEY: Task.CLASSIFICATION_LANDUSE_MULTICLASS.value,
+        TASK_KEY: Task.CLASSIFICATION_LANDUSE_MULTILABEL.value,
     },
     "model": {
         MODEL_KEY: UniResNet,

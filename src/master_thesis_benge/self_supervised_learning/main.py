@@ -18,7 +18,7 @@ from master_thesis_benge.self_supervised_learning.model.sim_clr_model import (
     SimCLR_pl
 )
 
-from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning_evaluation_segmentaion_landuse import (
+from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning_evaluation_classification_landuse_multilabel import (
     training_config
 )
 
@@ -79,7 +79,7 @@ if __name__ == "__main__":
 
     
     # Train
-    train_setup()
+    #train_setup()
 
     # Evaluate
-    #evaluation_setup()
+    evaluation_setup()

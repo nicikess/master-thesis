@@ -41,7 +41,7 @@ training_config = {
         GRADIENT_ACCUMULATION_STEPS_KEY: 5,
         WEIGHT_DECAY_KEY: 1e-6,
         EMEDDING_SIZE_KEY: 128,
-        CHECKPOINT_PATH_KEY: "./SimCLR_ResNet18.ckpt",
+        CHECKPOINT_PATH_KEY: "-",
         #DATASET_SIZE_KEY: "20",
         FEATURE_DIMENSION_KEY: 512,
         RESUME_FROM_CHECKPOINT_KEY: False,
