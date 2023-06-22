@@ -51,7 +51,7 @@ if __name__ == "__main__":
             sweep=sweep_configuration, project="master-thesis-ssl-training"
         )
 
-        wandb.agent(sweep_id, function=training, count=20)
+        wandb.agent(sweep_id, function=training)
 
 
     def evaluation_setup():
@@ -60,14 +60,14 @@ if __name__ == "__main__":
             "method": 'grid',
             "name": 'two-modality',
             "parameters": {
-                "seed": {'values': [42, 43, 44, 45, 46]},
+                "seed": {'values': [42]},
                 #"learning_rate": {'values': [0.0001]},
                 #"dataset_size": {'values': ["20"]},
                 "batch_size": {"values": [128]}, # only to init the SimCLR model
                 "temperature": {"values": [0.1]},  # only to init the SimCLR model
                 "pre_trained_weights_path": {'values': ["saved_models/SimCLR_ResNet18_adam_-v1.ckpt"]},
                 "modalities": {'values':    [
-                                                [SENTINEL_1_INDEX_KEY, SENTINEL_2_INDEX_KEY],
+                                                [SENTINEL_2_INDEX_KEY],
                                             ]
                             },
             }

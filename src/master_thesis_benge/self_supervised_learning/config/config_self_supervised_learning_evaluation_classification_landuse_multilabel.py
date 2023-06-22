@@ -1,9 +1,6 @@
 import torch
 
 # Import models
-from master_thesis_benge.self_supervised_learning.model.dual_unet import (
-    DualUNet,
-)
 
 from master_thesis_benge.self_supervised_learning.model.dual_resnet import (
     DualResNet,

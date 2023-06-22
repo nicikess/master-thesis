@@ -94,7 +94,7 @@ def evaluation():
         in_channels_1=channel_modalities["in_channels_1"],
         #in_channels_1=4,
         # Input channels for s2
-        in_channels_2=channel_modalities["in_channels_2"],
+        #in_channels_2=channel_modalities["in_channels_2"],
         #in_channels_3=channel_modalities["in_channels_3"],
         number_of_classes=training_config[MODEL_CONFIG_KEY][NUMBER_OF_CLASSES_KEY],
     )
