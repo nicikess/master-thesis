@@ -56,38 +56,49 @@ if __name__ == "__main__":
 
     def evaluation_setup():
 
-        sweep_configuration = {
-            "method": 'grid',
-            "name": 'two-modality',
-            "parameters": {
-                "seed": {'values': [42]},
-                #"learning_rate": {'values': [0.0001]},
-                #"dataset_size": {'values': ["20"]},
-                "batch_size": {"values": [128]}, # only to init the SimCLR model
-                "temperature": {"values": [0.1]},  # only to init the SimCLR model
-                "pre_trained_weights_path": {'values': [#'saved_models/sentinel2-sentinel1-modality-run-6g8bi57r.ckpt',
-                                                        #'saved_models/worldcover(esa)-sentinel1.ckpt',
-                                                        #'saved_models/worldcover(esa)-sentinel2.ckpt',
-                                                        #'saved_models/worldcover(esa)-elevation(glo-30-dem).ckpt',
-                                                        #'saved_models/sentinel2-elevation(glo-30-dem).ckpt',
-                                                        'saved_models/sentinel1-elevation(glo-30-dem).ckpt',
-                                                        ]
-                                                        },
-                "modalities": {'values':    [
-                                                #[SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
-                                                #[ESA_WORLD_COVER_INDEX_KEY, SENTINEL_1_INDEX_KEY],
-                                                #[ESA_WORLD_COVER_INDEX_KEY, SENTINEL_2_INDEX_KEY],
-                                                #[ESA_WORLD_COVER_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
-                                                #[SENTINEL_2_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
-                                                [SENTINEL_1_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
-                                            ]
-                            },
+        pre_trained_weights = ['saved_models/sentinel2-sentinel1-modality-run-6g8bi57r.ckpt',
+                    'saved_models/worldcover(esa)-sentinel1.ckpt',
+                    'saved_models/worldcover(esa)-sentinel2.ckpt',
+                    'saved_models/worldcover(esa)-elevation(glo-30-dem).ckpt',
+                    'saved_models/sentinel2-elevation(glo-30-dem).ckpt',
+                    'saved_models/sentinel1-elevation(glo-30-dem).ckpt',
+                        ]
+    
+        modalities = [
+                        [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
+                        [ESA_WORLD_COVER_INDEX_KEY, SENTINEL_1_INDEX_KEY],
+                        [ESA_WORLD_COVER_INDEX_KEY, SENTINEL_2_INDEX_KEY],
+                        [ESA_WORLD_COVER_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
+                        [SENTINEL_2_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
+                        [SENTINEL_1_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
+                                                ]
+        
+        sweep_name = ['sentinel2-sentinel1-modality',
+                    'worldcover(esa)-sentinel1',
+                    'worldcover(esa)-sentinel2',
+                    'worldcover(esa)-elevation(glo-30-dem)',
+                    'sentinel2-elevation(glo-30-dem)',
+                    'sentinel1-elevation(glo-30-dem)']
+        
+        for i in range(len(pre_trained_weights)):
+            sweep_configuration = {
+                "method": 'grid',
+                "name": sweep_name[i],
+                "parameters": {
+                    "seed": {'values': [42]},
+                    #"learning_rate": {'values': [0.0001]},
+                    #"dataset_size": {'values': ["20"]},
+                    "batch_size": {"values": [128]}, # only to init the SimCLR model
+                    "temperature": {"values": [0.1]},  # only to init the SimCLR model
+                    "pre_trained_weights_path": {'values': [pre_trained_weights[i]]},
+                    "modalities": {'values':    [modalities[i]]
+                                },
+                }
             }
-        }
 
-        sweep_id = wandb.sweep(sweep=sweep_configuration, project='master-thesis-ssl-evaluation-'+training_config[TASK_CONFIG_KEY][TASK_KEY].lower())
+            sweep_id = wandb.sweep(sweep=sweep_configuration, project='master-thesis-ssl-evaluation-'+training_config[TASK_CONFIG_KEY][TASK_KEY].lower())
 
-        wandb.agent(sweep_id, function=evaluation)
+            wandb.agent(sweep_id, function=evaluation)
 
     
     # Train
