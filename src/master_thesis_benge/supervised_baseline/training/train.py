@@ -107,11 +107,10 @@ class Train:
                 # Calculate batch train metrics
                 self.metrics.log_batch_train_metrics(loss, output, label, progress, epoch)
 
-            #self.scheduler.step()
+            self.scheduler.step()
 
             # Calculate epoch train metrics
             self.metrics.log_epoch_train_metrics(len(self.train_dl), scheduler=self.scheduler)
-            #self.metrics.log_epoch_train_metrics(len(self.train_dl))
 
             progress = tqdm(
                 enumerate(self.validation_dl),

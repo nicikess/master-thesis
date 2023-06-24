@@ -70,7 +70,7 @@ training_config = {
         TASK_KEY: Task.CLASSIFICATION_LANDUSE_MULTILABEL.value,
     },
     "model": {
-        MODEL_KEY: UniResNet,
+        MODEL_KEY: DualResNet,
         NUMBER_OF_CLASSES_KEY: 11,
     },
     "training": {
@@ -112,4 +112,4 @@ training_config = {
 def get_data_set_files(size: str):
     train_file = f'/raid/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-train.beton'
     validation_file = f'/raid/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-validation.beton'
-    return train_file, validation_file
+    #return train_file, validation_file

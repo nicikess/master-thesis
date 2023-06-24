@@ -57,6 +57,7 @@ MODALITIES_KEY = "modalities"
 MODALITIES_LABEL_KEY = "modalities_label"
 FEATURE_DIMENSION_KEY = "feature_dimension"
 RESUME_FROM_CHECKPOINT_KEY = "resume_from_checkpoint"
+PROJECTION_HEAD_KEY = "projection_head"
 
 # Metrics
 METRICS_KEY = "metrics"

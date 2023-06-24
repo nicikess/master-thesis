@@ -2,9 +2,11 @@ import torch
 
 # Import models
 
-from master_thesis_benge.self_supervised_learning.model.dual_unet import (
+from master_thesis_benge.self_supervised_learning.model.evaluation.dual_unet import (
     DualUNet,
 )
+
+from master_thesis_benge.self_supervised_learning.model.training.projection_head import AddUNetProjection
 
 # Import constants
 from master_thesis_benge.self_supervised_learning.config.constants import (
@@ -32,7 +34,8 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     DATALOADER_VALIDATION_FILE_KEY,
     TASK_KEY,
     FEATURE_DIMENSION_KEY,
-    EMEDDING_SIZE_KEY
+    EMEDDING_SIZE_KEY,
+    PROJECTION_HEAD_KEY
 )
 
 from master_thesis_benge.self_supervised_learning.metrics.segmentation_utils import (
@@ -53,9 +56,9 @@ from remote_sensing_core.transforms.ffcv.era5_temperature_s2_transform import Er
 from ffcv.transforms import ToTensor, ToDevice
 from ffcv.fields.decoders import NDArrayDecoder, FloatDecoder, IntDecoder
 
-training_config = {
+evaluation_config = {
     "task": {
-        TASK_KEY: Task.SSL_CLASSIFICATION_LANDUSE_MULTILABEL.value
+        TASK_KEY: Task.SSL_SEGMENTATION_LANDUSE.value
     },
     "model": {
         MODEL_KEY: DualUNet,
@@ -65,7 +68,7 @@ training_config = {
         MODALITIES_KEY: {
             MODALITIES_LABEL_KEY: ESA_WORLD_COVER_INDEX_KEY,
         },
-        DATALOADER_TRAIN_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-train.beton',
+        DATALOADER_TRAIN_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-test.beton',
         DATALOADER_VALIDATION_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-validation.beton',
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.01,
@@ -78,6 +81,7 @@ training_config = {
         SCHEDULER_MIN_LR_KEY: 0,
         FEATURE_DIMENSION_KEY: 512,
         EMEDDING_SIZE_KEY: 128,
+        PROJECTION_HEAD_KEY: AddUNetProjection,
     },
     "metrics": {METRICS_KEY: SegmentationUtils},
     "other": {
@@ -105,4 +109,4 @@ training_config = {
 def get_data_set_files(size: str):
     train_file = f'/raid/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-train.beton'
     validation_file = f'/raid/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-validation.beton'
-    return train_file, validation_file
+    #return train_file, validation_file

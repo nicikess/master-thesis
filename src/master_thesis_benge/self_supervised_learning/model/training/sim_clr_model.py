@@ -4,9 +4,6 @@ from torch.optim import Adam
 
 # from pl_bolts.optimizers.lr_scheduler import LinearWarmupCosineAnnealingLR
 
-from master_thesis_benge.self_supervised_learning.model.projection_head import (
-    AddProjection,
-)
 from master_thesis_benge.self_supervised_learning.loss.contrastive_loss import (
     ContrastiveLoss,
 )
@@ -16,7 +13,8 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     EMEDDING_SIZE_KEY,
     WEIGHT_DECAY_KEY,
     GRADIENT_ACCUMULATION_STEPS_KEY,
-    LEARNING_RATE_KEY
+    LEARNING_RATE_KEY,
+    PROJECTION_HEAD_KEY
 )
 
 def define_param_groups(model, weight_decay, optimizer_name):
@@ -52,10 +50,8 @@ class SimCLR_pl(pl.LightningModule):
     def __init__(self, training_config, feat_dim=512, in_channels_1 = None, in_channels_2 = None):
         super().__init__()
         self.training_config = training_config
-        #assert(in_channels_1==2)
-        #assert(in_channels_2==4)
-        self.model_modality_1 = AddProjection(in_channels=in_channels_1, embedding_size = self.training_config[TRAINING_CONFIG_KEY][EMEDDING_SIZE_KEY], mlp_dim=feat_dim)
-        self.model_modality_2 = AddProjection(in_channels=in_channels_2, embedding_size = self.training_config[TRAINING_CONFIG_KEY][EMEDDING_SIZE_KEY], mlp_dim=feat_dim)
+        self.model_modality_1 = wandb.config.projection_head(in_channels=in_channels_1, embedding_size = self.training_config[TRAINING_CONFIG_KEY][EMEDDING_SIZE_KEY], mlp_dim=feat_dim)
+        self.model_modality_2 = wandb.config.projection_head(in_channels=in_channels_2, embedding_size = self.training_config[TRAINING_CONFIG_KEY][EMEDDING_SIZE_KEY], mlp_dim=feat_dim)
         self.loss = ContrastiveLoss(
             wandb.config.batch_size, temperature=wandb.config.temperature
         )

@@ -2,9 +2,11 @@ import torch
 
 # Import models
 
-from master_thesis_benge.self_supervised_learning.model.dual_resnet import (
+from master_thesis_benge.self_supervised_learning.model.evaluation.dual_resnet import (
     DualResNet,
 )
+
+from master_thesis_benge.self_supervised_learning.model.training.projection_head import AddResNetProjection
 
 # Import constants
 from master_thesis_benge.self_supervised_learning.config.constants import (
@@ -32,7 +34,8 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     DATALOADER_VALIDATION_FILE_KEY,
     TASK_KEY,
     FEATURE_DIMENSION_KEY,
-    EMEDDING_SIZE_KEY
+    EMEDDING_SIZE_KEY,
+    PROJECTION_HEAD_KEY
 )
 
 from master_thesis_benge.self_supervised_learning.metrics.classification_utils import (
@@ -49,11 +52,12 @@ from remote_sensing_core.transforms.ffcv.esa_world_cover_transform import EsaWor
 from remote_sensing_core.transforms.ffcv.blow_up import BlowUp
 from remote_sensing_core.transforms.ffcv.min_max_scaler import MinMaxScaler
 from remote_sensing_core.transforms.ffcv.era5_temperature_s2_transform import Era5TemperatureS2Transform
+from remote_sensing_core.transforms.ffcv.expand_dimension import ExpandDimension
 
 from ffcv.transforms import ToTensor, ToDevice
 from ffcv.fields.decoders import NDArrayDecoder, FloatDecoder, IntDecoder
 
-training_config = {
+evaluation_config = {
     "task": {
         TASK_KEY: Task.SSL_CLASSIFICATION_LANDUSE_MULTILABEL.value
     },
@@ -78,6 +82,7 @@ training_config = {
         SCHEDULER_MIN_LR_KEY: 0,
         FEATURE_DIMENSION_KEY: 512,
         EMEDDING_SIZE_KEY: 128,
+        PROJECTION_HEAD_KEY: AddResNetProjection,
     },
     "metrics": {METRICS_KEY: ClassificationUtils},
     "other": {
@@ -87,7 +92,7 @@ training_config = {
         'climate_zone': [FloatDecoder(), MinMaxScaler(maximum_value=29, minimum_value=0, interval_max=1, interval_min=0), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'elevation_differ': [FloatDecoder(), ToTensor(), ToDevice(device)],
         'era_5': [NDArrayDecoder(), Era5TemperatureS2Transform(batch_size=32), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
-        'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), Convert('int64'), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), ExpandDimension(), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'glo_30_dem': [NDArrayDecoder(), ChannelSelector([0]), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'multiclass_numer': [NDArrayDecoder(), ToTensor(), ToDevice(device)],
         'multiclass_one_h': [ToTensor(), ToDevice(device = torch.device('cuda'))],

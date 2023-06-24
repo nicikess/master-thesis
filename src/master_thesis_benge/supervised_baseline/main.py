@@ -41,13 +41,14 @@ if __name__ == "__main__":
 
     sweep_configuration = {
         "method": 'grid',
-        "name": 'data-set-size-classification-multi-label',
+        "name": 'two-modalities',
         "parameters": {
             "seed": {'values': [42, 43, 44, 45, 46]},
             #"learning_rate": {'values': [0.0001]},
-            "dataset_size": {'values': ["8k","20","40", "60", "80", "100"]},
+            "dataset_size": {'values': ["20"]},
             "modalities": {'values':    [
-                                            [SENTINEL_2_INDEX_KEY],
+                                            [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
+                                            [SENTINEL_2_INDEX_KEY, ERA_5_INDEX_KEY],
                                         ]
                            },
         }
@@ -83,13 +84,14 @@ if __name__ == "__main__":
                                 pipelines=training_config[PIPELINES_CONFIG_KEY]
                             )
         
-        
+        '''
         itera = iter(dataloader_train)
         first = next(itera)
         for data in first:
             print(data)
             print(data.shape)
             input("test")
+        '''
                
         # Create a dictionary that maps each modality to the number of input channels
         channel_modalities = {
@@ -106,7 +108,7 @@ if __name__ == "__main__":
             in_channels_1=channel_modalities["in_channels_1"],
             #in_channels_1=4,
             # Input channels for s2
-            #in_channels_2=channel_modalities["in_channels_2"],
+            in_channels_2=channel_modalities["in_channels_2"],
             #in_channels_3=channel_modalities["in_channels_3"],
             number_of_classes=training_config[MODEL_CONFIG_KEY][NUMBER_OF_CLASSES_KEY],
         )
