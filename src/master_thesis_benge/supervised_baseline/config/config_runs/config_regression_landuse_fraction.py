@@ -71,7 +71,7 @@ training_config = {
     },
     "model": {
         MODEL_KEY: UniResNet,
-        NUMBER_OF_CLASSES_KEY: 11,
+        NUMBER_OF_CLASSES_KEY: 11, #Is not used in the code, but if is not set, the code will crash (because train requires it)
     },
     "training": {
         MODALITIES_KEY: {
@@ -81,7 +81,7 @@ training_config = {
         DATALOADER_VALIDATION_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-validation.beton',
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.001,
-        BATCH_SIZE_KEY: 32,
+        BATCH_SIZE_KEY: 1,
         OPTIMIZER_KEY: torch.optim.Adam,
         SCHEDULER_KEY: torch.optim.lr_scheduler.CosineAnnealingLR,
         LOSS_KEY: torch.nn.MSELoss(),
@@ -96,7 +96,7 @@ training_config = {
     "pipelines": {
         'climate_zone': [FloatDecoder(), MinMaxScaler(maximum_value=29, minimum_value=0, interval_max=1, interval_min=0), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'elevation_differ': [FloatDecoder(), ToTensor(), ToDevice(device)],
-        'era_5': [NDArrayDecoder(), Era5TemperatureS2Transform(batch_size=32), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'era_5': [NDArrayDecoder(), Era5TemperatureS2Transform(batch_size=1), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), ExpandDimension(), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'glo_30_dem': [NDArrayDecoder(), ChannelSelector([0]), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'multiclass_numer': [NDArrayDecoder(), ToTensor(), ToDevice(device)],
@@ -115,4 +115,4 @@ training_config = {
 def get_data_set_files(size: str):
     train_file = f'/raid/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-train.beton'
     validation_file = f'/raid/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-validation.beton'
-    return train_file, validation_file
+    #return train_file, validation_file

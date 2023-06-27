@@ -66,6 +66,8 @@ METRICS_KEY = "metrics"
 TRAINING_CONFIG_KEY = "training"
 PIPELINES_CONFIG_KEY = "pipelines"
 PARAMETERS_CONFIG_KEY = "parameters"
+RESNET_CONFIG_KEY = "resnet"
+UNET_CONFIG_KEY = "unet"
 
 # Config
 TRAINING_CONFIG_KEY = "training"

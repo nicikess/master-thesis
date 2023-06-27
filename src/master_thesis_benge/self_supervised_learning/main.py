@@ -4,6 +4,7 @@ import numpy as np
 
 from master_thesis_benge.self_supervised_learning.config.constants import (
     TASK_KEY,
+    TRAINING_CONFIG_KEY,
     SENTINEL_1_INDEX_KEY,
     CLIMATE_ZONE_INDEX_KEY,
     ERA_5_INDEX_KEY,
@@ -12,10 +13,10 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     SENTINEL_2_INDEX_KEY,
     ESA_WORLD_COVER_INDEX_KEY,
     TASK_CONFIG_KEY,
+    PIPELINES_CONFIG_KEY,
+    RESNET_CONFIG_KEY,
+    UNET_CONFIG_KEY,
 )
-
-# TODO: Change this for training: training_config_resnet or training_config_unet
-from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning_training import training_config_resnet as training_config
 
 # TODO: Change task for evaluation
 from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning_evaluation_classification_landuse_multilabel import (
@@ -34,12 +35,12 @@ if __name__ == "__main__":
     def train_setup():
         sweep_configuration = {
             "method": "grid",
-            "name": "dataset-size-evaluation-ssl",
+            "name": "debug",
             "parameters": {
-                "training_config": {"values": [training_config]},
+                "training_config": {"values": [RESNET_CONFIG_KEY]},
                 "batch_size": {"values": [128]},
                 "temperature": {"values": [0.1]},
-                "dataset_size": {'values': ["8k","20","40", "60", "80", "100"]},
+                "dataset_size": {'values': ["20"]},
                 "modalities": {'values':    [
                                                 [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
                                             ]
@@ -48,7 +49,7 @@ if __name__ == "__main__":
         }
 
         sweep_id = wandb.sweep(
-            sweep=sweep_configuration, project="master-thesis-ssl-training"+training_config[TASK_CONFIG_KEY][TASK_KEY]
+            sweep=sweep_configuration, project="master-thesis-ssl-training"
         )
 
         wandb.agent(sweep_id, function=training)
@@ -103,7 +104,7 @@ if __name__ == "__main__":
 
     
     # Train
-    #train_setup()
+    train_setup()
 
     # Evaluate
-    evaluation_setup()
+    #evaluation_setup()

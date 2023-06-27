@@ -70,7 +70,7 @@ training_config = {
         TASK_KEY: Task.CLASSIFICATION_LANDUSE.value,
     },
     "model": {
-        MODEL_KEY: DualResNet,
+        MODEL_KEY: UniResNet,
         NUMBER_OF_CLASSES_KEY: 11,
     },
     "training": {

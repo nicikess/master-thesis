@@ -49,6 +49,9 @@ class RegressionUtils(Metric):
     def log_batch_train_metrics(self, loss, output, label, progress, epoch):
         self.epoch_train_loss += loss
 
+        print("output: ", str(output))
+        input()
+
         if self.task == Task.REGRESSION_LANDUSE_FRACTION.value:
             output = F.softmax(output, dim=1)
         if self.task == Task.REGRESSION_ELEVATION_DIFFERENCE.value:
@@ -56,8 +59,18 @@ class RegressionUtils(Metric):
         if self.task == Task.SEGMENTATION_ELEVATION.value:
             output = F.sigmoid(output)
 
+        print("sig/softmax: ", str(output))
+        input()
+
+        print("label: ", str(label))
+        input()
+
         self.epoch_train_mse += self.mse(output, label)
         self.epoch_train_rmse += self.rsme(output, label)
+
+        print("mse: ", str(self.mse(output, label)))
+        print("rmse: ", str(self.rsme(output, label)))
+        input()
 
         progress.set_description("Train loss "+str(epoch)+":{:.4f}".format(loss))
         wandb.log({"Step loss": loss})

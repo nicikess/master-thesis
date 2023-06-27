@@ -12,6 +12,8 @@ from pytorch_lightning import Trainer
 
 from master_thesis_benge.self_supervised_learning.model.training.sim_clr_model import SimCLR_pl
 
+from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning_training import training_config_resnet, training_config_unet, get_data_set_files
+
 from master_thesis_benge.self_supervised_learning.config.constants import (
     PIPELINES_CONFIG_KEY,
     TRAINING_CONFIG_KEY,
@@ -28,6 +30,14 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
 
 from ffcv.loader import Loader, OrderOption
 
+def select_training_config(config_type):
+    if config_type == "resnet":
+        return training_config_resnet
+    elif config_type == "unet":
+        return training_config_unet
+    else:
+        raise ValueError("Invalid config type.")
+
 def reproducibility(seed):
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -36,7 +46,9 @@ def reproducibility(seed):
 def training():
 
     # Initialize wandb
-    wandb.init(config=wandb.config.training_config)
+    wandb.init()
+    training_config = select_training_config(wandb.config.training_config)
+    wandb.config.update(training_config)
     run_name = '-'.join([get_label_from_index(modality) for modality in wandb.config.modalities])
     wandb.run.name = run_name
 
@@ -45,18 +57,18 @@ def training():
     print("available_gpus:", available_gpus)
 
     # Model path
-    save_model_path = os.path.join(os.getcwd(), wandb.config.training_config[TRAINING_CONFIG_KEY][SAVE_MODEL_KEY])
-    filename = '-'.join([get_label_from_index(modality) for modality in wandb.config.modalities])+str(wandb.config.dataset_size)+str(wandb.run.sweep)
-    resume_from_checkpoint = wandb.config.training_config[TRAINING_CONFIG_KEY][RESUME_FROM_CHECKPOINT_KEY]
+    save_model_path = os.path.join(os.getcwd(), training_config[TRAINING_CONFIG_KEY][SAVE_MODEL_KEY],str(wandb.run.sweep_id))
+    filename = '-'.join([get_label_from_index(modality) for modality in wandb.config.modalities])+str(wandb.config.dataset_size)
+    resume_from_checkpoint = training_config[TRAINING_CONFIG_KEY][RESUME_FROM_CHECKPOINT_KEY]
 
-    reproducibility(wandb.config.training_config[TRAINING_CONFIG_KEY][SEED_KEY])
+    reproducibility(training_config[TRAINING_CONFIG_KEY][SEED_KEY])
 
     #training_config[TRAINING_CONFIG_KEY][DATASET_SIZE_KEY]
-    dataloader_train = Loader(wandb.config.training_config.get_data_set_files(wandb.config.dataset_size)[0],
+    dataloader_train = Loader(get_data_set_files(wandb.config.dataset_size)[0],
                     batch_size=wandb.config.batch_size,
                     order=OrderOption.RANDOM,
                     num_workers=4,
-                    pipelines=wandb.config.training_config[PIPELINES_CONFIG_KEY]
+                    pipelines=training_config[PIPELINES_CONFIG_KEY]
                 )
 
     # Create a dictionary that maps each modality to the number of input channels
@@ -68,7 +80,7 @@ def training():
         )
     }
 
-    model = SimCLR_pl(wandb.config.training_config, feat_dim=wandb.config.training_config[TRAINING_CONFIG_KEY][FEATURE_DIMENSION_KEY], in_channels_1=channel_modalities["in_channels_1"], in_channels_2=channel_modalities["in_channels_2"])
+    model = SimCLR_pl(training_config, feat_dim=training_config[TRAINING_CONFIG_KEY][FEATURE_DIMENSION_KEY], in_channels_1=channel_modalities["in_channels_1"], in_channels_2=channel_modalities["in_channels_2"])
 
     '''
     itera = iter(dataloader_train)
@@ -98,14 +110,14 @@ def training():
         trainer = Trainer(
             callbacks=[checkpoint_callback],
             accelerator="gpu",
-            max_epochs=wandb.config.training_config[TRAINING_CONFIG_KEY][EPOCHS_KEY],
-            resume_from_checkpoint=wandb.config.training_config[TRAINING_CONFIG_KEY][CHECKPOINT_PATH_KEY], # -> check in config for correct path of checkpoint (if this needs to be executed at some point)
+            max_epochs=training_config[TRAINING_CONFIG_KEY][EPOCHS_KEY],
+            resume_from_checkpoint=training_config[TRAINING_CONFIG_KEY][CHECKPOINT_PATH_KEY], # -> check in config for correct path of checkpoint (if this needs to be executed at some point)
         )
     else:
         trainer = Trainer(
             callbacks=[checkpoint_callback],
             accelerator="gpu",
-            max_epochs=wandb.config.training_config[TRAINING_CONFIG_KEY][EPOCHS_KEY],
+            max_epochs=training_config[TRAINING_CONFIG_KEY][EPOCHS_KEY],
         )
 
     trainer.fit(model, dataloader_train)

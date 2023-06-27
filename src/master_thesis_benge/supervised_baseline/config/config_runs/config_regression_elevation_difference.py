@@ -70,7 +70,7 @@ training_config = {
     },
     "model": {
         MODEL_KEY: UniResNet,
-        NUMBER_OF_CLASSES_KEY: 1,
+        NUMBER_OF_CLASSES_KEY: 1, #Is not used in the code, but if is not set, the code will crash (because train requires it)
     },
     "training": {
         MODALITIES_KEY: {
