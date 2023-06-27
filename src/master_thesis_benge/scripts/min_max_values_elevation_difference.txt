@@ -1,0 +1,2 @@
+Minimum value: 0.0
+Maximum value: 1926.0
