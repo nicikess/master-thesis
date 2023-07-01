@@ -70,7 +70,7 @@ training_config = {
         TASK_KEY: Task.SEGMENTATION_ELEVATION.value,
     },
     "model": {
-        MODEL_KEY: TripleUNet,
+        MODEL_KEY: UNet,
         NUMBER_OF_CLASSES_KEY: 1, #Is not used in the code, but if is not set, the code will crash (because train requires it)
     },
     "training": {
@@ -98,7 +98,7 @@ training_config = {
         #'elevation_differ': [FloatDecoder(), ToTensor(), ToDevice(device)],
         'era_5': [NDArrayDecoder(), Era5TemperatureS2Transform(batch_size=16), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), ExpandDimension(), ToTensor(), ToDevice(device = torch.device('cuda'))],
-        'glo_30_dem': [NDArrayDecoder(), ChannelSelector([0]), Clipping([0, 500]), MinMaxScaler(maximum_value=500, minimum_value=0, interval_max=1, interval_min=0), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'glo_30_dem': [NDArrayDecoder(), ChannelSelector([0]), Clipping([-144.0, 2619.0]), MinMaxScaler(maximum_value=2619.0, minimum_value=-144.0, interval_max=1, interval_min=0), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'multiclass_numer': [NDArrayDecoder(), ToTensor(), ToDevice(device)],
         'multiclass_one_h': [ToTensor(), ToDevice(device = torch.device('cuda'))],
         'season_s1': [FloatDecoder(), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],

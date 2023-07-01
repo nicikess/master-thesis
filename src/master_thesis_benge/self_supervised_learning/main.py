@@ -14,13 +14,10 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     ESA_WORLD_COVER_INDEX_KEY,
     TASK_CONFIG_KEY,
     PIPELINES_CONFIG_KEY,
-    RESNET_CONFIG_KEY,
-    UNET_CONFIG_KEY,
-)
-
-# TODO: Change task for evaluation
-from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning_evaluation_classification_landuse_multilabel import (
-    evaluation_config
+    TRAINING_RESNET_CONFIG_KEY,
+    TRAINING_UNET_CONFIG_KEY,
+    EVALUATION_CLASSIFICATION_LANDUSE_MULTILABEL_CONFIG_KEY,
+    EVALUATION_SEGMENTATION_LANDUSE_CONFIG_KEY
 )
 
 from master_thesis_benge.self_supervised_learning.training.train import training
@@ -33,14 +30,17 @@ if __name__ == "__main__":
 
     # Train SSL
     def train_setup():
+
+        training_config = TRAINING_UNET_CONFIG_KEY
+
         sweep_configuration = {
             "method": "grid",
-            "name": "debug",
+            "name": "train-ssl-sen2-sen1-60-delta",
             "parameters": {
-                "training_config": {"values": [RESNET_CONFIG_KEY]},
+                "training_config": {"values": [training_config]},
                 "batch_size": {"values": [128]},
                 "temperature": {"values": [0.1]},
-                "dataset_size": {'values': ["20"]},
+                "dataset_size": {'values': ["60-delta-multilabel"]},
                 "modalities": {'values':    [
                                                 [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
                                             ]
@@ -48,8 +48,13 @@ if __name__ == "__main__":
             },
         }
 
+        if training_config == TRAINING_RESNET_CONFIG_KEY:
+            project_name = "master-thesis-ssl-training-resnet"
+        elif training_config == TRAINING_UNET_CONFIG_KEY:
+            project_name = "master-thesis-ssl-training-unet"
+
         sweep_id = wandb.sweep(
-            sweep=sweep_configuration, project="master-thesis-ssl-training"
+            sweep=sweep_configuration, project=project_name
         )
 
         wandb.agent(sweep_id, function=training)
@@ -57,39 +62,26 @@ if __name__ == "__main__":
 
     def evaluation_setup():
 
-        pre_trained_weights = [
-                    'saved_models/sentinel2-sentinel1-modality-run-6g8bi57r.ckpt',
-                    'saved_models/worldcover(esa)-sentinel1.ckpt',
-                    'saved_models/worldcover(esa)-sentinel2.ckpt',
-                    'saved_models/worldcover(esa)-elevation(glo-30-dem).ckpt',
-                    'saved_models/sentinel2-elevation(glo-30-dem).ckpt',
-                    'saved_models/sentinel1-elevation(glo-30-dem).ckpt',
-                        ]
+        pre_trained_weights =   [
+                                    'saved_models/resnet_weights/lxfkckti/sentinel2-sentinel1-60-delta-multilabel.ckpt',
+                                ]
     
-        modalities = [
-                        [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
-                        [ESA_WORLD_COVER_INDEX_KEY, SENTINEL_1_INDEX_KEY],
-                        [ESA_WORLD_COVER_INDEX_KEY, SENTINEL_2_INDEX_KEY],
-                        [ESA_WORLD_COVER_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
-                        [SENTINEL_2_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
-                        [SENTINEL_1_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
-                                                ]
+        modalities =            [
+                                    [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
+                                ]
         
-        sweep_name = [
-                    'sentinel2-sentinel1-modality',
-                    'worldcover(esa)-sentinel1',
-                    'worldcover(esa)-sentinel2',
-                    'worldcover(esa)-elevation(glo-30-dem)',
-                    'sentinel2-elevation(glo-30-dem)',
-                    'sentinel1-elevation(glo-30-dem)'
-                    ]
+        sweep_name =            [
+                                    'sentinel2-sentinel1',
+                                ]
+        
+        evaluation_task = EVALUATION_CLASSIFICATION_LANDUSE_MULTILABEL_CONFIG_KEY
         
         for i in range(len(pre_trained_weights)):
             sweep_configuration = {
                 "method": 'grid',
                 "name": sweep_name[i],
                 "parameters": {
-                    "evaluation_config": {'values': [evaluation_config]},
+                    "evaluation_config": {'values': [evaluation_task]},
                     "seed": {'values': [42]},
                     "batch_size": {"values": [128]}, # only to init the SimCLR model
                     "temperature": {"values": [0.1]},  # only to init the SimCLR model
@@ -99,12 +91,17 @@ if __name__ == "__main__":
                 }
             }
 
-            sweep_id = wandb.sweep(sweep=sweep_configuration, project='master-thesis-ssl-evaluation-'+evaluation_config[TASK_CONFIG_KEY][TASK_KEY].lower())
+            if evaluation_task == EVALUATION_CLASSIFICATION_LANDUSE_MULTILABEL_CONFIG_KEY:
+                project_name = 'master-thesis-ssl-evaluation-classification-landuse-multilabel'
+            elif evaluation_task == EVALUATION_SEGMENTATION_LANDUSE_CONFIG_KEY:
+                project_name = 'master-thesis-ssl-evaluation-segmentation-landuse'
+
+            sweep_id = wandb.sweep(sweep=sweep_configuration, project=project_name)
             wandb.agent(sweep_id, function=evaluation)
 
     
     # Train
-    train_setup()
+    #train_setup()
 
     # Evaluate
-    #evaluation_setup()
+    evaluation_setup()

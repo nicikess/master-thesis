@@ -25,15 +25,17 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     FEATURE_DIMENSION_KEY,
     RESUME_FROM_CHECKPOINT_KEY,
     SAVE_MODEL_KEY,
+    TRAINING_RESNET_CONFIG_KEY,
+    TRAINING_UNET_CONFIG_KEY,
     get_label_from_index
 )
 
 from ffcv.loader import Loader, OrderOption
 
 def select_training_config(config_type):
-    if config_type == "resnet":
+    if config_type == TRAINING_RESNET_CONFIG_KEY:
         return training_config_resnet
-    elif config_type == "unet":
+    elif config_type == TRAINING_UNET_CONFIG_KEY:
         return training_config_unet
     else:
         raise ValueError("Invalid config type.")
@@ -58,7 +60,7 @@ def training():
 
     # Model path
     save_model_path = os.path.join(os.getcwd(), training_config[TRAINING_CONFIG_KEY][SAVE_MODEL_KEY],str(wandb.run.sweep_id))
-    filename = '-'.join([get_label_from_index(modality) for modality in wandb.config.modalities])+str(wandb.config.dataset_size)
+    filename = '-'.join([get_label_from_index(modality) for modality in wandb.config.modalities])+'-'+str(wandb.config.dataset_size)
     resume_from_checkpoint = training_config[TRAINING_CONFIG_KEY][RESUME_FROM_CHECKPOINT_KEY]
 
     reproducibility(training_config[TRAINING_CONFIG_KEY][SEED_KEY])

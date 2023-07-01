@@ -14,7 +14,8 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     WEIGHT_DECAY_KEY,
     GRADIENT_ACCUMULATION_STEPS_KEY,
     LEARNING_RATE_KEY,
-    PROJECTION_HEAD_KEY
+    PROJECTION_HEAD_KEY,
+    FEATURE_DIMENSION_KEY
 )
 
 def define_param_groups(model, weight_decay, optimizer_name):
@@ -50,8 +51,8 @@ class SimCLR_pl(pl.LightningModule):
     def __init__(self, training_config, feat_dim=512, in_channels_1 = None, in_channels_2 = None):
         super().__init__()
         self.training_config = training_config
-        self.model_modality_1 = self.training_config[TRAINING_CONFIG_KEY][PROJECTION_HEAD_KEY](in_channels=in_channels_1, embedding_size = self.training_config[TRAINING_CONFIG_KEY][EMEDDING_SIZE_KEY], mlp_dim=feat_dim)
-        self.model_modality_2 = self.training_config[TRAINING_CONFIG_KEY][PROJECTION_HEAD_KEY](in_channels=in_channels_2, embedding_size = self.training_config[TRAINING_CONFIG_KEY][EMEDDING_SIZE_KEY], mlp_dim=feat_dim)
+        self.model_modality_1 = self.training_config[TRAINING_CONFIG_KEY][PROJECTION_HEAD_KEY](in_channels=in_channels_1, embedding_size = self.training_config[TRAINING_CONFIG_KEY][EMEDDING_SIZE_KEY], mlp_dim=training_config[TRAINING_CONFIG_KEY][FEATURE_DIMENSION_KEY])
+        self.model_modality_2 = self.training_config[TRAINING_CONFIG_KEY][PROJECTION_HEAD_KEY](in_channels=in_channels_2, embedding_size = self.training_config[TRAINING_CONFIG_KEY][EMEDDING_SIZE_KEY], mlp_dim=training_config[TRAINING_CONFIG_KEY][FEATURE_DIMENSION_KEY])
         self.loss = ContrastiveLoss(
             wandb.config.batch_size, temperature=wandb.config.temperature
         )

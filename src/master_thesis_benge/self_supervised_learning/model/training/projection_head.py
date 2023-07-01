@@ -4,6 +4,15 @@ import torch
 
 from master_thesis_benge.self_supervised_learning.model.training.unet_encoder import UNetEncoder
 
+def create_projection(input_dim, output_dim):
+        return nn.Sequential(
+            nn.Linear(in_features=input_dim, out_features=input_dim),
+            nn.BatchNorm1d(input_dim),
+            nn.ReLU(),
+            nn.Linear(in_features=input_dim, out_features=output_dim),
+            nn.BatchNorm1d(output_dim),
+        )
+
 class AddResNetProjection(nn.Module):
     def __init__(self, in_channels, embedding_size, mlp_dim=512):
         super(AddResNetProjection, self).__init__()
@@ -15,13 +24,7 @@ class AddResNetProjection(nn.Module):
         print("Dim MLP input:", mlp_dim)
         self.backbone.fc = nn.Identity()
 
-        self.projection = nn.Sequential(
-            nn.Linear(in_features=mlp_dim, out_features=mlp_dim),
-            nn.BatchNorm1d(mlp_dim),
-            nn.ReLU(), 
-            nn.Linear(in_features=mlp_dim, out_features=embedding_size),
-            nn.BatchNorm1d(embedding_size),
-        )
+        self.projection = create_projection(mlp_dim, embedding_size)
 
     def forward(self, x, return_embedding=False):
             embedding = self.backbone(x)
@@ -34,27 +37,13 @@ class AddUNetProjection(nn.Module):
     def __init__(self, in_channels, embedding_size, mlp_dim=512):
         super(AddUNetProjection, self).__init__()
         self.encoder = UNetEncoder(in_channels)
-        self.projection = nn.Sequential(
-            nn.Linear(in_features=1024, out_features=mlp_dim),
-            nn.BatchNorm1d(mlp_dim),
-            nn.ReLU(),
-            nn.Linear(in_features=mlp_dim, out_features=embedding_size),
-            nn.BatchNorm1d(embedding_size),
-        )
+
+        self.projection = create_projection(mlp_dim, embedding_size)
+
 
     def forward(self, x, return_embedding=False):
-        encoding = self.encoder(x)
-        print(encoding)
-        print(encoding.shape)
-        input('test')
-        print(torch.equal(encoding, encoding.view(encoding.size(0), -1)))
-        input('equal')
-        encoding = encoding.view(encoding.size(0), -1)
-        print(encoding)
-        print(encoding.shape)
-        input('test')
-        embedding = self.projection(encoding)
-        
+        embedding = self.encoder(x)
+        pooled_embedding = nn.AdaptiveAvgPool2d(1)(embedding).view(128,512)        
         if return_embedding:
             return embedding
-        return self.projection(embedding)
+        return self.projection(pooled_embedding)

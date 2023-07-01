@@ -34,14 +34,14 @@ class ResNet(nn.Module):
         self.number_of_classes = number_of_classes
         self.model = models.resnet18(weights=None)
 
-        # Update weights
-        common_keys = set(self.model.state_dict().keys()) & set(state_dict_from_checkpoint.keys())
-        new_state_dict = {k: v for k, v in self.model.state_dict().items() if k in common_keys}
-        self.model.load_state_dict(new_state_dict, strict=False)
-
         self.model.conv1 = nn.Conv2d(
             in_channels_1, 64, kernel_size=7, stride=2, padding=3, bias=False
         )
+
+        # Update weights
+        common_keys = set(self.model.state_dict().keys()) & set(state_dict_from_checkpoint.keys())
+        new_state_dict = {k: v for k, v in state_dict_from_checkpoint.items() if k in common_keys}
+        self.model.load_state_dict(new_state_dict, strict=False)
 
         # Check if weights are initialized correctly
         state_dict1 = self.model.state_dict()

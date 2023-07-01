@@ -57,7 +57,7 @@ from remote_sensing_core.transforms.ffcv.expand_dimension import ExpandDimension
 from ffcv.transforms import ToTensor, ToDevice
 from ffcv.fields.decoders import NDArrayDecoder, FloatDecoder, IntDecoder
 
-evaluation_config = {
+evaluation_config_classification_landuse_multilabel = {
     "task": {
         TASK_KEY: Task.SSL_CLASSIFICATION_LANDUSE_MULTILABEL.value
     },
@@ -69,7 +69,7 @@ evaluation_config = {
         MODALITIES_KEY: {
             MODALITIES_LABEL_KEY: MULTICLASS_ONE_HOT_LABEL_INDEX_KEY,
         },
-        DATALOADER_TRAIN_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-test-multi-label-ewc.beton',
+        DATALOADER_TRAIN_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-train-multi-label-ewc.beton',
         DATALOADER_VALIDATION_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-validation-multi-label-ewc.beton',
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.001,

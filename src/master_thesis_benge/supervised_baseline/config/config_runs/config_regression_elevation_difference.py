@@ -69,7 +69,7 @@ training_config = {
         TASK_KEY: Task.REGRESSION_ELEVATION_DIFFERENCE.value,
     },
     "model": {
-        MODEL_KEY: UniResNet,
+        MODEL_KEY: DualResNet,
         NUMBER_OF_CLASSES_KEY: 1, #Is not used in the code, but if is not set, the code will crash (because train requires it)
     },
     "training": {
@@ -94,7 +94,7 @@ training_config = {
     },
     "pipelines": {
         'climate_zone': [FloatDecoder(), MinMaxScaler(maximum_value=29, minimum_value=0, interval_max=1, interval_min=0), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
-        'elevation_differ': [FloatDecoder(), Clipping([0, 500]), MinMaxScaler(minimum_value=0, maximum_value=500, interval_min=0, interval_max=1) ,Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'elevation_differ': [FloatDecoder(), Clipping([0, 1926]), MinMaxScaler(minimum_value=0, maximum_value=1926, interval_min=0, interval_max=1) ,Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'era_5': [NDArrayDecoder(), Era5TemperatureS2Transform(batch_size=32), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), ExpandDimension(), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'glo_30_dem': [NDArrayDecoder(), ChannelSelector([0]), ToTensor(), ToDevice(device = torch.device('cuda'))],

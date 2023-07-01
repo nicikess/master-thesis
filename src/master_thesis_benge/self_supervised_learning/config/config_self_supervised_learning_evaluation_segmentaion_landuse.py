@@ -56,7 +56,7 @@ from remote_sensing_core.transforms.ffcv.era5_temperature_s2_transform import Er
 from ffcv.transforms import ToTensor, ToDevice
 from ffcv.fields.decoders import NDArrayDecoder, FloatDecoder, IntDecoder
 
-evaluation_config = {
+evaluation_config_segmenation_landuse = {
     "task": {
         TASK_KEY: Task.SSL_SEGMENTATION_LANDUSE.value
     },
@@ -68,8 +68,8 @@ evaluation_config = {
         MODALITIES_KEY: {
             MODALITIES_LABEL_KEY: ESA_WORLD_COVER_INDEX_KEY,
         },
-        DATALOADER_TRAIN_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-test.beton',
-        DATALOADER_VALIDATION_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-validation.beton',
+        DATALOADER_TRAIN_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-train-multi-label-ewc.beton',
+        DATALOADER_VALIDATION_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-validation-multi-label-ewc.beton',
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.01,
         BATCH_SIZE_KEY: 32,

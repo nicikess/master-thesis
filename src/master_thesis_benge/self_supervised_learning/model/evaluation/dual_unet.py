@@ -54,11 +54,9 @@ class UNet(nn.Module):
         self.up3 = Up(256, 128 // 2)
         self.up4 = Up(128, 64)
 
-        unet_state_dict = self.state_dict()
-        common_keys = set(unet_state_dict.keys()) & set(state_dict_from_checkpoint.keys())
+        common_keys = set(self.state_dict().keys()) & set(state_dict_from_checkpoint.keys())
         new_state_dict = {k: v for k, v in state_dict_from_checkpoint.items() if k in common_keys}
-        unet_state_dict.update(new_state_dict)
-        self.load_state_dict(unet_state_dict)
+        self.load_state_dict(new_state_dict)
 
         # Check if weights are initialized correctly
         state_dict1 = self.state_dict()

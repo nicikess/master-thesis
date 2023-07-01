@@ -66,8 +66,10 @@ METRICS_KEY = "metrics"
 TRAINING_CONFIG_KEY = "training"
 PIPELINES_CONFIG_KEY = "pipelines"
 PARAMETERS_CONFIG_KEY = "parameters"
-RESNET_CONFIG_KEY = "resnet"
-UNET_CONFIG_KEY = "unet"
+TRAINING_RESNET_CONFIG_KEY = "resnet"
+TRAINING_UNET_CONFIG_KEY = "unet"
+EVALUATION_CLASSIFICATION_LANDUSE_MULTILABEL_CONFIG_KEY = "evaluation_config_classification_landuse_multilabel"
+EVALUATION_SEGMENTATION_LANDUSE_CONFIG_KEY = "evaluation_config_segmentation_landuse"
 
 # Config
 TRAINING_CONFIG_KEY = "training"
