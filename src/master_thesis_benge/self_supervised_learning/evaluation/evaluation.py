@@ -30,7 +30,7 @@ from master_thesis_benge.self_supervised_learning.model.training.sim_clr_model i
 )
 
 from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning_evaluation_classification_landuse_multilabel import (
-    evaluation_config_classification_landuse_multilabel
+    evaluation_config_classification_landuse_multilabel, get_data_set_files
 )
 
 from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning_evaluation_segmentaion_landuse import (
@@ -64,7 +64,7 @@ def evaluation():
     np.random.seed(wandb.config.seed)
 
     #get_data_set_files(wandb.config.dataset_size)[0]
-    dataloader_train = Loader(evaluation_config[TRAINING_CONFIG_KEY][DATALOADER_TRAIN_FILE_KEY],
+    dataloader_train = Loader(get_data_set_files(wandb.config.dataset_size_fine_tuning)[0],
                             batch_size=evaluation_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY],
                             order=OrderOption.RANDOM,
                             num_workers=4,
@@ -96,12 +96,7 @@ def evaluation():
     '''
 
     # Load weights from pre-trained model
-    model_ssl = SimCLR_pl(evaluation_config, feat_dim=evaluation_config[TRAINING_CONFIG_KEY][FEATURE_DIMENSION_KEY], in_channels_1=channel_modalities["in_channels_1"], in_channels_2=channel_modalities["in_channels_2"])
-    checkpoint = torch.load(wandb.config.pre_trained_weights_path)
-    model_dict = model_ssl.state_dict()
-    pretrained_dict = {k: v for k, v in checkpoint['state_dict'].items() if k in model_dict}
-    model_dict.update(pretrained_dict)
-    model_ssl.load_state_dict(model_dict)
+    model_ssl = SimCLR_pl.load_from_checkpoint(wandb.config.pre_trained_weights_path, training_config=evaluation_config, in_channels_1=channel_modalities["in_channels_1"], in_channels_2=channel_modalities["in_channels_2"])
 
     state_dict_modality_1 = model_ssl.model_modality_1.backbone.state_dict()
     state_dict_modality_2 = model_ssl.model_modality_2.backbone.state_dict()

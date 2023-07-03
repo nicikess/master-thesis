@@ -77,7 +77,7 @@ training_config = {
         MODALITIES_KEY: {
             MODALITIES_LABEL_KEY: GLO_30_DEM_INDEX_KEY,
         },
-        DATALOADER_TRAIN_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-train.beton',
+        DATALOADER_TRAIN_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-60-delta-multilabel-train-1-percent.beton',
         DATALOADER_VALIDATION_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-validation.beton',
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.0001,

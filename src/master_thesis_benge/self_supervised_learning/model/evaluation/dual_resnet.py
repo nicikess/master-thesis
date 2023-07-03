@@ -29,7 +29,7 @@ class DualResNet(nn.Module):
 
 class ResNet(nn.Module):
 
-    def __init__(self, state_dict_from_checkpoint, in_channels_1, number_of_classes):
+    def __init__(self, weights, in_channels_1, number_of_classes):
         super(ResNet, self).__init__()
         self.number_of_classes = number_of_classes
         self.model = models.resnet18(weights=None)
@@ -39,13 +39,19 @@ class ResNet(nn.Module):
         )
 
         # Update weights
-        common_keys = set(self.model.state_dict().keys()) & set(state_dict_from_checkpoint.keys())
-        new_state_dict = {k: v for k, v in state_dict_from_checkpoint.items() if k in common_keys}
-        self.model.load_state_dict(new_state_dict, strict=False)
+        resnet_state_dict = self.model.state_dict()
+        common_keys = set(resnet_state_dict.keys()) & set(weights.keys())
+        new_state_dict = {k: v for k, v in weights.items() if k in common_keys}
+        resnet_state_dict.update(new_state_dict)
+        self.model.load_state_dict(resnet_state_dict)
+        
+        #Freeze all layers except the last one
+        for param in self.model.parameters():
+                param.requires_grad = False
 
         # Check if weights are initialized correctly
         state_dict1 = self.model.state_dict()
-        state_dict2 = state_dict_from_checkpoint
+        state_dict2 = weights
 
         for key1, value1 in state_dict1.items():
             if key1 in state_dict2:

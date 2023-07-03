@@ -77,8 +77,8 @@ training_config = {
         MODALITIES_KEY: {
             MODALITIES_LABEL_KEY: MULTICLASS_ONE_HOT_LABEL_INDEX_KEY,
         },
-        DATALOADER_TRAIN_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-train-multi-label-ewc.beton',
-        DATALOADER_VALIDATION_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-validation-multi-label-ewc.beton',
+        #DATALOADER_TRAIN_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-train-multi-label-ewc.beton',
+        DATALOADER_VALIDATION_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-multi-label-ewc-validation.beton',
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.001,
         BATCH_SIZE_KEY: 32,
@@ -110,6 +110,6 @@ training_config = {
 
 
 def get_data_set_files(size: str):
-    train_file = f'/raid/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-train-multi-label-ewc.beton'
+    train_file = f'/raid/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-train.beton'
     validation_file = f'/raid/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-validation-multi-label-ewc.beton'
-    #return train_file, validation_file
+    return train_file, validation_file

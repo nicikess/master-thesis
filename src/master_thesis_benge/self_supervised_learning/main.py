@@ -31,18 +31,23 @@ if __name__ == "__main__":
     # Train SSL
     def train_setup():
 
-        training_config = TRAINING_UNET_CONFIG_KEY
+        training_config = TRAINING_RESNET_CONFIG_KEY
 
         sweep_configuration = {
             "method": "grid",
-            "name": "train-ssl-sen2-sen1-60-delta",
+            "name": "train-ssl-different-modalities-combi-resnet",
             "parameters": {
                 "training_config": {"values": [training_config]},
                 "batch_size": {"values": [128]},
                 "temperature": {"values": [0.1]},
-                "dataset_size": {'values': ["60-delta-multilabel"]},
+                "dataset_size_train": {'values': ["60-delta-multilabel"]},
                 "modalities": {'values':    [
                                                 [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
+                                                [SENTINEL_2_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
+                                                [SENTINEL_2_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
+                                                [SENTINEL_1_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
+                                                [SENTINEL_1_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
+                                                [ESA_WORLD_COVER_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
                                             ]
                             },
             },
@@ -63,7 +68,7 @@ if __name__ == "__main__":
     def evaluation_setup():
 
         pre_trained_weights =   [
-                                    'saved_models/resnet_weights/lxfkckti/sentinel2-sentinel1-60-delta-multilabel.ckpt',
+                                    'saved_models/resnet_weights/sentinel2-sentinel1-v13.ckpt',
                                 ]
     
         modalities =            [
@@ -71,7 +76,10 @@ if __name__ == "__main__":
                                 ]
         
         sweep_name =            [
-                                    'sentinel2-sentinel1',
+                                    'eval-ssl-sen2-sen1-1-percent',
+                                    'eval-ssl-sen2-sen1-10-percent',
+                                    'eval-ssl-sen2-sen1-50-percent',
+                                    'eval-ssl-sen2-sen1-100-percent',
                                 ]
         
         evaluation_task = EVALUATION_CLASSIFICATION_LANDUSE_MULTILABEL_CONFIG_KEY
@@ -82,10 +90,11 @@ if __name__ == "__main__":
                 "name": sweep_name[i],
                 "parameters": {
                     "evaluation_config": {'values': [evaluation_task]},
-                    "seed": {'values': [42]},
+                    "seed": {'values': [42, 43, 44, 45, 46]},
                     "batch_size": {"values": [128]}, # only to init the SimCLR model
                     "temperature": {"values": [0.1]},  # only to init the SimCLR model
                     "pre_trained_weights_path": {'values': [pre_trained_weights[i]]},
+                    "dataset_size_fine_tuning": {'values': ["20-1-percent", "20-10-percent", "20-50-percent", "20-multi-label-ewc"]},
                     "modalities": {'values':    [modalities[i]]
                                 },
                 }
@@ -101,7 +110,7 @@ if __name__ == "__main__":
 
     
     # Train
-    #train_setup()
+    train_setup()
 
     # Evaluate
-    evaluation_setup()
+    #evaluation_setup()

@@ -68,8 +68,8 @@ evaluation_config_segmenation_landuse = {
         MODALITIES_KEY: {
             MODALITIES_LABEL_KEY: ESA_WORLD_COVER_INDEX_KEY,
         },
-        DATALOADER_TRAIN_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-train-multi-label-ewc.beton',
-        DATALOADER_VALIDATION_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-validation-multi-label-ewc.beton',
+        DATALOADER_TRAIN_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20--multi-label-ewc-train.beton',
+        DATALOADER_VALIDATION_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-multi-label-ewc-validation.beton',
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.01,
         BATCH_SIZE_KEY: 32,

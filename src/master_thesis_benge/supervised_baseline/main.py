@@ -3,7 +3,7 @@ import numpy as np
 import wandb
 import torch
 
-from master_thesis_benge.supervised_baseline.config.config_runs.config_regression_elevation_difference import (
+from master_thesis_benge.supervised_baseline.config.config_runs.config_classification_landuse_multilabel import (
     training_config,
     get_data_set_files
 )
@@ -41,13 +41,13 @@ if __name__ == "__main__":
 
     sweep_configuration = {
         "method": 'grid',
-        "name": 're-run-two-modality',
+        "name": 'infrared-rerun',
         "parameters": {
             "seed": {'values': [42, 43, 44, 45, 46]},
             #"learning_rate": {'values': [0.0001]},
-            "dataset_size": {'values': ["20"]},
+            "dataset_size": {'values': ["20-multi-label-ewc", "60-delta-multilabel"]},
             "modalities": {'values':    [
-                                            [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
+                                            [SENTINEL_2_INDEX_KEY],
                                         ]
                            },
         }
@@ -69,7 +69,7 @@ if __name__ == "__main__":
         np.random.seed(wandb.config.seed)
 
         #get_data_set_files(wandb.config.dataset_size)[0]
-        dataloader_train = Loader(training_config[TRAINING_CONFIG_KEY][DATALOADER_TRAIN_FILE_KEY],
+        dataloader_train = Loader(get_data_set_files(wandb.config.dataset_size)[0],
                                 batch_size=training_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY],
                                 order=OrderOption.RANDOM,
                                 num_workers=4,
@@ -108,7 +108,7 @@ if __name__ == "__main__":
             in_channels_1=channel_modalities["in_channels_1"],
             #in_channels_1=4,
             # Input channels for s2
-            in_channels_2=channel_modalities["in_channels_2"],
+            #in_channels_2=channel_modalities["in_channels_2"],
             #in_channels_3=channel_modalities["in_channels_3"],
             number_of_classes=training_config[MODEL_CONFIG_KEY][NUMBER_OF_CLASSES_KEY],
         )
