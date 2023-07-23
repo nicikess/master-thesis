@@ -13,7 +13,6 @@ class ResNet(nn.Module):
             in_channels_1, 64, kernel_size=7, stride=2, padding=3, bias=False
         )
 
-        # Adding two fully connected layers
         self.model.fc = nn.Sequential(
             nn.Linear(512, 256),
             nn.ReLU(),

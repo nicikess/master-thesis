@@ -6,18 +6,18 @@ class DualUNet(nn.Module):
     def __init__(self, in_channels_1, in_channels_2, number_of_classes):
         super(DualUNet, self).__init__()
         
-        # First stream of UNet() for Sentinel 1 data (in_channels_1 = 2)
+        # First stream of UNet() 
         self.unet1 = UNet(in_channels_1, number_of_classes=number_of_classes)
-        # Second stream of UNet() for Sentinel 2 data (in_channels_2 = 13)
+        # Second stream of UNet()
         self.unet2 = UNet(in_channels_2, number_of_classes=number_of_classes)
         
         # Output convolution
         self.outc = OutConv(2 * 64, number_of_classes)
 
     def forward(self, x1, x2):
-        # We process Sentinel1 input
+        # Process of modality one
         x1 = self.unet1(x1)
-        # We process Sentinel2 input
+        # Process of modality two
         x2 = self.unet2(x2)
 
         '''

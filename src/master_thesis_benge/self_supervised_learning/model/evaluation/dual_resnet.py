@@ -53,9 +53,14 @@ class ResNet(nn.Module):
         state_dict1 = self.model.state_dict()
         state_dict2 = weights
 
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
         for key1, value1 in state_dict1.items():
             if key1 in state_dict2:
                 value2 = state_dict2[key1]
+                # Move tensors to the same device
+                value1 = value1.to(device)
+                value2 = value2.to(device)
                 if torch.allclose(value1, value2):
                     print(f"Weights for key '{key1}' are the same.")
                 else:

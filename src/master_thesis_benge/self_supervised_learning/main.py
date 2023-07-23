@@ -18,7 +18,8 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     TRAINING_RESNET_CONFIG_KEY,
     TRAINING_UNET_CONFIG_KEY,
     EVALUATION_CLASSIFICATION_LANDUSE_MULTILABEL_CONFIG_KEY,
-    EVALUATION_SEGMENTATION_LANDUSE_CONFIG_KEY
+    EVALUATION_SEGMENTATION_LANDUSE_CONFIG_KEY,
+    EVALUATION_REGRESSION_LANDUSE_FRACTION_CONFIG_KEY
 )
 
 from master_thesis_benge.self_supervised_learning.training.train import training
@@ -99,7 +100,7 @@ if __name__ == "__main__":
                                     'eval-ssl-sen2-sen1-100-percent',
                                 ]
         
-        evaluation_task = EVALUATION_CLASSIFICATION_LANDUSE_MULTILABEL_CONFIG_KEY
+        evaluation_task = EVALUATION_REGRESSION_LANDUSE_FRACTION_CONFIG_KEY
         
         for i in range(len(pre_trained_weights)):
             sweep_configuration = {
@@ -111,7 +112,7 @@ if __name__ == "__main__":
                     "batch_size": {"values": [128]}, # only to init the SimCLR model
                     "temperature": {"values": [0.1]},  # only to init the SimCLR model
                     "pre_trained_weights_path": {'values': [pre_trained_weights[i]]},
-                    "dataset_size_fine_tuning": {'values': ["20-1-percent", "20-10-percent", "20-50-percent", "20-multi-label-ewc"]},
+                    "dataset_size_fine_tuning": {'values': ["20-multi-label-ewc"]},
                     "modalities": {'values':    [modalities[i]]
                                 },
                 }
@@ -119,8 +120,10 @@ if __name__ == "__main__":
 
             if evaluation_task == EVALUATION_CLASSIFICATION_LANDUSE_MULTILABEL_CONFIG_KEY:
                 project_name = 'master-thesis-ssl-evaluation-classification-landuse-multilabel'
-            elif evaluation_task == EVALUATION_SEGMENTATION_LANDUSE_CONFIG_KEY:
+            if evaluation_task == EVALUATION_SEGMENTATION_LANDUSE_CONFIG_KEY:
                 project_name = 'master-thesis-ssl-evaluation-segmentation-landuse'
+            elif evaluation_task == EVALUATION_REGRESSION_LANDUSE_FRACTION_CONFIG_KEY:
+                project_name = 'master-thesis-ssl-evaluation-regression-landuse-fraction'
 
             sweep_id = wandb.sweep(sweep=sweep_configuration, project=project_name)
             wandb.agent(sweep_id, function=evaluation)

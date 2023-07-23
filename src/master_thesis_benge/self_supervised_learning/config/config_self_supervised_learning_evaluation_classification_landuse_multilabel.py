@@ -70,7 +70,7 @@ evaluation_config_classification_landuse_multilabel = {
             MODALITIES_LABEL_KEY: MULTICLASS_ONE_HOT_LABEL_INDEX_KEY,
         },
         #DATALOADER_TRAIN_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-60-delta-multilabel-train-1-percent.beton',
-        DATALOADER_VALIDATION_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-multi-label-ewc-validation.beton',
+        DATALOADER_VALIDATION_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-20-multi-label-ewc-validation.beton',
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.001,
         BATCH_SIZE_KEY: 32,
@@ -105,6 +105,6 @@ evaluation_config_classification_landuse_multilabel = {
 
 
 def get_data_set_files(size: str):
-    train_file = f'/raid/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-train.beton'
-    validation_file = f'/raid/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-validation.beton'
+    train_file = f'/ds2/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-train.beton'
+    validation_file = f'/ds2/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-validation.beton'
     return train_file, validation_file

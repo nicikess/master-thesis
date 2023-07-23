@@ -30,6 +30,7 @@ label_from_index = {
 class Task(Enum):
     SSL_CLASSIFICATION_LANDUSE_MULTILABEL = "ssl-classification-landuse-multilabel"
     SSL_SEGMENTATION_LANDUSE = "ssl-segmentation-landuse"
+    SSL_REGRESSION_LANDUSE_FRACTION = "ssl-regression-landuse-fraction"
 
 # Training
 EPOCHS_KEY = "epochs"
@@ -70,6 +71,7 @@ TRAINING_RESNET_CONFIG_KEY = "resnet"
 TRAINING_UNET_CONFIG_KEY = "unet"
 EVALUATION_CLASSIFICATION_LANDUSE_MULTILABEL_CONFIG_KEY = "evaluation_config_classification_landuse_multilabel"
 EVALUATION_SEGMENTATION_LANDUSE_CONFIG_KEY = "evaluation_config_segmentation_landuse"
+EVALUATION_REGRESSION_LANDUSE_FRACTION_CONFIG_KEY = "evaluation_config_regression_landuse_fraction"
 
 # Config
 TRAINING_CONFIG_KEY = "training"

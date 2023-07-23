@@ -41,13 +41,18 @@ if __name__ == "__main__":
 
     sweep_configuration = {
         "method": 'grid',
-        "name": 'infrared-rerun',
+        "name": 'resnet-different-modalities-different-fractions-part-2-after-crash',
         "parameters": {
             "seed": {'values': [42, 43, 44, 45, 46]},
             #"learning_rate": {'values': [0.0001]},
-            "dataset_size": {'values': ["20-multi-label-ewc", "60-delta-multilabel"]},
+            "dataset_size": {'values': ["20-50-percent", "20-multi-label-ewc"]},
             "modalities": {'values':    [
-                                            [SENTINEL_2_INDEX_KEY],
+                                            [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
+                                            [SENTINEL_2_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
+                                            [SENTINEL_2_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
+                                            [SENTINEL_1_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
+                                            [SENTINEL_1_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
+                                            [ESA_WORLD_COVER_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
                                         ]
                            },
         }
@@ -108,7 +113,7 @@ if __name__ == "__main__":
             in_channels_1=channel_modalities["in_channels_1"],
             #in_channels_1=4,
             # Input channels for s2
-            #in_channels_2=channel_modalities["in_channels_2"],
+            in_channels_2=channel_modalities["in_channels_2"],
             #in_channels_3=channel_modalities["in_channels_3"],
             number_of_classes=training_config[MODEL_CONFIG_KEY][NUMBER_OF_CLASSES_KEY],
         )

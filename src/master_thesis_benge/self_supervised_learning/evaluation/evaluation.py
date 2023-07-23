@@ -18,6 +18,7 @@ from master_thesis_benge.self_supervised_learning.config.constants import (
     FEATURE_DIMENSION_KEY,
     EVALUATION_CLASSIFICATION_LANDUSE_MULTILABEL_CONFIG_KEY,
     EVALUATION_SEGMENTATION_LANDUSE_CONFIG_KEY,
+    EVALUATION_REGRESSION_LANDUSE_FRACTION_CONFIG_KEY,
     get_label_from_index
 )
 
@@ -30,27 +31,36 @@ from master_thesis_benge.self_supervised_learning.model.training.sim_clr_model i
 )
 
 from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning_evaluation_classification_landuse_multilabel import (
-    evaluation_config_classification_landuse_multilabel, get_data_set_files
+    evaluation_config_classification_landuse_multilabel, get_data_set_files as get_data_set_files_classification
 )
 
 from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning_evaluation_segmentaion_landuse import (
-    evaluation_config_segmenation_landuse
+    evaluation_config_segmenation_landuse, get_data_set_files as get_data_set_files_segmentation
+)
+
+from master_thesis_benge.self_supervised_learning.config.config_self_supervised_learning_evaluation_regression_landuse_fraction import (
+    evaluation_config_regression_landuse_fraction, get_data_set_files as get_data_set_files_regression
 )
 
 from ffcv.loader import Loader, OrderOption
 
 def select_evaluation_config(config_type):
     if config_type == EVALUATION_CLASSIFICATION_LANDUSE_MULTILABEL_CONFIG_KEY:
-        return evaluation_config_classification_landuse_multilabel
-    elif config_type == EVALUATION_SEGMENTATION_LANDUSE_CONFIG_KEY:
-        return evaluation_config_segmenation_landuse
+        get_data_set_files = get_data_set_files_classification
+        return evaluation_config_classification_landuse_multilabel, get_data_set_files
+    if config_type == EVALUATION_SEGMENTATION_LANDUSE_CONFIG_KEY:
+        get_data_set_files = get_data_set_files_segmentation
+        return evaluation_config_segmenation_landuse, get_data_set_files
+    elif config_type == EVALUATION_REGRESSION_LANDUSE_FRACTION_CONFIG_KEY:
+        get_data_set_files = get_data_set_files_regression
+        return evaluation_config_regression_landuse_fraction, get_data_set_files
     else:
         raise ValueError("Invalid config type.")
 
 def evaluation():
 
     wandb.init()
-    evaluation_config = select_evaluation_config(wandb.config.evaluation_config)
+    evaluation_config, get_data_set_files = select_evaluation_config(wandb.config.evaluation_config)
     wandb.config.update(evaluation_config)
 
     run_name = '-'.join([get_label_from_index(modality) for modality in wandb.config.modalities])
@@ -63,7 +73,6 @@ def evaluation():
     torch.manual_seed(wandb.config.seed)
     np.random.seed(wandb.config.seed)
 
-    #get_data_set_files(wandb.config.dataset_size)[0]
     dataloader_train = Loader(get_data_set_files(wandb.config.dataset_size_fine_tuning)[0],
                             batch_size=evaluation_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY],
                             order=OrderOption.RANDOM,
@@ -77,7 +86,7 @@ def evaluation():
                             num_workers=4,
                             pipelines=evaluation_config[PIPELINES_CONFIG_KEY]
                         )
-        
+
     # Create a dictionary that maps each modality to the number of input channels
     channel_modalities = {
         f"in_channels_{i+1}": int(str(np.shape(next(iter(dataloader_train))[modality])[1]))
@@ -96,10 +105,15 @@ def evaluation():
     '''
 
     # Load weights from pre-trained model
+    
     model_ssl = SimCLR_pl.load_from_checkpoint(wandb.config.pre_trained_weights_path, training_config=evaluation_config, in_channels_1=channel_modalities["in_channels_1"], in_channels_2=channel_modalities["in_channels_2"])
 
-    state_dict_modality_1 = model_ssl.model_modality_1.backbone.state_dict()
-    state_dict_modality_2 = model_ssl.model_modality_2.backbone.state_dict()
+    if wandb.config.evaluation_config == EVALUATION_CLASSIFICATION_LANDUSE_MULTILABEL_CONFIG_KEY or wandb.config.evaluation_config == EVALUATION_REGRESSION_LANDUSE_FRACTION_CONFIG_KEY:
+        state_dict_modality_1 = model_ssl.model_modality_1.backbone.state_dict()
+        state_dict_modality_2 = model_ssl.model_modality_2.backbone.state_dict()
+    elif wandb.config.evaluation_config == EVALUATION_SEGMENTATION_LANDUSE_CONFIG_KEY:
+        state_dict_modality_1 = model_ssl.model_modality_1.encoder.state_dict()
+        state_dict_modality_2 = model_ssl.model_modality_2.encoder.state_dict()
 
     state_dict = {
         "state_dict_modality_1": state_dict_modality_1,

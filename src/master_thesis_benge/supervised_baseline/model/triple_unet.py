@@ -17,11 +17,11 @@ class TripleUNet(nn.Module):
         self.outc = OutConv(3 * 64, number_of_classes)
 
     def forward(self, x1, x2, x3):
-        # We process Sentinel1 input
+        # Process of modality one
         x1 = self.unet1(x1)
-        # We process Sentinel2 input
+        # Process of modality two
         x2 = self.unet2(x2)
-
+        # Process of modality three
         x3 = self.unet3(x3)
 
         '''

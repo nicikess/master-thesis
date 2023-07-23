@@ -156,11 +156,18 @@ class Train:
                 self.metrics.log_epoch_validation_metrics(len(self.validation_dl))
 
 
-        if self.config[OTHER_CONFIG_KEY][SAVE_MODEL_KEY]:
-            # Save only the best model
-            run_id = str(self.wandb.run.id)
-            os.makedirs("saved_models/" + run_id)
-            save_weights_path = (
-                "saved_models/" + run_id
-            )
-            torch.save(self.model.state_dict(), save_weights_path+'/model.pt')
+            print("Epoch: " + str(epoch))
+            if self.config[OTHER_CONFIG_KEY][SAVE_MODEL_KEY]:
+                sweep_id = str(self.wandb.run.sweep_id)
+                save_weights_path = "saved_models/" + sweep_id
+
+                if not os.path.exists(save_weights_path):
+                    os.makedirs(save_weights_path)
+                else:
+                    print("Directory already exists:", save_weights_path)
+
+                file_path = save_weights_path + '/state_dict_epoch_' + str(epoch) + '_.pt'
+                if not os.path.exists(file_path):
+                    torch.save(self.model.state_dict(), file_path)
+                else:
+                    print("File already exists:", file_path)

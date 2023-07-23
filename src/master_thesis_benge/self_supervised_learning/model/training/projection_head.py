@@ -37,7 +37,6 @@ class AddUNetProjection(nn.Module):
     def __init__(self, in_channels, embedding_size, mlp_dim=512):
         super(AddUNetProjection, self).__init__()
         self.encoder = UNetEncoder(in_channels)
-
         self.projection = create_projection(mlp_dim, embedding_size)
 
 

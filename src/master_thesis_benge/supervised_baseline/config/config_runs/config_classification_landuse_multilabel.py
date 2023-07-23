@@ -61,6 +61,7 @@ from remote_sensing_core.transforms.ffcv.esa_world_cover_transform import EsaWor
 from remote_sensing_core.transforms.ffcv.blow_up import BlowUp
 from remote_sensing_core.transforms.ffcv.min_max_scaler import MinMaxScaler
 from remote_sensing_core.transforms.ffcv.era5_temperature_s2_transform import Era5TemperatureS2Transform
+from remote_sensing_core.transforms.ffcv.expand_dimension import ExpandDimension
 
 from ffcv.transforms import ToTensor, ToDevice
 from ffcv.fields.decoders import NDArrayDecoder, FloatDecoder, IntDecoder
@@ -70,7 +71,7 @@ training_config = {
         TASK_KEY: Task.CLASSIFICATION_LANDUSE_MULTILABEL.value,
     },
     "model": {
-        MODEL_KEY: UniResNet,
+        MODEL_KEY: DualResNet,
         NUMBER_OF_CLASSES_KEY: 11,
     },
     "training": {
@@ -78,7 +79,7 @@ training_config = {
             MODALITIES_LABEL_KEY: MULTICLASS_ONE_HOT_LABEL_INDEX_KEY,
         },
         #DATALOADER_TRAIN_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-train-multi-label-ewc.beton',
-        DATALOADER_VALIDATION_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-multi-label-ewc-validation.beton',
+        DATALOADER_VALIDATION_FILE_KEY: '/ds2/remote_sensing/ben-ge/ffcv/ben-ge-20-multi-label-ewc-validation.beton',
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.001,
         BATCH_SIZE_KEY: 32,
@@ -97,7 +98,7 @@ training_config = {
         'climate_zone': [FloatDecoder(), MinMaxScaler(maximum_value=29, minimum_value=0, interval_max=1, interval_min=0), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'elevation_differ': [FloatDecoder(), ToTensor(), ToDevice(device)],
         'era_5': [NDArrayDecoder(), Era5TemperatureS2Transform(batch_size=32), BlowUp([1,120,120]), Convert('float32'), ToTensor(), ToDevice(device = torch.device('cuda'))],
-        'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), Convert('int64'), ToTensor(), ToDevice(device = torch.device('cuda'))],
+        'esa_worldcover': [NDArrayDecoder(), EsaWorldCoverTransform(10,1), ExpandDimension(), ToTensor(), ToDevice(device = torch.device('cuda'))],
         'glo_30_dem': [NDArrayDecoder(), ChannelSelector([0]), ToTensor(), ToDevice(device = torch.device('cuda'))],
         #'multiclass_numer': [NDArrayDecoder(), ToTensor(), ToDevice(device)],
         'multiclass_one_h': [ToTensor(), ToDevice(device = torch.device('cuda'))],
@@ -110,6 +111,6 @@ training_config = {
 
 
 def get_data_set_files(size: str):
-    train_file = f'/raid/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-train.beton'
-    validation_file = f'/raid/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-validation-multi-label-ewc.beton'
+    train_file = f'/ds2/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-train.beton'
+    validation_file = f'/ds2/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-validation-multi-label-ewc.beton'
     return train_file, validation_file

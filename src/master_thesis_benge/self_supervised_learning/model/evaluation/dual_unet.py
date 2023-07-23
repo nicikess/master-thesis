@@ -37,7 +37,7 @@ class DualUNet(nn.Module):
 
 class UNet(nn.Module):
     # Leave this otherwise the initialization fails
-    def __init__(self, state_dict_from_checkpoint, in_channels_1, number_of_classes):
+    def __init__(self, weights, in_channels_1, number_of_classes):
         super(UNet, self).__init__()
 
         self.inc = DoubleConv(in_channels_1, 64)
@@ -56,7 +56,9 @@ class UNet(nn.Module):
 
         # Update weights
         unet_state_dict = self.state_dict()
-        unet_state_dict.update(state_dict_from_checkpoint)
+        common_keys = set(unet_state_dict.keys()) & set(weights.keys())
+        new_state_dict = {k: v for k, v in weights.items() if k in common_keys}
+        unet_state_dict.update(new_state_dict)
         self.load_state_dict(unet_state_dict)
 
         # Freeze the encoder weights
@@ -71,11 +73,17 @@ class UNet(nn.Module):
 
         # Check if weights are initialized correctly
         state_dict1 = self.state_dict()
-        state_dict2 = state_dict_from_checkpoint
+        state_dict2 = weights
+
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         for key1, value1 in state_dict1.items():
+            #input("key")
             if key1 in state_dict2:
                 value2 = state_dict2[key1]
+                # Move tensors to the same device
+                value1 = value1.to(device)
+                value2 = value2.to(device)
                 if torch.allclose(value1, value2):
                     print(f"Weights for key '{key1}' are the same.")
                 else:
