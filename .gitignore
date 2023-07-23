@@ -1,7 +1,7 @@
 # file: ~/.gitignore_global
 **/.DS_Store
 .idea
-src/master_thesis_benge/scripts/*
+src/master_thesis_benge/scripts/data-splits/*
 src/master_thesis_benge/wandb/*
 src/master_thesis_benge/supervised_baseline/wandb/*
 src/master_thesis_benge/supervised_baseline/saved_models/*
@@ -12,6 +12,8 @@ src/master_thesis_benge/self_supervised_learning/example_data/*
 src/master_thesis_benge/self_supervised_learning/stl10_binary/*
 src/master_thesis_benge/self_supervised_learning/saved_models/*
 src/master_thesis_benge/self_supervised_learning/lightning_logs/*
+src/master_thesis_benge/self_supervised_learning/core
+src/master_thesis_benge/supervised_baseline/core
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -165,3 +167,4 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+*.pt

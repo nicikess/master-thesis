@@ -1,8 +1,8 @@
 class RemoteFilesAndDirectoryReferences:
     # Files
-    ESA_WORLD_COVER_CSV_TRAIN = "/netscratch2/nkesseli/master-thesis-benge/src/master_thesis_benge/scripts/data-split/data-split-folder-2/ben-ge-train20.csv"
-    ESA_WORLD_COVER_CSV_VALIDATION = "/netscratch2/nkesseli/master-thesis-benge/src/master_thesis_benge/scripts/data-split/data-split-folder-2/ben-ge-validation20.csv"
-    ESA_WORLD_COVER_CSV_TEST = "/netscratch2/nkesseli/master-thesis-benge/src/master_thesis_benge/scripts/data-split/data-split-folder-2/ben-ge-test20.csv"
+    ESA_WORLD_COVER_CSV_TRAIN = "/netscratch2/nkesseli/master-thesis-benge/src/master_thesis_benge/scripts/data-splits/data-splits-folder-2/ben-ge-train20.csv"
+    ESA_WORLD_COVER_CSV_VALIDATION = "/netscratch2/nkesseli/master-thesis-benge/src/master_thesis_benge/scripts/data-splits/data-splits-folder-2/ben-ge-validation20.csv"
+    ESA_WORLD_COVER_CSV_TEST = "/netscratch2/nkesseli/master-thesis-benge/src/master_thesis_benge/scripts/data-splits/data-splits-folder-2/ben-ge-test20.csv"
     
     #ESA_WORLD_COVER_CSV_TRAIN = "/ds2/remote_sensing/ben-ge/ben-ge-s/data-index/ben-ge-s-train.csv"
     #ESA_WORLD_COVER_CSV_VALIDATION = "/ds2/remote_sensing/ben-ge/ben-ge-s/data-index/ben-ge-s-validation.csv"
