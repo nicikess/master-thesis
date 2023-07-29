@@ -16,12 +16,13 @@ def create_projection(input_dim, output_dim):
 class AddResNetProjection(nn.Module):
     def __init__(self, in_channels, embedding_size, mlp_dim=512):
         super(AddResNetProjection, self).__init__()
-        self.backbone = resnet18(weights=None, num_classes=embedding_size)
+        self.backbone = resnet18(weights=None)
         self.backbone.conv1 = nn.Conv2d(
             in_channels, 64, kernel_size=7, stride=2, padding=3, bias=False
         )
         mlp_dim = self.backbone.fc.in_features
         print("Dim MLP input:", mlp_dim)
+        # Remove classification head to get feature extractor
         self.backbone.fc = nn.Identity()
 
         self.projection = create_projection(mlp_dim, embedding_size)

@@ -76,21 +76,21 @@ if __name__ == "__main__":
 
 
         pre_trained_weights =   [
-                                    'saved_models/resnet_weights/wnga6wqm/sentinel1-elevation(glo-30-dem)-60-delta-multilabel.ckpt',
-                                    'saved_models/resnet_weights/wnga6wqm/sentinel1-worldcover(esa)-60-delta-multilabel.ckpt',
+                                    #'saved_models/resnet_weights/wnga6wqm/sentinel1-elevation(glo-30-dem)-60-delta-multilabel.ckpt',
+                                    #'saved_models/resnet_weights/wnga6wqm/sentinel1-worldcover(esa)-60-delta-multilabel.ckpt',
                                     'saved_models/resnet_weights/wnga6wqm/sentinel2-elevation(glo-30-dem)-60-delta-multilabel.ckpt',
                                     'saved_models/resnet_weights/wnga6wqm/sentinel2-sentinel1-60-delta-multilabel.ckpt',
-                                    'saved_models/resnet_weights/wnga6wqm/sentinel2-worldcover(esa)-60-delta-multilabel.ckpt',
-                                    'saved_models/resnet_weights/wnga6wqm/worldcover(esa)-elevation(glo-30-dem)-60-delta-multilabel.ckpt'
+                                    #'saved_models/resnet_weights/wnga6wqm/sentinel2-worldcover(esa)-60-delta-multilabel.ckpt',
+                                    #'saved_models/resnet_weights/wnga6wqm/worldcover(esa)-elevation(glo-30-dem)-60-delta-multilabel.ckpt'
                                 ]
     
         modalities =            [
-                                    [SENTINEL_1_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
-                                    [SENTINEL_1_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
+                                    #[SENTINEL_1_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
+                                    #[SENTINEL_1_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
                                     [SENTINEL_2_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
                                     [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
-                                    [SENTINEL_2_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
-                                    [ESA_WORLD_COVER_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
+                                    #[SENTINEL_2_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
+                                    #[ESA_WORLD_COVER_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
                                 ]
         
         sweep_name =            [
@@ -112,7 +112,7 @@ if __name__ == "__main__":
                     "batch_size": {"values": [128]}, # only to init the SimCLR model
                     "temperature": {"values": [0.1]},  # only to init the SimCLR model
                     "pre_trained_weights_path": {'values': [pre_trained_weights[i]]},
-                    "dataset_size_fine_tuning": {'values': ["20-multi-label-ewc"]},
+                    "dataset_size_fine_tuning": {'values': ["20-1-percent", "20-10-percent", "20-50-percent", "20-multi-label-ewc"]},
                     "modalities": {'values':    [modalities[i]]
                                 },
                 }

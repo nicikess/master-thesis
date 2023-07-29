@@ -68,7 +68,7 @@ training_config = {
         TASK_KEY: Task.SEGMENTATION_LANDUSE.value,
     },
     "model": {
-        MODEL_KEY: DualUNet,
+        MODEL_KEY: UNet,
         NUMBER_OF_CLASSES_KEY: 11,
     },
     "training": {

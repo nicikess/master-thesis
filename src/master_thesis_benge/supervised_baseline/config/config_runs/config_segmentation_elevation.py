@@ -70,14 +70,14 @@ training_config = {
         TASK_KEY: Task.SEGMENTATION_ELEVATION.value,
     },
     "model": {
-        MODEL_KEY: UNet,
+        MODEL_KEY: DualUNet,
         NUMBER_OF_CLASSES_KEY: 1, #Is not used in the code, but if is not set, the code will crash (because train requires it)
     },
     "training": {
         MODALITIES_KEY: {
             MODALITIES_LABEL_KEY: GLO_30_DEM_INDEX_KEY,
         },
-        DATALOADER_TRAIN_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-60-delta-multilabel-train-1-percent.beton',
+        #DATALOADER_TRAIN_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-60-delta-multilabel-train-1-percent.beton',
         DATALOADER_VALIDATION_FILE_KEY: '/raid/remote_sensing/ben-ge/ffcv/ben-ge-20-validation.beton',
         EPOCHS_KEY: 20,
         LEARNING_RATE_KEY: 0.0001,
@@ -111,4 +111,4 @@ training_config = {
 def get_data_set_files(size: str):
     train_file = f'/raid/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-train.beton'
     validation_file = f'/raid/remote_sensing/ben-ge/ffcv/ben-ge-{str(size)}-validation.beton'
-    #return train_file, validation_file
+    return train_file, validation_file

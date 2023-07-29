@@ -3,7 +3,7 @@ import numpy as np
 import wandb
 import torch
 
-from master_thesis_benge.supervised_baseline.config.config_runs.config_classification_landuse_multilabel import (
+from master_thesis_benge.supervised_baseline.config.config_runs.config_regression_elevation_difference import (
     training_config,
     get_data_set_files
 )
@@ -41,18 +41,15 @@ if __name__ == "__main__":
 
     sweep_configuration = {
         "method": 'grid',
-        "name": 'resnet-different-modalities-different-fractions-part-2-after-crash',
+        "name": 'two-modalities-combi',
         "parameters": {
             "seed": {'values': [42, 43, 44, 45, 46]},
             #"learning_rate": {'values': [0.0001]},
-            "dataset_size": {'values': ["20-50-percent", "20-multi-label-ewc"]},
+            "dataset_size": {'values': ["20-multi-label-ewc"]},
             "modalities": {'values':    [
                                             [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
-                                            [SENTINEL_2_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
-                                            [SENTINEL_2_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
-                                            [SENTINEL_1_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
-                                            [SENTINEL_1_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
-                                            [ESA_WORLD_COVER_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
+                                            [SENTINEL_2_INDEX_KEY, ERA_5_INDEX_KEY],
+
                                         ]
                            },
         }
@@ -106,12 +103,24 @@ if __name__ == "__main__":
             )
         }
 
+        '''
         # Define model
         model = training_config[MODEL_CONFIG_KEY][MODEL_KEY](
             # Define multi modal model
             # Input channels for s1
             in_channels_1=channel_modalities["in_channels_1"],
             #in_channels_1=4,
+            # Input channels for s2
+            in_channels_2=channel_modalities["in_channels_2"],
+            #in_channels_3=channel_modalities["in_channels_3"],
+            number_of_classes=training_config[MODEL_CONFIG_KEY][NUMBER_OF_CLASSES_KEY],
+        )
+        '''
+
+        model = training_config[MODEL_CONFIG_KEY][MODEL_KEY](
+            # Define multi modal model
+            # Input channels for s1
+            in_channels_1=channel_modalities["in_channels_1"],
             # Input channels for s2
             in_channels_2=channel_modalities["in_channels_2"],
             #in_channels_3=channel_modalities["in_channels_3"],
