@@ -69,7 +69,7 @@ training_config = {
         TASK_KEY: Task.REGRESSION_ELEVATION_DIFFERENCE.value,
     },
     "model": {
-        MODEL_KEY: DualResNet,
+        MODEL_KEY: TripleResNet,
         NUMBER_OF_CLASSES_KEY: 1, #Is not used in the code, but if is not set, the code will crash (because train requires it)
     },
     "training": {

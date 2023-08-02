@@ -70,7 +70,7 @@ training_config = {
         TASK_KEY: Task.SEGMENTATION_ELEVATION.value,
     },
     "model": {
-        MODEL_KEY: DualUNet,
+        MODEL_KEY: TripleUNet,
         NUMBER_OF_CLASSES_KEY: 1, #Is not used in the code, but if is not set, the code will crash (because train requires it)
     },
     "training": {

@@ -3,7 +3,7 @@ import numpy as np
 import wandb
 import torch
 
-from master_thesis_benge.supervised_baseline.config.config_runs.config_regression_elevation_difference import (
+from master_thesis_benge.supervised_baseline.config.config_runs.config_classification_landuse_multilabel import (
     training_config,
     get_data_set_files
 )
@@ -41,14 +41,13 @@ if __name__ == "__main__":
 
     sweep_configuration = {
         "method": 'grid',
-        "name": 'two-modalities-combi',
+        "name": 'sen1-sen2-rerun',
         "parameters": {
             "seed": {'values': [42, 43, 44, 45, 46]},
             #"learning_rate": {'values': [0.0001]},
             "dataset_size": {'values': ["20-multi-label-ewc"]},
             "modalities": {'values':    [
-                                            [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
-                                            [SENTINEL_2_INDEX_KEY, ERA_5_INDEX_KEY],
+                                            [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY]
 
                                         ]
                            },
@@ -71,19 +70,24 @@ if __name__ == "__main__":
         np.random.seed(wandb.config.seed)
 
         #get_data_set_files(wandb.config.dataset_size)[0]
-        dataloader_train = Loader(get_data_set_files(wandb.config.dataset_size)[0],
+        dataloader_train = Loader("/ds2/remote_sensing/ben-ge/ffcv/ben-ge-20-multi-label-ewc-train.beton",
                                 batch_size=training_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY],
                                 order=OrderOption.RANDOM,
                                 num_workers=4,
                                 pipelines=training_config[PIPELINES_CONFIG_KEY]
                             )
 
-        dataloader_validation = Loader(training_config[TRAINING_CONFIG_KEY][DATALOADER_VALIDATION_FILE_KEY],
+        dataloader_validation = Loader("/ds2/remote_sensing/ben-ge/ffcv/ben-ge-8k-train.beton",
                                 batch_size=training_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY],
                                 order=OrderOption.RANDOM,
                                 num_workers=4,
                                 pipelines=training_config[PIPELINES_CONFIG_KEY]
                             )
+
+        print(f"ben-ge-20 size: {len(dataloader_train)}")
+        print(f"be-ge-60-delta size: {len(dataloader_validation)}")
+
+        input("test")
         
         '''
         itera = iter(dataloader_train)
