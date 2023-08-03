@@ -20,10 +20,8 @@ def normalize_for_display(band_data):
 
 
 if __name__ == "__main__":
-
-
-    input = np.load('/Users/nicolaskesseli/Downloads/input.npy')
-    input = input[[3,2,1],:,:]
+    input = np.load("/Users/nicolaskesseli/Downloads/input.npy")
+    input = input[[3, 2, 1], :, :]
     input = reshape_as_image(input)
     input = normalize_for_display(input)
     fig, ax = plt.subplots(1, figsize=(5, 5))
@@ -31,7 +29,7 @@ if __name__ == "__main__":
     ax.axis(False)
     plt.tight_layout()
     plt.show()
-    '''
+    """
 
     output = np.load('/Users/nicolaskesseli/Downloads/output.npy')
     # [1,11,120,120]
@@ -47,8 +45,4 @@ if __name__ == "__main__":
     ax.axis(False)
     plt.tight_layout()
     plt.show()
-    '''
-
-
-
-
+    """

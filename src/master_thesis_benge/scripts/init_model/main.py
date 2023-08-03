@@ -4,14 +4,15 @@ from models.dual_resnet import DualResNet
 
 
 def init_resnet(in_channels_1, number_of_classes):
-
     # Create the model
     model = UniResNet(in_channels_1=in_channels_1, number_of_classes=number_of_classes)
 
     print(model)
 
     # Load the state_dict
-    state_dict = torch.load('models/weights/state_dict_sentinel2.pt', map_location=torch.device('cpu'))
+    state_dict = torch.load(
+        "models/weights/state_dict_sentinel2.pt", map_location=torch.device("cpu")
+    )
 
     # Load the state_dict into the model
     model.load_state_dict(state_dict)
@@ -24,12 +25,18 @@ def init_resnet(in_channels_1, number_of_classes):
 
 
 def init_dual_resnet(in_channels_1, in_channels_2, number_of_classes):
-
     # Create the model
-    model = DualResNet(in_channels_1=in_channels_1, in_channels_2=in_channels_2, number_of_classes=number_of_classes)
+    model = DualResNet(
+        in_channels_1=in_channels_1,
+        in_channels_2=in_channels_2,
+        number_of_classes=number_of_classes,
+    )
 
     # Load the state_dict
-    state_dict = torch.load('models/weights/state_dict_sentinel2-sentinel1.pt', map_location=torch.device('cpu'))
+    state_dict = torch.load(
+        "models/weights/state_dict_sentinel2-sentinel1.pt",
+        map_location=torch.device("cpu"),
+    )
 
     # Load the state_dict into the model
     model.load_state_dict(state_dict)
@@ -43,8 +50,7 @@ def init_dual_resnet(in_channels_1, in_channels_2, number_of_classes):
     print("Example output for ResNet with two modalities: \n", output)
 
 
-if __name__ == '__main__':
-
+if __name__ == "__main__":
     # Set the number of input channels for the first modality
     in_channels_1 = 4
 
@@ -56,4 +62,4 @@ if __name__ == '__main__':
 
     # Initialize the models and make example forward passes
     init_resnet(in_channels_1=in_channels_1, number_of_classes=number_of_classes)
-    #init_dual_resnet(in_channels_1=in_channels_1, in_channels_2=in_channels_2, number_of_classes=number_of_classes)
+    # init_dual_resnet(in_channels_1=in_channels_1, in_channels_2=in_channels_2, number_of_classes=number_of_classes)

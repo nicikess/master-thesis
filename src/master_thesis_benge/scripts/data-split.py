@@ -45,7 +45,7 @@ def make_split():
         "40": 232928,
         "60": 349392,
         "80": 465856,
-        #"100": 582320,
+        # "100": 582320,
     }
 
     for key, value in dict_size.items():
@@ -143,11 +143,10 @@ def check_column_non_inclusion(df1, df2):
 
 
 if __name__ == "__main__":
-
-    #make_split()
+    # make_split()
 
     # Check that all values from ben-ge-s are in cluded in the respective train,validation,test splits
-    
+
     df_small_train = pd.read_csv(
         "/ds2/remote_sensing/ben-ge/ben-ge-s/data-index/ben-ge-s-train.csv"
     )
@@ -243,4 +242,4 @@ if __name__ == "__main__":
     print(check_column_non_inclusion(df_train80, df_validation80))
     print(check_column_non_inclusion(df_train80, df_test80))
     print(check_column_non_inclusion(df_test80, df_validation80))
-    print('')
+    print("")

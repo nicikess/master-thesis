@@ -17,7 +17,7 @@ class ResNet(nn.Module):
             nn.ReLU(),
             nn.Dropout(0.2),
         )
-    
+
     def forward(self, x):
         return self.model.forward(x)
 
