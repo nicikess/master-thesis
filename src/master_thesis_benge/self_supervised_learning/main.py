@@ -33,23 +33,31 @@ if __name__ == "__main__":
     # Train SSL
     def train_setup():
 
-        training_config = TRAINING_UNET_CONFIG_KEY
+        training_config = TRAINING_RESNET_CONFIG_KEY
 
         sweep_configuration = {
             "method": "grid",
-            "name": "train-ssl-different-modalities-combi-unet",
+            "name": "train-ssl-sen2-sen1-different-dataset-sizes-resnet-RUN2",
             "parameters": {
                 "training_config": {"values": [training_config]},
                 "batch_size": {"values": [128]},
                 "temperature": {"values": [0.1]},
-                "dataset_size_train": {'values': ["60-delta-multilabel"]},
+                "dataset_size_train": {'values': [
+                                                    #"60-delta-multilabel"
+                                                    "delta-60-40-s",
+                                                    "60-delta-multilabel",
+                                                    "delta-80-40",
+                                                    "delta-100-40",
+                                                    "delta-100-20",
+                                                    "100"
+                                                ]},
                 "modalities": {'values':    [
                                                 [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
-                                                [SENTINEL_2_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
-                                                [SENTINEL_2_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
-                                                [SENTINEL_1_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
-                                                [SENTINEL_1_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
-                                                [ESA_WORLD_COVER_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
+                                                #[SENTINEL_2_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
+                                                #[SENTINEL_2_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
+                                                #[SENTINEL_1_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
+                                                #[SENTINEL_1_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
+                                                #[ESA_WORLD_COVER_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
                                             ]
                             },
             },
@@ -73,21 +81,24 @@ if __name__ == "__main__":
             file_name = os.path.basename(file_path)
             ckpt_name = os.path.splitext(file_name)[0]
             return ckpt_name
+        
 
+        # resnet folder -> wnga6wqm
+        # unet folder -> ttzkmp7o
 
         pre_trained_weights =   [
-                                    #'saved_models/resnet_weights/wnga6wqm/sentinel1-elevation(glo-30-dem)-60-delta-multilabel.ckpt',
-                                    #'saved_models/resnet_weights/wnga6wqm/sentinel1-worldcover(esa)-60-delta-multilabel.ckpt',
-                                    'saved_models/resnet_weights/wnga6wqm/sentinel2-elevation(glo-30-dem)-60-delta-multilabel.ckpt',
+                                    #'saved_models/resnet_weights/ttzkmp7o/sentinel1-elevation(glo-30-dem)-60-delta-multilabel.ckpt',
+                                    #'saved_models/resnet_weights/ttzkmp7o/sentinel1-worldcover(esa)-60-delta-multilabel.ckpt',
+                                    #'saved_models/resnet_weights/wnga6wqm/sentinel2-elevation(glo-30-dem)-60-delta-multilabel.ckpt',
                                     'saved_models/resnet_weights/wnga6wqm/sentinel2-sentinel1-60-delta-multilabel.ckpt',
-                                    #'saved_models/resnet_weights/wnga6wqm/sentinel2-worldcover(esa)-60-delta-multilabel.ckpt',
-                                    #'saved_models/resnet_weights/wnga6wqm/worldcover(esa)-elevation(glo-30-dem)-60-delta-multilabel.ckpt'
+                                    #'saved_models/resnet_weights/ttzkmp7o/sentinel2-worldcover(esa)-60-delta-multilabel.ckpt',
+                                    #'saved_models/resnet_weights/ttzkmp7o/worldcover(esa)-elevation(glo-30-dem)-60-delta-multilabel.ckpt'
                                 ]
     
         modalities =            [
                                     #[SENTINEL_1_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
                                     #[SENTINEL_1_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
-                                    [SENTINEL_2_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
+                                    #[SENTINEL_2_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
                                     [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
                                     #[SENTINEL_2_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
                                     #[ESA_WORLD_COVER_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
@@ -112,7 +123,12 @@ if __name__ == "__main__":
                     "batch_size": {"values": [128]}, # only to init the SimCLR model
                     "temperature": {"values": [0.1]},  # only to init the SimCLR model
                     "pre_trained_weights_path": {'values': [pre_trained_weights[i]]},
-                    "dataset_size_fine_tuning": {'values': ["20-1-percent", "20-10-percent", "20-50-percent", "20-multi-label-ewc"]},
+                    "dataset_size_fine_tuning": {'values': [
+                                                        "20-1-percent", 
+                                                        "20-10-percent",
+                                                        "20-50-percent", 
+                                                        "20-multi-label-ewc"
+                                                        ]},
                     "modalities": {'values':    [modalities[i]]
                                 },
                 }
@@ -130,7 +146,7 @@ if __name__ == "__main__":
 
     
     # Train
-    #train_setup()
+    train_setup()
 
     # Evaluate
-    evaluation_setup()
+    #evaluation_setup()

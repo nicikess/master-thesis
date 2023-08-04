@@ -8,7 +8,7 @@ from torchmetrics.regression import (
 
 import torch.nn.functional as F
 
-from master_thesis_benge.supervised_baseline.config.constants import (
+from master_thesis_benge.self_supervised_learning.config.constants import (
     Task,
 )
 
@@ -43,12 +43,10 @@ class RegressionUtils(Metric):
         self.epoch_validation_rmse_per_class = [0.0] * self.number_of_classes
 
     def calculate_loss(self, loss, output, label):
-        if self.task == Task.REGRESSION_LANDUSE_FRACTION.value:
+        if self.task == Task.SSL_REGRESSION_LANDUSE_FRACTION.value:
             output = F.softmax(output, dim=1)
-        if self.task == Task.REGRESSION_ELEVATION_DIFFERENCE.value:
-            output = F.sigmoid(output)
-        if self.task == Task.SEGMENTATION_ELEVATION.value:
-            output = F.sigmoid(output)
+        else:
+            raise ValueError("Invalid config task for this metric")
         loss = loss(output, label)
         return loss
 
@@ -62,12 +60,10 @@ class RegressionUtils(Metric):
     def log_batch_train_metrics(self, loss, output, label, progress, epoch):
         self.epoch_train_loss += loss
 
-        if self.task == Task.REGRESSION_LANDUSE_FRACTION.value:
+        if self.task == Task.SSL_REGRESSION_LANDUSE_FRACTION.value:
             output = F.softmax(output, dim=1)
-        if self.task == Task.REGRESSION_ELEVATION_DIFFERENCE.value:
-            output = F.sigmoid(output)
-        if self.task == Task.SEGMENTATION_ELEVATION.value:
-            output = F.sigmoid(output)
+        else:
+            raise ValueError("Invalid config task for this metric")
 
         self.epoch_train_mse += self.mse(output, label)
         self.epoch_train_rmse += self.rsme(output, label)
@@ -115,12 +111,10 @@ class RegressionUtils(Metric):
 
     def log_batch_validation_metrics(self, output, label):
 
-        if self.task == Task.REGRESSION_LANDUSE_FRACTION.value:
+        if self.task == Task.SSL_REGRESSION_LANDUSE_FRACTION.value:
             output = F.softmax(output, dim=1)
-        if self.task == Task.REGRESSION_ELEVATION_DIFFERENCE.value:
-            output = F.sigmoid(output)
-        if self.task == Task.SEGMENTATION_ELEVATION.value:
-            output = F.sigmoid(output)
+        else:
+            raise ValueError("Invalid config task for this metric")
 
         self.epoch_val_mse += self.mse(output, label)
         self.epoch_val_rmse += self.rsme(output, label)

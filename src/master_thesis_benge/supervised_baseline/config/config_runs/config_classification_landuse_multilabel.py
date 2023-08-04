@@ -12,6 +12,7 @@ from master_thesis_benge.supervised_baseline.model.resnet import (
 
 from master_thesis_benge.supervised_baseline.model.dual_resnet import (
     DualResNet,
+    EarlyFusionDualResNet
 )
 
 from master_thesis_benge.supervised_baseline.model.triple_resnet import (
@@ -71,7 +72,7 @@ training_config = {
         TASK_KEY: Task.CLASSIFICATION_LANDUSE_MULTILABEL.value,
     },
     "model": {
-        MODEL_KEY: DualResNet,
+        MODEL_KEY: EarlyFusionDualResNet,
         NUMBER_OF_CLASSES_KEY: 11,
     },
     "training": {

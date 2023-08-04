@@ -41,13 +41,13 @@ if __name__ == "__main__":
 
     sweep_configuration = {
         "method": 'grid',
-        "name": 'sen1-sen2-rerun',
+        "name": 'early-fusion-run',
         "parameters": {
             "seed": {'values': [42, 43, 44, 45, 46]},
             #"learning_rate": {'values': [0.0001]},
-            "dataset_size": {'values': ["20-multi-label-ewc"]},
+            "dataset_size": {'values': ["20-50-percent", "20-10-percent", "20-1-percent"]},
             "modalities": {'values':    [
-                                            [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY]
+                                            [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
 
                                         ]
                            },
@@ -70,24 +70,19 @@ if __name__ == "__main__":
         np.random.seed(wandb.config.seed)
 
         #get_data_set_files(wandb.config.dataset_size)[0]
-        dataloader_train = Loader("/ds2/remote_sensing/ben-ge/ffcv/ben-ge-20-multi-label-ewc-train.beton",
+        dataloader_train = Loader(get_data_set_files(wandb.config.dataset_size)[0],
                                 batch_size=training_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY],
                                 order=OrderOption.RANDOM,
                                 num_workers=4,
                                 pipelines=training_config[PIPELINES_CONFIG_KEY]
                             )
 
-        dataloader_validation = Loader("/ds2/remote_sensing/ben-ge/ffcv/ben-ge-8k-train.beton",
+        dataloader_validation = Loader(training_config[TRAINING_CONFIG_KEY][DATALOADER_VALIDATION_FILE_KEY],
                                 batch_size=training_config[TRAINING_CONFIG_KEY][BATCH_SIZE_KEY],
                                 order=OrderOption.RANDOM,
                                 num_workers=4,
                                 pipelines=training_config[PIPELINES_CONFIG_KEY]
                             )
-
-        print(f"ben-ge-20 size: {len(dataloader_train)}")
-        print(f"be-ge-60-delta size: {len(dataloader_validation)}")
-
-        input("test")
         
         '''
         itera = iter(dataloader_train)
@@ -106,20 +101,6 @@ if __name__ == "__main__":
                 wandb.config.modalities
             )
         }
-
-        '''
-        # Define model
-        model = training_config[MODEL_CONFIG_KEY][MODEL_KEY](
-            # Define multi modal model
-            # Input channels for s1
-            in_channels_1=channel_modalities["in_channels_1"],
-            #in_channels_1=4,
-            # Input channels for s2
-            in_channels_2=channel_modalities["in_channels_2"],
-            #in_channels_3=channel_modalities["in_channels_3"],
-            number_of_classes=training_config[MODEL_CONFIG_KEY][NUMBER_OF_CLASSES_KEY],
-        )
-        '''
 
         model = training_config[MODEL_CONFIG_KEY][MODEL_KEY](
             # Define multi modal model
