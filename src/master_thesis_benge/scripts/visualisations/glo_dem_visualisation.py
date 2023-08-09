@@ -46,8 +46,8 @@ def save_histogram_and_values(folder_path, histogram_filename, values_filename):
 
 # Example usage
 folder_path = "/ds2/remote_sensing/ben-ge/ben-ge/glo-30_dem"  # Replace with the actual path to your folder
-histogram_filename = "plot_output/glo_histogram_values.txt"
-values_filename = "plot_output/glo_min_max_values.txt"
+histogram_filename = "../plot_output/glo_histogram_values.txt"
+values_filename = "../plot_output/glo_min_max_values.txt"
 
 min_value, max_value = save_histogram_and_values(
     folder_path, histogram_filename, values_filename

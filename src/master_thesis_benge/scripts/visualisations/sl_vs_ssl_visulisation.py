@@ -2,7 +2,8 @@ import matplotlib.pyplot as plt
 
 # Data
 label_fraction = [1, 10, 50, 100]
-supervised_results = [85.24, 88.58, 91.11, 92.21]
+supervised_results_lf = [85.24, 88.58, 91.11, 92.21]
+supervised_results_ef = [84.81, 90.49, 92.12, 92.86]
 self_supervised_results = [88.59, 91.3, 92.35, 92.58]
 
 # Plotting
@@ -11,11 +12,21 @@ plt.figure(figsize=(8, 6))
 # Supervised results
 plt.plot(
     label_fraction,
-    supervised_results,
+    supervised_results_lf,
     marker="o",
     linestyle="-",
     color="blue",
-    label="Supervised",
+    label="Supervised Late Fusion",
+)
+
+# Supervised results
+plt.plot(
+    label_fraction,
+    supervised_results_ef,
+    marker="o",
+    linestyle="-",
+    color="green",
+    label="Supervised Early Fusion",
 )
 
 # Self-supervised results
@@ -24,7 +35,7 @@ plt.plot(
     self_supervised_results,
     marker="o",
     linestyle="-",
-    color="green",
+    color="orange",
     label="Self-supervised",
 )
 

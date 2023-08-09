@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     np.save(
         os.path.join(
-            "/Users/nicolaskesseli/NICOLAS_KESSELI/Programming/Lokal/master-thesis-benge/src/master_thesis_benge/scripts",
+            "/master_thesis_benge/scripts",
             "S2A_MSIL2A_20170613T101031_46_73_dem" + ".npy",
         ),
         numpy_array,
