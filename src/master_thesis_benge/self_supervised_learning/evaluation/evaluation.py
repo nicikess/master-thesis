@@ -114,6 +114,10 @@ def evaluation():
     elif wandb.config.evaluation_config == EVALUATION_SEGMENTATION_LANDUSE_CONFIG_KEY:
         state_dict_modality_1 = model_ssl.model_modality_1.encoder.state_dict()
         state_dict_modality_2 = model_ssl.model_modality_2.encoder.state_dict()
+    
+    optimizer_modality_1 = model_ssl.optimizers()[0]
+    print(type(optimizer_modality_1))
+    #input("test")
 
     state_dict = {
         "state_dict_modality_1": state_dict_modality_1,

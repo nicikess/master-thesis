@@ -29,7 +29,7 @@ class DualResNet(nn.Module):
 
 class ResNet(nn.Module):
 
-    def __init__(self, weights, in_channels_1, number_of_classes):
+    def __init__(self, weights, in_channels_1, number_of_classes, optimizer):
         super(ResNet, self).__init__()
         self.number_of_classes = number_of_classes
         self.model = models.resnet18(weights=None)
@@ -78,6 +78,9 @@ class ResNet(nn.Module):
             nn.ReLU(),
             nn.Dropout(0.2),
         )
+
+        #self.optimizer = optimizer(self.model.parameters())
+
     
     def forward(self, x):
         return self.model.forward(x)

@@ -42,7 +42,7 @@ class DualResNet(nn.Module):
         # Second stream of ResNet()
         self.res_net_2 = ResNet(in_channels_2, number_of_classes).model
 
-        # TODO: Uncomment to test
+        # Last fully connected layer
         self.fc = LinearFC(2 * 256, number_of_classes)
 
     def forward(self, x1, x2):
@@ -53,6 +53,28 @@ class DualResNet(nn.Module):
 
         x = torch.cat([x1, x2], dim=1)
 
+        x = self.fc(x)
+
+        return x
+
+class EarlyFusionDualResNet(nn.Module):
+    def __init__(self, in_channels_1, in_channels_2, number_of_classes):
+        super(EarlyFusionDualResNet, self).__init__()
+
+        # ResNet Stream
+        self.res_net = ResNet(in_channels_1 + in_channels_2, number_of_classes).model
+
+        # Last fully connected layer
+        self.fc = LinearFC(256, number_of_classes)
+
+    def forward(self, x1, x2):
+        # Combine inputs from both modalities
+        x = torch.cat([x1, x2], dim=1)
+
+        # Process the combined input through the ResNet architecture
+        x = self.res_net(x)
+
+        # Process the output through the fully connected layer
         x = self.fc(x)
 
         return x
