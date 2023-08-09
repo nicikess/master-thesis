@@ -44,12 +44,12 @@ if __name__ == "__main__":
                 "temperature": {"values": [0.1]},
                 "dataset_size_train": {'values': [
                                                     #"60-delta-multilabel"
-                                                    "delta-60-40-s",
-                                                    "60-delta-multilabel",
-                                                    "delta-80-40",
-                                                    "delta-100-40",
+                                                    #"delta-60-40-s",
+                                                    #"60-delta-multilabel",
+                                                    #"delta-80-40",
+                                                    #"100",
                                                     "delta-100-20",
-                                                    "100"
+                                                    "delta-100-40",
                                                 ]},
                 "modalities": {'values':    [
                                                 [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
@@ -83,16 +83,16 @@ if __name__ == "__main__":
             return ckpt_name
         
 
-        # resnet folder -> wnga6wqm
-        # unet folder -> ttzkmp7o
+        # resnet folder -> v1l0llek
+        # unet folder -> v1
 
         pre_trained_weights =   [
-                                    #'saved_models/resnet_weights/ttzkmp7o/sentinel1-elevation(glo-30-dem)-60-delta-multilabel.ckpt',
-                                    #'saved_models/resnet_weights/ttzkmp7o/sentinel1-worldcover(esa)-60-delta-multilabel.ckpt',
-                                    #'saved_models/resnet_weights/wnga6wqm/sentinel2-elevation(glo-30-dem)-60-delta-multilabel.ckpt',
-                                    'saved_models/resnet_weights/wnga6wqm/sentinel2-sentinel1-60-delta-multilabel.ckpt',
-                                    #'saved_models/resnet_weights/ttzkmp7o/sentinel2-worldcover(esa)-60-delta-multilabel.ckpt',
-                                    #'saved_models/resnet_weights/ttzkmp7o/worldcover(esa)-elevation(glo-30-dem)-60-delta-multilabel.ckpt'
+                                    'saved_models/unet_weights/v1l0llek/sentinel2-sentinel1-delta-60-40-s.ckpt',
+                                    'saved_models/unet_weights/v1l0llek/sentinel2-sentinel1-60-delta-multilabel.ckpt',
+                                    'saved_models/unet_weights/v1l0llek/sentinel2-sentinel1-delta-80-40.ckpt',
+                                    'saved_models/unet_weights/v1l0llek/sentinel2-sentinel1-delta-100-40.ckpt',
+                                    'saved_models/unet_weights/v1l0llek/sentinel2-sentinel1-delta-100-20.ckpt',
+                                    'saved_models/unet_weights/v1l0llek/sentinel2-sentinel1-100.ckpt',
                                 ]
     
         modalities =            [
@@ -105,13 +105,13 @@ if __name__ == "__main__":
                                 ]
         
         sweep_name =            [
-                                    'eval-ssl-sen2-sen1-1-percent',
-                                    'eval-ssl-sen2-sen1-10-percent',
-                                    'eval-ssl-sen2-sen1-50-percent',
-                                    'eval-ssl-sen2-sen1-100-percent',
+                                    #'eval-ssl-sen2-sen1-1-percent',
+                                    #'eval-ssl-sen2-sen1-10-percent',
+                                    #'eval-ssl-sen2-sen1-50-percent',
+                                    #'eval-ssl-sen2-sen1-100-percent',
                                 ]
         
-        evaluation_task = EVALUATION_REGRESSION_LANDUSE_FRACTION_CONFIG_KEY
+        evaluation_task = EVALUATION_SEGMENTATION_LANDUSE_CONFIG_KEY
         
         for i in range(len(pre_trained_weights)):
             sweep_configuration = {
@@ -124,9 +124,9 @@ if __name__ == "__main__":
                     "temperature": {"values": [0.1]},  # only to init the SimCLR model
                     "pre_trained_weights_path": {'values': [pre_trained_weights[i]]},
                     "dataset_size_fine_tuning": {'values': [
-                                                        "20-1-percent", 
-                                                        "20-10-percent",
-                                                        "20-50-percent", 
+                                                        #"20-1-percent", 
+                                                        #"20-10-percent",
+                                                        #"20-50-percent", 
                                                         "20-multi-label-ewc"
                                                         ]},
                     "modalities": {'values':    [modalities[i]]
@@ -146,7 +146,7 @@ if __name__ == "__main__":
 
     
     # Train
-    train_setup()
+    #train_setup()
 
     # Evaluate
-    #evaluation_setup()
+    evaluation_setup()
