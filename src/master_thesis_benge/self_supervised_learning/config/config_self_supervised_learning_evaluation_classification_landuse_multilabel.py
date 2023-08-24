@@ -3,7 +3,8 @@ import torch
 # Import models
 
 from master_thesis_benge.self_supervised_learning.model.evaluation.dual_resnet import (
-    DualResNet,
+    #DualResNet,
+    TripleResNet
 )
 
 from master_thesis_benge.self_supervised_learning.model.training.projection_head import AddResNetProjection
@@ -62,7 +63,7 @@ evaluation_config_classification_landuse_multilabel = {
         TASK_KEY: Task.SSL_CLASSIFICATION_LANDUSE_MULTILABEL.value
     },
     "model": {
-        MODEL_KEY: DualResNet,
+        MODEL_KEY: TripleResNet,
         NUMBER_OF_CLASSES_KEY: 11,
     },
     "training": {

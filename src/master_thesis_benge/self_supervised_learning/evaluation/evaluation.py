@@ -106,22 +106,25 @@ def evaluation():
 
     # Load weights from pre-trained model
     
-    model_ssl = SimCLR_pl.load_from_checkpoint(wandb.config.pre_trained_weights_path, training_config=evaluation_config, in_channels_1=channel_modalities["in_channels_1"], in_channels_2=channel_modalities["in_channels_2"])
+    model_ssl = SimCLR_pl.load_from_checkpoint(wandb.config.pre_trained_weights_path, training_config=evaluation_config, in_channels_1=channel_modalities["in_channels_1"], in_channels_2=channel_modalities["in_channels_2"], in_channels_3=channel_modalities["in_channels_3"])
 
     if wandb.config.evaluation_config == EVALUATION_CLASSIFICATION_LANDUSE_MULTILABEL_CONFIG_KEY or wandb.config.evaluation_config == EVALUATION_REGRESSION_LANDUSE_FRACTION_CONFIG_KEY:
         state_dict_modality_1 = model_ssl.model_modality_1.backbone.state_dict()
         state_dict_modality_2 = model_ssl.model_modality_2.backbone.state_dict()
+        state_dict_modality_3 = model_ssl.model_modality_3.backbone.state_dict()
     elif wandb.config.evaluation_config == EVALUATION_SEGMENTATION_LANDUSE_CONFIG_KEY:
         state_dict_modality_1 = model_ssl.model_modality_1.encoder.state_dict()
         state_dict_modality_2 = model_ssl.model_modality_2.encoder.state_dict()
+        state_dict_modality_3 = model_ssl.model_modality_3.encoder.state_dict()
     
-    optimizer_modality_1 = model_ssl.optimizers()[0]
-    print(type(optimizer_modality_1))
+    #optimizer_modality_1 = model_ssl.optimizers()[0]
+    #print(type(optimizer_modality_1))
     #input("test")
 
     state_dict = {
         "state_dict_modality_1": state_dict_modality_1,
-        "state_dict_modality_2": state_dict_modality_2
+        "state_dict_modality_2": state_dict_modality_2,
+        "state_dict_modality_3": state_dict_modality_3
     }
 
     # Define model
@@ -130,10 +133,10 @@ def evaluation():
         # Input channels for s1
         state_dict=state_dict,
         in_channels_1=channel_modalities["in_channels_1"],
-        #in_channels_1=4,
         # Input channels for s2
         in_channels_2=channel_modalities["in_channels_2"],
-        #in_channels_3=channel_modalities["in_channels_3"],
+        # Input channels for s3
+        in_channels_3=channel_modalities["in_channels_3"],
         number_of_classes=evaluation_config[MODEL_CONFIG_KEY][NUMBER_OF_CLASSES_KEY],
     )
 

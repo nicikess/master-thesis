@@ -41,14 +41,18 @@ if __name__ == "__main__":
 
     sweep_configuration = {
         "method": 'grid',
-        "name": 'early-fusion-run',
+        "name": 'late-fusion-run-rest',
         "parameters": {
             "seed": {'values': [42, 43, 44, 45, 46]},
             #"learning_rate": {'values': [0.0001]},
-            "dataset_size": {'values': ["20-50-percent", "20-10-percent", "20-1-percent"]},
+            "dataset_size": {'values': ["20-multi-label-ewc"]},
             "modalities": {'values':    [
-                                            [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
-
+                                            #[SENTINEL_2_INDEX_KEY, ERA_5_INDEX_KEY],
+                                            #[SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
+                                            [SENTINEL_2_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
+                                            #[SENTINEL_2_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
+                                            [SENTINEL_2_INDEX_KEY, SEASON_S2_INDEX_KEY],
+                                            [SENTINEL_2_INDEX_KEY, CLIMATE_ZONE_INDEX_KEY],
                                         ]
                            },
         }

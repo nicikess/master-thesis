@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
         sweep_configuration = {
             "method": "grid",
-            "name": "train-ssl-sen2-sen1-different-dataset-sizes-resnet-RUN2",
+            "name": "train-ssl-sen2-sen1-glo-different-dataset-sizes-resnet",
             "parameters": {
                 "training_config": {"values": [training_config]},
                 "batch_size": {"values": [128]},
@@ -45,14 +45,13 @@ if __name__ == "__main__":
                 "dataset_size_train": {'values': [
                                                     #"60-delta-multilabel"
                                                     #"delta-60-40-s",
-                                                    #"60-delta-multilabel",
                                                     #"delta-80-40",
                                                     #"100",
                                                     "delta-100-20",
-                                                    "delta-100-40",
+                                                    #"delta-100-40",
                                                 ]},
                 "modalities": {'values':    [
-                                                [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
+                                                [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
                                                 #[SENTINEL_2_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
                                                 #[SENTINEL_2_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
                                                 #[SENTINEL_1_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
@@ -83,23 +82,27 @@ if __name__ == "__main__":
             return ckpt_name
         
 
-        # resnet folder -> v1l0llek
-        # unet folder -> v1
+        pre_trained_weights =   [   
+                                    # ResNet
+                                    #'saved_models/resnet_weights/i135szoj/sentinel2-sentinel1-delta-100-20.ckpt',
+                                    #'saved_models/resnet_weights/i135szoj/sentinel2-sentinel1-delta-100-40.ckpt',
+                                    #'saved_models/resnet_weights/s4vzi5bq/sentinel2-sentinel1-delta-80-40.ckpt',
+                                    #'saved_models/resnet_weights/s4vzi5bq/sentinel2-sentinel1-60-delta-multilabel.ckpt',
+                                    #'saved_models/resnet_weights/s4vzi5bq/sentinel2-sentinel1-delta-60-40-s.ckpt'
 
-        pre_trained_weights =   [
-                                    'saved_models/unet_weights/v1l0llek/sentinel2-sentinel1-delta-60-40-s.ckpt',
-                                    'saved_models/unet_weights/v1l0llek/sentinel2-sentinel1-60-delta-multilabel.ckpt',
-                                    'saved_models/unet_weights/v1l0llek/sentinel2-sentinel1-delta-80-40.ckpt',
-                                    'saved_models/unet_weights/v1l0llek/sentinel2-sentinel1-delta-100-40.ckpt',
-                                    'saved_models/unet_weights/v1l0llek/sentinel2-sentinel1-delta-100-20.ckpt',
-                                    'saved_models/unet_weights/v1l0llek/sentinel2-sentinel1-100.ckpt',
+                                    # ResNet triple weights
+                                    'saved_models/resnet_weights/nkzdt0o0/sentinel2-sentinel1-elevation(glo-30-dem)-delta-100-20.ckpt',
+
+                                    # UNet
+                                    #'saved_models/unet_weights/v1l0llek/sentinel2-sentinel1-delta-100-20.ckpt',
                                 ]
     
         modalities =            [
                                     #[SENTINEL_1_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
                                     #[SENTINEL_1_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
                                     #[SENTINEL_2_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
-                                    [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
+                                    [SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
+                                    #[SENTINEL_2_INDEX_KEY, SENTINEL_1_INDEX_KEY],
                                     #[SENTINEL_2_INDEX_KEY, ESA_WORLD_COVER_INDEX_KEY],
                                     #[ESA_WORLD_COVER_INDEX_KEY, GLO_30_DEM_INDEX_KEY],
                                 ]
@@ -111,7 +114,7 @@ if __name__ == "__main__":
                                     #'eval-ssl-sen2-sen1-100-percent',
                                 ]
         
-        evaluation_task = EVALUATION_SEGMENTATION_LANDUSE_CONFIG_KEY
+        evaluation_task = EVALUATION_CLASSIFICATION_LANDUSE_MULTILABEL_CONFIG_KEY
         
         for i in range(len(pre_trained_weights)):
             sweep_configuration = {
@@ -124,10 +127,10 @@ if __name__ == "__main__":
                     "temperature": {"values": [0.1]},  # only to init the SimCLR model
                     "pre_trained_weights_path": {'values': [pre_trained_weights[i]]},
                     "dataset_size_fine_tuning": {'values': [
-                                                        #"20-1-percent", 
-                                                        #"20-10-percent",
-                                                        #"20-50-percent", 
-                                                        "20-multi-label-ewc"
+                                                        "20-multi-label-ewc",
+                                                        "20-50-percent",
+                                                        "20-10-percent",
+                                                        "20-1-percent",
                                                         ]},
                     "modalities": {'values':    [modalities[i]]
                                 },

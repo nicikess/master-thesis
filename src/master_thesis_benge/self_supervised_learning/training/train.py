@@ -82,7 +82,7 @@ def training():
         )
     }
 
-    model = SimCLR_pl(training_config, feat_dim=training_config[TRAINING_CONFIG_KEY][FEATURE_DIMENSION_KEY], in_channels_1=channel_modalities["in_channels_1"], in_channels_2=channel_modalities["in_channels_2"])
+    model = SimCLR_pl(training_config, feat_dim=training_config[TRAINING_CONFIG_KEY][FEATURE_DIMENSION_KEY], in_channels_1=channel_modalities["in_channels_1"], in_channels_2=channel_modalities["in_channels_2"], in_channels_3=channel_modalities["in_channels_3"])
 
     checkpoint_callback = ModelCheckpoint(
         filename=filename,
